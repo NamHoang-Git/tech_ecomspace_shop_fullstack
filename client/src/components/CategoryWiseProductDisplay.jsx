@@ -60,7 +60,7 @@ const CategoryWiseProductDisplay = ({ id, name }) => {
     return (
         <div className="container mx-auto px-4">
             <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-white">{name}</h2>
+                <h2 className="text-2xl font-bold text-emerald-400">{name}</h2>
                 <Link
                     to={redirectURL}
                     onClick={scrollToTop}

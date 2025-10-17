@@ -37,7 +37,11 @@ export function ProductCard({ data }: ProductCardProps) {
     };
 
     return (
-        <Link to={url} onClick={scrollToTop} className="block">
+        <Link
+            to={url}
+            onClick={scrollToTop}
+            className="block rounded-[28px] liquid-glass p-2 shadow-2xl"
+        >
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -48,7 +52,7 @@ export function ProductCard({ data }: ProductCardProps) {
                 }}
             >
                 <Card
-                    className="bg-white rounded-xl shadow-md shadow-secondary-100 hover:shadow-lg transition-all duration-300 overflow-hidden group relative h-full"
+                    className="bg-white rounded-3xl shadow-md shadow-secondary-100 hover:shadow-lg transition-all duration-300 overflow-hidden group relative"
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
                 >
@@ -72,7 +76,7 @@ export function ProductCard({ data }: ProductCardProps) {
                         <img
                             src={data.image[0]}
                             alt={data.name}
-                            className={`w-full h-48 object-cover transition-transform duration-700 ${
+                            className={`w-full h-52 object-contain bg-white transition-transform duration-700 ${
                                 isHovered ? 'scale-100' : 'scale-100'
                             }`}
                         />
@@ -109,9 +113,10 @@ export function ProductCard({ data }: ProductCardProps) {
 
                         {/* Add to cart button on hover */}
                         <div
-                            className={`absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end justify-center p-4 transition-opacity duration-300 ${
-                                isHovered ? 'opacity-100' : 'opacity-0'
-                            }`}
+                            className={`absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent md:flex hidden items-end justify-center p-4
+                                transition-opacity duration-300 ${
+                                    isHovered ? 'opacity-100' : 'opacity-0'
+                                }`}
                         >
                             {/* <Button
                                 className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/20"
@@ -128,21 +133,21 @@ export function ProductCard({ data }: ProductCardProps) {
                         </div>
                     </div>
 
-                    <CardContent className="p-4 relative z-10 text-white grid gap-1">
+                    <CardContent className="md:p-4 p-3 relative z-10 text-white grid gap-1 md:h-36">
                         <h3
-                            className={`font-semibold mb-1 transition-colors duration-300 line-clamp-2 ${
+                            className={`font-semibold mb-1 transition-colors duration-300 line-clamp-2 h-fit md:w-auto w-full ${
                                 isHovered ? 'text-emerald-500' : ''
                             }`}
                         >
                             {data.name}
                         </h3>
 
-                        <div className="flex items-center gap-2 text-sm">
+                        {/* <div className="flex items-center gap-2 text-sm">
                             <span className="font-medium">{data.unit}</span>
-                        </div>
+                        </div> */}
 
                         <div className="flex items-center justify-between">
-                            <div className="flex flex-col">
+                            <div className="flex md:flex-col md:items-start items-center justify-between md:gap-0 gap-2 md:w-auto w-full">
                                 {data.discount > 0 ? (
                                     <>
                                         <span className="text-gray-400 line-through text-sm">
@@ -165,10 +170,13 @@ export function ProductCard({ data }: ProductCardProps) {
                             </div>
 
                             {data.stock == 0 && (
-                                <span className="text-red-500 text-sm font-medium">
+                                <span className="text-rose-400 text-sm font-medium md:block hidden">
                                     Hết hàng
                                 </span>
                             )}
+                        </div>
+                        <div className='w-full md:hidden block'>
+                            <AddToCartButton data={data} />
                         </div>
                     </CardContent>
                 </Card>

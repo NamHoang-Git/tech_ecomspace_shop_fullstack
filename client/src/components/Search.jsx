@@ -34,11 +34,11 @@ const Search = () => {
     };
 
     return (
-        <search className="px-16 cursor-pointer">
+        <search className="cursor-pointer liquid-glass max-w-2xl container mx-auto rounded-3xl">
             <div
                 className={`${
                     !isSearchPage ? 'my-0' : 'my-2'
-                } container mx-auto max-w-2xl px-8 sm:my-0 h-8 sm:h-12 rounded-3xl border-[3px] border-inset overflow-hidden
+                } px-8 sm:my-0 h-8 sm:h-12 rounded-3xl border-[3px] border-inset overflow-hidden
                 flex items-center text-sm text-gray-300 liquid-glass group focus-within:border-purple-400`}
             >
                 <div>
@@ -46,7 +46,7 @@ const Search = () => {
                         <Link
                             to={'/'}
                             className="flex justify-center items-center h-full p-1 m-2 group-focus-within:text-purple-400
-                    bg-white shadow-sm shadow-purple-400 group-focus-within:shadow-purple-400 rounded-full"
+                        shadow-sm shadow-purple-400 group-focus-within:shadow-purple-400 rounded-full"
                         >
                             <GiReturnArrow size={14} />
                         </Link>

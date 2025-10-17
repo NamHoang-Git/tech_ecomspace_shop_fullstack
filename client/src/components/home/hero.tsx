@@ -170,9 +170,15 @@ function PhoneCard({
     videoSrc?: string;
     imageSrc?: string;
 }) {
+    const [isHovered, setIsHovered] = useState(false);
+
     return (
-        <div className="relative rounded-[28px] glass-border bg-neutral-900 p-2">
-            <div className="relative aspect-[9/19] w-full overflow-hidden rounded-2xl bg-black">
+        <div
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            className="relative rounded-[28px] p-[2px] transition-all duration-700 ease-out"
+        >
+            <div className="relative aspect-[9/19] w-full overflow-hidden rounded-2xl bg-black group">
                 {imageSrc ? (
                     <img
                         src={imageSrc}
@@ -194,11 +200,19 @@ function PhoneCard({
                         className={`h-full w-full bg-gradient-to-br ${gradient}`}
                     />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/5 to-black/60" />
+                {/* <div className="absolute inset-0 bg-gradient-to-b from-black/75 to-black/5" /> */}
+                {/* <div className="absolute inset-0 bg-gradient-to-b from-black/75 to-black/5" /> */}
+                <div
+                    className={`absolute inset-0 bg-gradient-to-b from-black/75 to-black/5 transition-all duration-500 ${
+                        isHovered
+                            ? 'border-4 border-lime-200/70 bg-gradient-to-b from-black/5 to-cyan-500/30 transition-opacity duration-500 shadow-[0_0_25px_rgba(132,204,22,0.45)]'
+                            : 'border border-transparent'
+                    }`}
+                />
             </div>
-            <div className="absolute inset-0 flex flex-col justify-end p-4">
-                <h3 className="text-xl font-bold text-white">{title}</h3>
-                <p className="text-sm text-white/80">{sub}</p>
+            <div className="absolute inset-0 flex flex-col justify-start p-6">
+                <h3 className="text-xl font-bold text-lime-300">{title}</h3>
+                <p className="text-sm font-semibold text-white/80">{sub}</p>
             </div>
         </div>
     );

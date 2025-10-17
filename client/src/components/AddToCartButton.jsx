@@ -168,8 +168,8 @@ const AddToCartButton = ({ data }) => {
                     {loading ? (
                         <Loading />
                     ) : (
-                        <span className="flex items-center gap-1 text-sm text-white font-semibold">
-                            <ShoppingCart className="w-4 h-4 mr-2" />
+                        <span className="flex items-center gap-2 text-sm text-white font-semibold">
+                            <ShoppingCart className="w-4 h-4 mb-1" />
                             <p className="">
                                 {data?.stock <= 0 ? 'Hết hàng' : 'Thêm vào giỏ'}
                             </p>

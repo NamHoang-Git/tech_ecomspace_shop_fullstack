@@ -1,42 +1,59 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-// import { useNavigate } from 'react-router-dom';
-// import { valideURLConvert } from './../utils/valideURLConvert';
 import CategoryWiseProductDisplay from './../components/CategoryWiseProductDisplay';
-import { FaAngleLeft, FaAngleRight } from 'react-icons/fa6';
 import { Hero } from '../components/home/hero';
 import { LogoMarquee } from '../components/home/logo-marquee';
 import { AppverseFooter } from '../components/home/appverse-footer';
-import Search from '../components/Search';
+import LiquidEther from '../components/ui/liquid-ether.tsx';
 
 const Home = () => {
     const categoryData = useSelector((state) => state.product.allCategory);
-    // const navigate = useNavigate();
-    // const containerRef = useRef();
-
-    // const handleRedirectProductListPage = (id, cat) => {
-    //     const url = `/${valideURLConvert(cat)}-${id}`;
-    //     navigate(url);
-    // };
 
     return (
-        <section className="">
-            <Hero />
-            <LogoMarquee />
-            {/* Display Category Product */}
-            <div className="mt-2 mb-8 flex flex-col gap-8 sm:gap-12 sm:px-4 px-2">
-                {categoryData?.map((c, index) => {
-                    return (
-                        <CategoryWiseProductDisplay
-                            key={c?._id + 'CategoryWiseProduct' || index}
-                            id={c?._id}
-                            name={c?.name}
-                        />
-                    );
-                })}
+        <div className="relative min-h-screen">
+            {/* Background effect - position absolute */}
+            <div className="fixed inset-0 z-0 pointer-events-none">
+                <LiquidEther
+                    colors={['#5227FF', '#FF9FFC', '#B19EEF']}
+                    mouseForce={20}
+                    cursorSize={100}
+                    isViscous={false}
+                    viscous={30}
+                    iterationsViscous={32}
+                    iterationsPoisson={32}
+                    resolution={0.5}
+                    isBounce={false}
+                    autoDemo={true}
+                    autoSpeed={0.5}
+                    autoIntensity={2.2}
+                    takeoverDuration={0.25}
+                    autoResumeDelay={3000}
+                    autoRampDuration={0.6}
+                    style={{ width: '100%', height: '100%' }}
+                />
             </div>
-            <AppverseFooter />
-        </section>
+
+            {/* Content - position relative để nổi lên trên background */}
+            <div className="relative z-10">
+                <Hero />
+                <LogoMarquee />
+
+                {/* Display Category Product */}
+                <div className="mt-2 mb-8 flex flex-col gap-8 sm:gap-12 sm:px-4 px-2">
+                    {categoryData?.map((c, index) => {
+                        return (
+                            <CategoryWiseProductDisplay
+                                key={c?._id + 'CategoryWiseProduct' || index}
+                                id={c?._id}
+                                name={c?.name}
+                            />
+                        );
+                    })}
+                </div>
+
+                <AppverseFooter />
+            </div>
+        </div>
     );
 };
 

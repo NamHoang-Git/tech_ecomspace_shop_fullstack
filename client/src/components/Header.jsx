@@ -17,9 +17,13 @@ import Search from './Search';
 
 export default function Header() {
     const links = [
-        { href: '/', label: 'Trang chủ'},
-        { href: '/', label: 'Sản phẩm'},
-        { href: '/search', label: 'Tìm kiếm', icon: <FaSearch size={14} /> },
+        { href: '/', label: 'Trang chủ' },
+        { href: '/', label: 'Sản phẩm' },
+        {
+            href: '/search',
+            label: 'Tìm kiếm',
+            icon: <FaSearch size={14} className="mb-[3px]" />,
+        },
     ];
 
     const navigate = useNavigate();
@@ -44,7 +48,7 @@ export default function Header() {
     return (
         <>
             <header className="sticky top-0 z-50 p-4">
-                <div className="container mx-auto max-w-4xl">
+                <div className="container mx-auto">
                     <div className="flex h-14 items-center justify-between px-6 liquid-glass-header rounded-full">
                         {/* Brand Logo */}
                         <Link
@@ -73,37 +77,46 @@ export default function Header() {
                                     onClick={scrollToTop}
                                     className="hover:text-purple-300 transition-colors flex items-center gap-[6px]"
                                 >
-                                    {l.icon}{l.label}
+                                    {l.icon}
+                                    {l.label}
                                 </Link>
                             ))}
                         </nav>
 
                         {/* Desktop CTA */}
-                        <div className="hidden md:flex items-center justify-end gap-8">
-                            {/* <Link to="#contact">Chat With Us</Link> */}
+                        <div className="hidden md:flex items-center justify-end gap-6">
                             {user?._id ? (
                                 <div className="relative">
                                     <div
                                         onClick={() =>
                                             setOpenUserMenu((prev) => !prev)
                                         }
-                                        className="flex select-none items-center gap-1 cursor-pointer transition-all duration-300 ease-in-out"
+                                        className="flex select-none items-center gap-2 cursor-pointer transition-all duration-300 ease-in-out
+                                        text-white"
                                     >
-                                        <img
-                                            src={user.avatar || defaultAvatar}
-                                            alt={user.name}
-                                            className="w-[52px] h-[52px] rounded-full border-[3px] border-inset border-primary-200"
-                                        />
+                                        <div className='relative p-0.5 overflow-hidden rounded-full liquid-glass'>
+                                            <img
+                                                src={
+                                                    user.avatar || defaultAvatar
+                                                }
+                                                alt={user.name}
+                                                className="w-8 h-8 rounded-full object-cover"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col items-start">
+                                            <span className="text-sm font-medium dark:text-white">
+                                                {user.name}
+                                            </span>
+                                            <span className="text-xs text-purple-400 dark:text-gray-400">
+                                                {user.role === 'ADMIN'
+                                                    ? 'Quản trị viên'
+                                                    : ''}
+                                            </span>
+                                        </div>
                                         {openUserMenu ? (
-                                            <FaCaretUp
-                                                size={20}
-                                                className="text-primary-200"
-                                            />
+                                            <FaCaretUp size={15} />
                                         ) : (
-                                            <FaCaretDown
-                                                size={20}
-                                                className="text-primary-200"
-                                            />
+                                            <FaCaretDown size={15} />
                                         )}
                                     </div>
                                     {openUserMenu && (
