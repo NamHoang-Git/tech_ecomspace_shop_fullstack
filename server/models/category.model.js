@@ -9,8 +9,10 @@ const categorySchema = new mongoose.Schema({
         type: String,
         default: "",
     },
-    description: { String },
-    video: { String },
+    description: {
+        type: String,
+        default: ""
+    },
 }, {
     timestamps: true
 })

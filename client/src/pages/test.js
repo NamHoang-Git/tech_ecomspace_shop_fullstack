@@ -1,137 +1,159 @@
-import React, { useRef } from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { valideURLConvert } from './../utils/valideURLConvert';
-import CategoryWiseProductDisplay from './../components/CategoryWiseProductDisplay';
-import { FaAngleLeft, FaAngleRight } from 'react-icons/fa6';
-import { Hero } from '../components/home/hero';
-import { LogoMarquee } from '../components/home/logo-marquee';
-import { AppverseFooter } from '../components/home/appverse-footer';
-import Search from '../components/Search';
+"use client"
 
-const Home = () => {
-    const loadingCategory = useSelector(
-        (state) => state.product.loadingCategory
-    );
-    const categoryData = useSelector((state) => state.product.allCategory);
-    const navigate = useNavigate();
-    const containerRef = useRef();
+import { useState } from "react"
+// import Image from "next/image"
+import { Star, Users } from "lucide-react"
+import { Badge } from "./ui/badge"
+import { Button } from "./ui/button"
+import { Card, CardContent } from "./ui/card"
+import { motion } from "framer-motion"
 
-    const handleRedirectProductListPage = (id, cat) => {
-        const url = `/${valideURLConvert(cat)}-${id}`;
-        navigate(url);
-    };
+interface GameCardProps {
+  game: {
+    title: string
+    price: number
+    discount?: number
+    image: string
+    tags: string[]
+    rating: number
+    players: string
+  }
+}
 
-    const handleScrollLeft = () => {
-        containerRef.current.scrollLeft -= 500;
-    };
+export function GameCard({ game }: GameCardProps) {
+  const [isHovered, setIsHovered] = useState(false)
 
-    const handleScrollRight = () => {
-        containerRef.current.scrollLeft += 500;
-    };
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      whileHover={{
+        scale: 1.03,
+        transition: { duration: 0.2 },
+      }}
+    >
+      <Card
+        className="bg-zinc-800/50 backdrop-blur-sm border-zinc-700/50 overflow-hidden group relative h-full"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {/* Glow effect on hover */}
+        <div
+          className={`absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 opacity-0 transition-opacity duration-500 pointer-events-none ${isHovered ? "opacity-100" : ""}`}
+        />
 
-    return (
-        <section className="">
-            <Hero />
-            <LogoMarquee />
-            <div className="container mx-auto px-4">
-                <div className="relative flex items-center">
-                    {/* Category */}
-                    <div
-                        ref={containerRef}
-                        className="grid grid-flow-col auto-cols-[minmax(7rem,7rem)] sm:auto-cols-[minmax(9rem,9rem)]
-                    md:auto-cols-[minmax(9rem,9rem)] lg:auto-cols-[minmax(10rem,10rem)]
-                    gap-4 md:gap-6 lg:gap-8 container mx-auto px-4 pt-6 pb-6 overflow-x-auto scroll-smooth scrollbar-hide"
-                    >
-                        {loadingCategory
-                            ? new Array(12).fill(null).map((c, index) => {
-                                  return (
-                                      <div
-                                          key={index + 'loadingCategory'}
-                                          className="grid grid-flow-col grid-cols-[2fr_1fr] h-[4rem] sm:h-[5rem] md:h-[5rem] lg:h-[6rem]
-                                        place-items-center border-2 rounded-2xl sm:rounded-3xl bg-white
-                                        shadow-md shadow-primary-100 cursor-pointer animate-pulse"
-                                      >
-                                          <div className="h-full w-full flex flex-col gap-2 justify-center p-2">
-                                              <div className="bg-blue-100 w-full h-2 rounded"></div>
-                                              <div className="bg-blue-100 w-2/3 h-2 rounded"></div>
-                                          </div>
-                                          <div className="bg-blue-100 w-full h-full rounded"></div>
-                                      </div>
-                                  );
-                              })
-                            : categoryData.map((cat, index) => {
-                                  return (
-                                      <div
-                                          key={
-                                              cat._id + 'displayCategory' ||
-                                              index
-                                          }
-                                          className="w-full h-full"
-                                          onClick={() =>
-                                              handleRedirectProductListPage(
-                                                  cat._id,
-                                                  cat.name
-                                              )
-                                          }
-                                      >
-                                          <div
-                                              className="grid grid-flow-col grid-cols-[2fr_1fr] h-[4rem] sm:h-[5rem] md:h-[5rem] lg:h-[6rem] gap-2
-                                            place-items-center shadow-md shadow-secondary-100 rounded-2xl sm:rounded-3xl bg-primary-5
-                                            cursor-pointer group"
-                                          >
-                                              <p className="text-[10px] sm:text-sm md:text-base lg:text-base text-center p-2 text-secondary-200 font-bold">
-                                                  {cat.name}
-                                              </p>
-                                              <img
-                                                  src={cat.image}
-                                                  alt={cat.name}
-                                                  className="w-full h-full object-cover rounded-3xl transition-transform duration-500
-                                                group-hover:scale-95"
-                                              />
-                                          </div>
-                                      </div>
-                                  );
-                              })}
-                    </div>
+        {/* Border glow */}
+        <div
+          className={`absolute inset-0 rounded-lg border-2 border-emerald-500/0 transition-all duration-500 ${isHovered ? "border-emerald-500/70 shadow-[0_0_15px_rgba(16,185,129,0.3)]" : ""}`}
+        />
 
-                    {/* Arrow */}
-                    <div className="left-0 absolute hidden lg:block cursor-pointer">
-                        <button
-                            onClick={handleScrollLeft}
-                            className="z-10 bg-white hover:bg-gray-100 shadow-md shadow-secondary-200 text-lg
-                        p-2 rounded-full "
-                        >
-                            <FaAngleLeft size={16} />
-                        </button>
-                    </div>
+        <div className="aspect-video relative overflow-hidden">
+          {/* <Image
+            src={game.image || "/placeholder.svg"}
+            alt={game.title}
+            fill
+            className={`object-cover transition-transform duration-700 ${isHovered ? "scale-110" : "scale-100"}`}
+          /> */}
 
-                    <div className="right-0 absolute hidden lg:block cursor-pointer">
-                        <button
-                            onClick={handleScrollRight}
-                            className="z-10 bg-white hover:bg-gray-100 shadow-md shadow-secondary-200 text-lg
-                        p-2 rounded-full "
-                        >
-                            <FaAngleRight size={16} />
-                        </button>
-                    </div>
-                </div>
+          {game.discount && game.discount > 0 && (
+            <div className="absolute top-2 right-2 z-10">
+              <motion.div
+                animate={{
+                  scale: isHovered ? [1, 1.1, 1] : 1,
+                  rotate: isHovered ? [0, -5, 5, 0] : 0,
+                }}
+                transition={{
+                  duration: 0.5,
+                  repeat: isHovered ? Number.POSITIVE_INFINITY : 0,
+                  repeatDelay: 2,
+                }}
+              >
+                <Badge className="bg-gradient-to-r from-emerald-500 to-cyan-500 shadow-lg shadow-emerald-500/20 font-bold">
+                  -{game.discount}%
+                </Badge>
+              </motion.div>
             </div>
-            {/* Display Category Product */}
-            <div className="mt-2 mb-8 flex flex-col gap-8 sm:gap-12 sm:px-4 px-2">
-                {categoryData?.map((c, index) => {
-                    return (
-                        <CategoryWiseProductDisplay
-                            key={c?._id + 'CategoryWiseProduct' || index}
-                            id={c?._id}
-                            name={c?.name}
-                        />
-                    );
-                })}
-            </div>
-            <AppverseFooter />
-        </section>
-    );
-};
+          )}
 
-export default Home;
+          {/* Overlay on hover */}
+          <div
+            className={`absolute inset-0 bg-gradient-to-t from-zinc-900/90 via-zinc-900/50 to-transparent flex items-end justify-between p-3 transition-opacity duration-300 ${isHovered ? "opacity-100" : "opacity-0"}`}
+          >
+            <Button className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/20">
+              View Game
+            </Button>
+
+            <Button
+              variant="outline"
+              size="icon"
+              className="bg-zinc-800/80 border-zinc-700 hover:bg-zinc-700 hover:border-emerald-500 transition-all duration-300"
+            >
+              <motion.div animate={{ scale: isHovered ? [1, 1.2, 1] : 1 }} transition={{ duration: 0.3 }}>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-5 h-5"
+                >
+                  <path
+                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className={isHovered ? "fill-rose-500 stroke-rose-500" : ""}
+                  />
+                </svg>
+              </motion.div>
+            </Button>
+          </div>
+        </div>
+
+        <CardContent className="p-4 relative z-10">
+          <h3 className={`font-semibold mb-1 transition-colors duration-300 ${isHovered ? "text-emerald-400" : ""}`}>
+            {game.title}
+          </h3>
+
+          <div className="flex flex-wrap gap-1 mb-2">
+            {game.tags.map((tag, i) => (
+              <Badge
+                key={i}
+                variant="outline"
+                className={`text-xs border-zinc-600 transition-all duration-300 ${isHovered ? "border-emerald-500/50 bg-emerald-500/10" : ""}`}
+              >
+                {tag}
+              </Badge>
+            ))}
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1">
+              {game.discount && game.discount > 0 ? (
+                <>
+                  <span className="line-through text-zinc-500 text-sm">${game.price.toFixed(2)}</span>
+                  <span className="font-bold">${(game.price * (1 - game.discount / 100)).toFixed(2)}</span>
+                </>
+              ) : (
+                <span className="font-bold">${game.price.toFixed(2)}</span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
+                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                <span className="text-sm">{game.rating}</span>
+              </div>
+              <div className="text-xs text-zinc-400 flex items-center">
+                <Users className="h-3 w-3 mr-1" />
+                {game.players}
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  )
+}

@@ -1,10 +1,10 @@
-import uploadToCloudinary from '../utils/uploadToCloudinary.js';
+import uploadImageCloudinary from "../utils/uploadImageCloudinary.js"
 
 const uploadImageController = async (req, res) => {
     try {
         const file = req.file
 
-        const uploadImage = await uploadToCloudinary(file)
+        const uploadImage = await uploadImageCloudinary(file)
 
         return res.json({
             message: 'Tải ảnh thành công',

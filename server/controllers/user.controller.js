@@ -4,7 +4,7 @@ import bcryptjs from 'bcryptjs'
 import verifyEmailTemplate from './../utils/verifyEmailTemplate.js';
 import generatedAccessToken from '../utils/generatedAccessToken.js';
 import generatedRefreshToken from '../utils/generatedRefreshToken.js';
-import uploadToCloudinary from '../utils/uploadToCloudinary.js';
+import uploadImageCloudinary from '../utils/uploadImageCloudinary.js';
 import generatedOtp from '../utils/generatedOtp.js';
 import forgotPasswordTemplate from '../utils/forgotPasswordTemplate.js';
 import jwt from 'jsonwebtoken'
@@ -255,7 +255,7 @@ export async function uploadAvatar(req, res) {
             });
         }
 
-        const upload = await uploadToCloudinary(image);
+        const upload = await uploadImageCloudinary(image);
 
         if (!upload.success) {
             return res.status(400).json({
