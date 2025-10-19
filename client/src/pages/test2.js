@@ -1,95 +1,299 @@
-import React from 'react';
-import { pricewithDiscount } from '../utils/PriceWithDiscount';
-import AddToCartButton from './AddToCartButton';
-import { valideURLConvert } from './../utils/valideURLConvert';
-import { Link } from 'react-router-dom';
-import { DisplayPriceInVND } from './../utils/DisplayPriceInVND';
-import { MdAccessTime } from 'react-icons/md';
+import { Button } from '../components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '../components/ui/sheet';
+import { Menu, Briefcase, Tag, HelpCircle, FileText, Info } from 'lucide-react';
+import logo from '../assets/logo.png';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { FaCartPlus } from 'react-icons/fa6';
+import { FaCaretDown, FaCaretUp, FaSearch } from 'react-icons/fa';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useSelector } from 'react-redux';
+import UserMenu from './UserMenu';
+import { DisplayPriceInVND } from '../utils/DisplayPriceInVND';
+import { useGlobalContext } from '../provider/GlobalProvider';
+import DisplayCartItem from './DisplayCartItem';
+import defaultAvatar from '../assets/defaultAvatar.png';
+import Search from './Search';
 
-const CardProduct = ({ data }) => {
-    const url = `/product/${valideURLConvert(data.name)}-${data._id}`;
+export default function Header() {
+    const links = [
+        { href: '/', label: 'Trang chủ' },
+        { href: '/', label: 'Sản phẩm' },
+        {
+            href: '/search',
+            label: 'Tìm kiếm',
+            icon: <FaSearch size={14} className="mb-[3px]" />,
+        },
+    ];
+    const navigate = useNavigate();
+    const user = useSelector((state) => state?.user);
+    const [openUserMenu, setOpenUserMenu] = useState(false);
+    const menuRef = useRef(null);
+    const cartItem = useSelector((state) => state.cartItem.cart);
+    const { totalPrice, totalQty } = useGlobalContext();
+    const [openCartSection, setOpenCartSection] = useState(false);
+
+    // Handle clicks outside the menu
+    useEffect(() => {
+        const handleClick = (event) => {
+            if (!menuRef.current) return;
+            const isClickInside = menuRef.current.contains(event.target);
+            const isToggleButton = event.target.closest(
+                'button[aria-haspopup="true"]'
+            );
+            if (!isClickInside && !isToggleButton) {
+                setOpenUserMenu(false);
+            }
+        };
+
+        const handleEscape = (event) => {
+            if (event.key === 'Escape') {
+                setOpenUserMenu(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClick, true);
+        document.addEventListener('keydown', handleEscape);
+        return () => {
+            document.removeEventListener('mousedown', handleClick, true);
+            document.removeEventListener('keydown', handleEscape);
+        };
+    }, []);
+
+    // Chỉ mở menu nếu đang đóng, đóng menu nếu đang mở
+    const toggleUserMenu = useCallback((e) => {
+        e.stopPropagation();
+        setOpenUserMenu((prev) => (prev ? false : true)); // Chỉ mở nếu đang đóng, đóng nếu đang mở
+    }, []);
+
+    // Hàm đóng menu
+    const closeMenu = useCallback(() => {
+        setOpenUserMenu(false);
+    }, []);
+
+    const redirectToLoginPage = () => {
+        navigate('/login');
+    };
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     return (
-        <Link
-            to={url}
-            onClick={scrollToTop}
-            title={data.name}
-            className="group bg-white rounded-xl shadow-md shadow-secondary-100
-        hover:shadow-lg transition-all duration-300 overflow-hidden"
-        >
-            {/* Image */}
-            <div className="relative w-full h-40 sm:h-48 lg:h-52 xl:h-56 overflow-hidden">
-                <img
-                    src={data.image[0]}
-                    alt={data.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-
-                {/* Badge thời gian (nếu có) */}
-                <div
-                    className="absolute top-2 right-2 bg-green-100 text-green-800 sm:px-2 sm:py-1 px-1 py-[2px] rounded-md
-                flex items-center gap-1"
-                >
-                    <MdAccessTime size={13} className="mb-[2px]" />
-                    <p className="sm:text-xs text-[8px] font-medium leading-[14px]">10 min</p>
-                </div>
-            </div>
-
-            {/* Info */}
-            <div className="px-2 pt-2 pb-2 md:px-3 md:pt-4 md:pb-5 flex flex-col gap-2 lg:gap-2">
-                {/* Tên sản phẩm */}
-                <h2 className="font-semibold line-clamp-2 text-[10px] sm:text-base h-7 sm:h-11 md:h-11 lg:h-12">
-                    {data.name}
-                </h2>
-
-                {/* Đơn vị + discount */}
-                <div className="flex gap-2 items-center sm:h-[12px] h-[6px] text-[9px] sm:text-sm mt-1 md:mt-2">
-                    <div className="whitespace-nowrap font-semibold line-clamp-1">
-                        {data.unit}
-                    </div>
-                    {/* Badge discount */}
-                    {Boolean(data.discount) && (
-                        <span
-                            className="w-fit bg-primary border-2 border-secondary-200 text-secondary-200 font-semibold
-                        px-2 sm:py-[0.8px] py-0 rounded-full shadow text-[8px] sm:text-sm"
+        <>
+            <header className="sticky top-0 z-50 p-4">
+                <div className="container mx-auto">
+                    <div className="flex h-16 items-center justify-between px-6 liquid-glass-header rounded-full">
+                        {/* Brand Logo */}
+                        <Link
+                            to="/"
+                            onClick={scrollToTop}
+                            className="flex items-center gap-1.5"
                         >
-                            -{data.discount}%
-                        </span>
-                    )}
-                </div>
-
-                {/* Giá + Button */}
-                <div className="flex md:flex-row flex-col md:items-center justify-between md:h-6 mt-1 md:mt-4 gap-2">
-                    <div className="text-[9px] sm:text-[15px] flex md:flex-col md:gap-0 gap-2 md:h-10 md:justify-center justify-start md:items-start items-baseline">
-                        {Boolean(data.discount) && (
-                            <span className="text-gray-400 line-through ">
-                                {DisplayPriceInVND(data.price)}
+                            <img
+                                src={logo}
+                                alt="TechSpace logo"
+                                width={25}
+                                height={25}
+                                className="h-5 w-5"
+                            />
+                            <span className="font-semibold tracking-wide text-white">
+                                TechSpace
                             </span>
-                        )}
-                        <span className="text-secondary-200 font-bold lg:text-base">
-                            {DisplayPriceInVND(
-                                pricewithDiscount(data.price, data.discount)
+                        </Link>
+                        {/* Desktop Nav */}
+                        <nav className="hidden items-center gap-6 text-sm text-gray-300 md:flex">
+                            {links.map((l) => (
+                                <Link
+                                    key={l.href}
+                                    to={l.href}
+                                    onClick={scrollToTop}
+                                    className="hover:text-purple-300 transition-colors flex items-center gap-[6px]"
+                                >
+                                    {l.icon}
+                                    {l.label}
+                                </Link>
+                            ))}
+                        </nav>
+                        {/* User */}
+                        <div className="hidden md:flex items-center justify-end gap-6">
+                            {user?._id ? (
+                                <div className="relative" ref={menuRef}>
+                                    <div className="relative">
+                                        <button
+                                            onClick={toggleUserMenu}
+                                            className="flex items-center gap-2 w-full px-2 py-1.5 text-white rounded-lg hover:bg-white/10 transition-colors"
+                                            aria-expanded={openUserMenu}
+                                            aria-haspopup="true"
+                                            aria-label="User menu"
+                                            type="button"
+                                        >
+                                            <div className="relative p-0.5 overflow-hidden rounded-full liquid-glass">
+                                                <img
+                                                    src={
+                                                        user.avatar ||
+                                                        defaultAvatar
+                                                    }
+                                                    alt={user.name}
+                                                    className="w-8 h-8 rounded-full object-cover"
+                                                    width={32}
+                                                    height={32}
+                                                />
+                                            </div>
+                                            <div className="flex flex-col items-start flex-1 min-w-0">
+                                                <span className="text-sm font-medium text-white truncate max-w-[120px]">
+                                                    {user.name}
+                                                </span>
+                                                {user.role === 'ADMIN' && (
+                                                    <span className="text-xs text-purple-400">
+                                                        Quản trị viên
+                                                    </span>
+                                                )}
+                                            </div>
+                                            {openUserMenu ? (
+                                                <FaCaretUp
+                                                    className="flex-shrink-0 ml-2"
+                                                    size={15}
+                                                />
+                                            ) : (
+                                                <FaCaretDown
+                                                    className="flex-shrink-0 ml-2"
+                                                    size={15}
+                                                />
+                                            )}
+                                        </button>
+                                    </div>
+                                    <AnimatePresence>
+                                        {openUserMenu && (
+                                            <motion.div
+                                                className="absolute right-0 top-full mt-2 z-50 w-64"
+                                                initial={{ opacity: 0, y: -10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -10 }}
+                                                transition={{
+                                                    duration: 0.15,
+                                                    ease: 'easeOut',
+                                                }}
+                                            >
+                                                <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                                                    <UserMenu
+                                                        close={closeMenu}
+                                                    />
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={redirectToLoginPage}
+                                    className="text-sm text-gray-300 hover:text-purple-300 transition-colors"
+                                >
+                                    Đăng nhập
+                                </button>
                             )}
-                        </span>
-                    </div>
-
-                    <div className="">
-                        {data.stock === 0 ? (
-                            <p className="text-secondary-200 text-[10px] sm:text-base font-bold md:font-semibold md:text-center">
-                                Hết hàng
-                            </p>
-                        ) : (
-                            <AddToCartButton data={data} />
-                        )}
+                            <button
+                                onClick={
+                                    user?._id
+                                        ? () => setOpenCartSection(true)
+                                        : redirectToLoginPage
+                                }
+                                className={`${
+                                    cartItem[0] ? ' py-1.5' : ' py-3'
+                                } flex items-center gap-2 bg-lime-400 text-gray-700 font-medium rounded-lg px-4
+                                hover:bg-lime-300 hover:shadow-md hover:scale-[1.02] transition-all`}
+                            >
+                                <div className="animate-bounce">
+                                    <FaCartPlus size={20} />
+                                </div>
+                                <div className="font-bold text-sm">
+                                    {cartItem[0] ? (
+                                        <div className="ml-1 flex flex-col items-center justify-center">
+                                            <p>{totalQty} sản phẩm</p>
+                                            <p>
+                                                {DisplayPriceInVND(totalPrice)}
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <p>Giỏ hàng</p>
+                                    )}
+                                </div>
+                            </button>
+                        </div>
+                        {/* Mobile Nav */}
+                        <div className="md:hidden">
+                            <Sheet>
+                                <SheetTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="border-gray-700 bg-gray-900/80 text-gray-200 hover:bg-gray-800"
+                                    >
+                                        <Menu className="h-5 w-5" />
+                                        <span className="sr-only">
+                                            Open menu
+                                        </span>
+                                    </Button>
+                                </SheetTrigger>
+                                <SheetContent
+                                    side="right"
+                                    className="liquid-glass border-gray-800 p-0 w-64 flex flex-col"
+                                >
+                                    <div className="flex items-center gap-1.5 px-4 py-4 border-b border-gray-800">
+                                        <img
+                                            alt="Skitbit logo"
+                                            width={24}
+                                            height={24}
+                                            className="h-6 w-6"
+                                        />
+                                        <span className="font-semibold tracking-wide text-white text-lg">
+                                            Skitbit
+                                        </span>
+                                    </div>
+                                    <nav className="flex flex-col gap-1 mt-2 text-gray-200">
+                                        {links.map((l) => (
+                                            <Link
+                                                key={l.href}
+                                                to={l.href}
+                                                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-900 hover:text-purple-300 transition-colors"
+                                            >
+                                                <span className="inline-flex items-center justify-center w-5 h-5 text-gray-400">
+                                                    <l.icon className="h-4 w-4" />
+                                                </span>
+                                                <span className="text-sm">
+                                                    {l.label}
+                                                </span>
+                                            </Link>
+                                        ))}
+                                    </nav>
+                                    <div className="mt-auto border-t border-gray-800 p-4">
+                                        <Button
+                                            asChild
+                                            className="w-full bg-lime-400 text-black font-medium rounded-lg px-6 py-2.5
+                                                hover:bg-lime-300 hover:shadow-md hover:scale-[1.02]
+                                                transition-all"
+                                        >
+                                            <a
+                                                href="https://wa.link/65mf3i"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                Get a Quote
+                                            </a>
+                                        </Button>
+                                    </div>
+                                </SheetContent>
+                            </Sheet>
+                        </div>
                     </div>
                 </div>
+            </header>
+            <div className="hidden md:block">
+                <Search />
             </div>
-        </Link>
+            {openCartSection && (
+                <DisplayCartItem close={() => setOpenCartSection(false)} />
+            )}
+        </>
     );
-};
-
-export default CardProduct;
+}

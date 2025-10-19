@@ -1,159 +1,301 @@
-"use client"
+import { Button } from '../components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '../components/ui/sheet';
+import { Menu, Briefcase, Tag, HelpCircle, FileText, Info } from 'lucide-react';
+import logo from '../assets/logo.png';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { FaCartPlus } from 'react-icons/fa6';
+import { FaCaretDown, FaCaretUp, FaSearch } from 'react-icons/fa';
+// eslint-disable-next-line no-unused-vars
+import { AnimatePresence, motion } from 'framer-motion';
+import { useSelector } from 'react-redux';
+import UserMenu from './UserMenu';
+import { DisplayPriceInVND } from '../utils/DisplayPriceInVND';
+import { useGlobalContext } from '../provider/GlobalProvider';
+import DisplayCartItem from './DisplayCartItem';
+import defaultAvatar from '../assets/defaultAvatar.png';
+import Search from './Search';
 
-import { useState } from "react"
-// import Image from "next/image"
-import { Star, Users } from "lucide-react"
-import { Badge } from "./ui/badge"
-import { Button } from "./ui/button"
-import { Card, CardContent } from "./ui/card"
-import { motion } from "framer-motion"
+export default function Header() {
+    const links = [
+        { href: '/', label: 'Trang chủ' },
+        { href: '/', label: 'Sản phẩm' },
+        {
+            href: '/search',
+            label: 'Tìm kiếm',
+            icon: <FaSearch size={14} className="mb-[3px]" />,
+        },
+    ];
+    const navigate = useNavigate();
+    const user = useSelector((state) => state?.user);
+    const [openUserMenu, setOpenUserMenu] = useState(false);
+    const menuRef = useRef(null);
+    const cartItem = useSelector((state) => state.cartItem.cart);
+    const { totalPrice, totalQty } = useGlobalContext();
+    const [openCartSection, setOpenCartSection] = useState(false);
 
-interface GameCardProps {
-  game: {
-    title: string
-    price: number
-    discount?: number
-    image: string
-    tags: string[]
-    rating: number
-    players: string
-  }
-}
+    // Handle clicks outside the menu
+    useEffect(() => {
+        const handleClick = (event) => {
+            if (!menuRef.current) return;
+            const isClickInside = menuRef.current.contains(event.target);
+            const isToggleButton = event.target.closest(
+                'button[aria-haspopup="true"]'
+            );
+            if (!isClickInside && !isToggleButton) {
+                setOpenUserMenu(false);
+            }
+        };
 
-export function GameCard({ game }: GameCardProps) {
-  const [isHovered, setIsHovered] = useState(false)
+        const handleEscape = (event) => {
+            if (event.key === 'Escape') {
+                setOpenUserMenu(false);
+            }
+        };
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      whileHover={{
-        scale: 1.03,
-        transition: { duration: 0.2 },
-      }}
-    >
-      <Card
-        className="bg-zinc-800/50 backdrop-blur-sm border-zinc-700/50 overflow-hidden group relative h-full"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        {/* Glow effect on hover */}
-        <div
-          className={`absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 opacity-0 transition-opacity duration-500 pointer-events-none ${isHovered ? "opacity-100" : ""}`}
-        />
+        document.addEventListener('mousedown', handleClick, true);
+        document.addEventListener('keydown', handleEscape);
+        return () => {
+            document.removeEventListener('mousedown', handleClick, true);
+            document.removeEventListener('keydown', handleEscape);
+        };
+    }, []);
 
-        {/* Border glow */}
-        <div
-          className={`absolute inset-0 rounded-lg border-2 border-emerald-500/0 transition-all duration-500 ${isHovered ? "border-emerald-500/70 shadow-[0_0_15px_rgba(16,185,129,0.3)]" : ""}`}
-        />
+    // Chỉ mở menu nếu đang đóng, đóng menu nếu đang mở
+    const toggleUserMenu = useCallback((e) => {
+        e.stopPropagation();
+        setOpenUserMenu((prev) => (prev ? false : true)); // Chỉ mở nếu đang đóng, đóng nếu đang mở
+    }, []);
 
-        <div className="aspect-video relative overflow-hidden">
-          {/* <Image
-            src={game.image || "/placeholder.svg"}
-            alt={game.title}
-            fill
-            className={`object-cover transition-transform duration-700 ${isHovered ? "scale-110" : "scale-100"}`}
-          /> */}
+    // Hàm đóng menu
+    const closeMenu = useCallback(() => {
+        setOpenUserMenu(false);
+    }, []);
 
-          {game.discount && game.discount > 0 && (
-            <div className="absolute top-2 right-2 z-10">
-              <motion.div
-                animate={{
-                  scale: isHovered ? [1, 1.1, 1] : 1,
-                  rotate: isHovered ? [0, -5, 5, 0] : 0,
-                }}
-                transition={{
-                  duration: 0.5,
-                  repeat: isHovered ? Number.POSITIVE_INFINITY : 0,
-                  repeatDelay: 2,
-                }}
-              >
-                <Badge className="bg-gradient-to-r from-emerald-500 to-cyan-500 shadow-lg shadow-emerald-500/20 font-bold">
-                  -{game.discount}%
-                </Badge>
-              </motion.div>
+    const redirectToLoginPage = () => {
+        navigate('/login');
+    };
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    return (
+        <>
+            <header className="sticky top-0 z-50 p-4">
+                <div className="container mx-auto">
+                    <div className="flex h-16 items-center justify-between px-6 liquid-glass-header rounded-full">
+                        {/* Brand Logo */}
+                        <Link
+                            to="/"
+                            onClick={scrollToTop}
+                            className="flex items-center gap-1.5"
+                        >
+                            <img
+                                src={logo}
+                                alt="TechSpace logo"
+                                width={25}
+                                height={25}
+                                className="h-5 w-5"
+                            />
+                            <span className="font-semibold tracking-wide text-white">
+                                TechSpace
+                            </span>
+                        </Link>
+                        {/* Desktop Nav */}
+                        <nav className="hidden items-center gap-6 text-sm text-gray-300 md:flex">
+                            {links.map((l) => (
+                                <Link
+                                    key={l.href}
+                                    to={l.href}
+                                    onClick={scrollToTop}
+                                    className="hover:text-purple-300 transition-colors flex items-center gap-[6px]"
+                                >
+                                    {l.icon}
+                                    {l.label}
+                                </Link>
+                            ))}
+                        </nav>
+                        {/* User */}
+                        <div className="hidden md:flex items-center justify-end gap-6">
+                            {user?._id ? (
+                                <div className="relative" ref={menuRef}>
+                                    <div className="relative">
+                                        <button
+                                            onClick={toggleUserMenu}
+                                            className="flex items-center gap-2 w-full px-2 py-1.5 text-white rounded-lg hover:bg-white/10 transition-colors"
+                                            aria-expanded={openUserMenu}
+                                            aria-haspopup="true"
+                                            aria-label="User menu"
+                                            type="button"
+                                        >
+                                            <div className="relative p-0.5 overflow-hidden rounded-full liquid-glass">
+                                                <img
+                                                    src={
+                                                        user.avatar ||
+                                                        defaultAvatar
+                                                    }
+                                                    alt={user.name}
+                                                    className="w-8 h-8 rounded-full object-cover"
+                                                    width={32}
+                                                    height={32}
+                                                />
+                                            </div>
+                                            <div className="flex flex-col items-start flex-1 min-w-0">
+                                                <span className="text-sm font-medium text-white truncate max-w-[120px]">
+                                                    {user.name}
+                                                </span>
+                                                {user.role === 'ADMIN' && (
+                                                    <span className="text-xs text-purple-400">
+                                                        Quản trị viên
+                                                    </span>
+                                                )}
+                                            </div>
+                                            {openUserMenu ? (
+                                                <FaCaretUp
+                                                    className="flex-shrink-0 ml-2"
+                                                    size={15}
+                                                />
+                                            ) : (
+                                                <FaCaretDown
+                                                    className="flex-shrink-0 ml-2"
+                                                    size={15}
+                                                />
+                                            )}
+                                        </button>
+                                    </div>
+                                    <AnimatePresence>
+                                        {openUserMenu && (
+                                            <motion.div
+                                                className="absolute right-0 top-full mt-2 z-50 w-64"
+                                                initial={{ opacity: 0, y: -10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -10 }}
+                                                transition={{
+                                                    duration: 0.15,
+                                                    ease: 'easeOut',
+                                                }}
+                                            >
+                                                <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                                                    <UserMenu
+                                                        close={closeMenu}
+                                                        menuTriggerRef={menuRef}
+                                                    />
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={redirectToLoginPage}
+                                    className="text-sm text-gray-300 hover:text-purple-300 transition-colors"
+                                >
+                                    Đăng nhập
+                                </button>
+                            )}
+                            <button
+                                onClick={
+                                    user?._id
+                                        ? () => setOpenCartSection(true)
+                                        : redirectToLoginPage
+                                }
+                                className={`${
+                                    cartItem[0] ? ' py-1.5' : ' py-3'
+                                } flex items-center gap-2 bg-lime-400 text-gray-700 font-medium rounded-lg px-4
+                                hover:bg-lime-300 hover:shadow-md hover:scale-[1.02] transition-all`}
+                            >
+                                <div className="animate-bounce">
+                                    <FaCartPlus size={20} />
+                                </div>
+                                <div className="font-bold text-sm">
+                                    {cartItem[0] ? (
+                                        <div className="ml-1 flex flex-col items-center justify-center">
+                                            <p>{totalQty} sản phẩm</p>
+                                            <p>
+                                                {DisplayPriceInVND(totalPrice)}
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <p>Giỏ hàng</p>
+                                    )}
+                                </div>
+                            </button>
+                        </div>
+                        {/* Mobile Nav */}
+                        <div className="md:hidden">
+                            <Sheet>
+                                <SheetTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="border-gray-700 bg-gray-900/80 text-gray-200 hover:bg-gray-800"
+                                    >
+                                        <Menu className="h-5 w-5" />
+                                        <span className="sr-only">
+                                            Open menu
+                                        </span>
+                                    </Button>
+                                </SheetTrigger>
+                                <SheetContent
+                                    side="right"
+                                    className="liquid-glass border-gray-800 p-0 w-64 flex flex-col"
+                                >
+                                    <div className="flex items-center gap-1.5 px-4 py-4 border-b border-gray-800">
+                                        <img
+                                            alt="Skitbit logo"
+                                            width={24}
+                                            height={24}
+                                            className="h-6 w-6"
+                                        />
+                                        <span className="font-semibold tracking-wide text-white text-lg">
+                                            Skitbit
+                                        </span>
+                                    </div>
+                                    <nav className="flex flex-col gap-1 mt-2 text-gray-200">
+                                        {links.map((l) => (
+                                            <Link
+                                                key={l.href}
+                                                to={l.href}
+                                                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-900 hover:text-purple-300 transition-colors"
+                                            >
+                                                <span className="inline-flex items-center justify-center w-5 h-5 text-gray-400">
+                                                    <l.icon className="h-4 w-4" />
+                                                </span>
+                                                <span className="text-sm">
+                                                    {l.label}
+                                                </span>
+                                            </Link>
+                                        ))}
+                                    </nav>
+                                    <div className="mt-auto border-t border-gray-800 p-4">
+                                        <Button
+                                            asChild
+                                            className="w-full bg-lime-400 text-black font-medium rounded-lg px-6 py-2.5
+                                                hover:bg-lime-300 hover:shadow-md hover:scale-[1.02]
+                                                transition-all"
+                                        >
+                                            <a
+                                                href="https://wa.link/65mf3i"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                Get a Quote
+                                            </a>
+                                        </Button>
+                                    </div>
+                                </SheetContent>
+                            </Sheet>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div className="hidden md:block">
+                <Search />
             </div>
-          )}
-
-          {/* Overlay on hover */}
-          <div
-            className={`absolute inset-0 bg-gradient-to-t from-zinc-900/90 via-zinc-900/50 to-transparent flex items-end justify-between p-3 transition-opacity duration-300 ${isHovered ? "opacity-100" : "opacity-0"}`}
-          >
-            <Button className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/20">
-              View Game
-            </Button>
-
-            <Button
-              variant="outline"
-              size="icon"
-              className="bg-zinc-800/80 border-zinc-700 hover:bg-zinc-700 hover:border-emerald-500 transition-all duration-300"
-            >
-              <motion.div animate={{ scale: isHovered ? [1, 1.2, 1] : 1 }} transition={{ duration: 0.3 }}>
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-5 h-5"
-                >
-                  <path
-                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className={isHovered ? "fill-rose-500 stroke-rose-500" : ""}
-                  />
-                </svg>
-              </motion.div>
-            </Button>
-          </div>
-        </div>
-
-        <CardContent className="p-4 relative z-10">
-          <h3 className={`font-semibold mb-1 transition-colors duration-300 ${isHovered ? "text-emerald-400" : ""}`}>
-            {game.title}
-          </h3>
-
-          <div className="flex flex-wrap gap-1 mb-2">
-            {game.tags.map((tag, i) => (
-              <Badge
-                key={i}
-                variant="outline"
-                className={`text-xs border-zinc-600 transition-all duration-300 ${isHovered ? "border-emerald-500/50 bg-emerald-500/10" : ""}`}
-              >
-                {tag}
-              </Badge>
-            ))}
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              {game.discount && game.discount > 0 ? (
-                <>
-                  <span className="line-through text-zinc-500 text-sm">${game.price.toFixed(2)}</span>
-                  <span className="font-bold">${(game.price * (1 - game.discount / 100)).toFixed(2)}</span>
-                </>
-              ) : (
-                <span className="font-bold">${game.price.toFixed(2)}</span>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1">
-                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                <span className="text-sm">{game.rating}</span>
-              </div>
-              <div className="text-xs text-zinc-400 flex items-center">
-                <Users className="h-3 w-3 mr-1" />
-                {game.players}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
-  )
+            {openCartSection && (
+                <DisplayCartItem close={() => setOpenCartSection(false)} />
+            )}
+        </>
+    );
 }

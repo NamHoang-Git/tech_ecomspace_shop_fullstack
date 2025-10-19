@@ -96,23 +96,11 @@ const UserMenu = ({ close }) => {
         }
     };
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (menuRef.current && !menuRef.current.contains(event.target)) {
-                close?.();
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [close]);
-
     return (
-        <div ref={menuRef}>
-            <div className="text-base font-bold text-secondary-200">Tài khoản</div>
+        <div ref={menuRef} className='p-3'>
+            <div className="text-base font-bold text-secondary-200">
+                Tài khoản
+            </div>
             <div className="lg:text-sm text-xs flex items-start gap-2 px-4 lg:px-2 py-2 font-semibold">
                 <div className="w-full grid gap-1">
                     <div className="font-bold text-ellipsis line-clamp-1 flex gap-1 items-center">
@@ -124,14 +112,16 @@ const UserMenu = ({ close }) => {
                             onClick={handleClose}
                             to={'/dashboard/profile'}
                             className="hover:text-secondary-100 text-secondary-200 lg:mb-[2px] mb-[1px]"
-                            title='Quản lý tài khoản'
+                            title="Quản lý tài khoản"
                         >
                             <BiLinkExternal size={18} />
                         </Link>
                     </div>
                     <div className="text-gray-600 mt-1 flex items-center gap-2">
                         <div className="flex items-center gap-1">
-                            <span className="font-medium text-yellow-600">Điểm thưởng:</span>
+                            <span className="font-medium text-yellow-600">
+                                Điểm thưởng:
+                            </span>
                             <span className="font-bold text-yellow-600">
                                 {user.rewardsPoint?.toLocaleString() || 0} điểm
                             </span>
