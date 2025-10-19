@@ -15,6 +15,7 @@ import { useGlobalContext } from '../provider/GlobalProvider';
 import DisplayCartItem from './DisplayCartItem';
 import defaultAvatar from '../assets/defaultAvatar.png';
 import Search from './Search';
+// import { UserMenu } from './menu/user-menu';
 
 export default function Header() {
     const links = [
@@ -176,12 +177,14 @@ export default function Header() {
                                                     ease: 'easeOut',
                                                 }}
                                             >
-                                                <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                                                    <UserMenu
+                                                {/* <UserMenu
                                                         close={closeMenu}
                                                         menuTriggerRef={menuRef}
-                                                    />
-                                                </div>
+                                                    /> */}
+                                                <UserMenu
+                                                    close={closeMenu}
+                                                    menuTriggerRef={menuRef}
+                                                />
                                             </motion.div>
                                         )}
                                     </AnimatePresence>

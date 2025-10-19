@@ -9,7 +9,8 @@ import { clearCart } from '../store/cartProduct';
 import { toast } from 'react-hot-toast';
 import AxiosToastError from './../utils/AxiosToastError';
 import { BiLinkExternal, BiRefresh } from 'react-icons/bi';
-import isAdmin from '../utils/isAdmin';
+// import isAdmin from '../utils/isAdmin';
+import GradientText from './GradientText';
 
 const UserMenu = ({ close }) => {
     const user = useSelector((state) => state.user);
@@ -97,32 +98,56 @@ const UserMenu = ({ close }) => {
     };
 
     return (
-        <div ref={menuRef} className='p-3'>
-            <div className="text-base font-bold text-secondary-200">
-                Tài khoản
-            </div>
-            <div className="lg:text-sm text-xs flex items-start gap-2 px-4 lg:px-2 py-2 font-semibold">
+        <div
+            ref={menuRef}
+            className="p-6 rounded-2xl bg-neutral-600/90 backdrop-blur-lg border border-white/20 shadow-xl"
+        >
+            <div className="text-lime-200 font-medium">Tài khoản</div>
+
+            <div className="text-sm flex items-start gap-2 px-4 lg:px-2 py-2 font-semibold">
                 <div className="w-full grid gap-1">
-                    <div className="font-bold text-ellipsis line-clamp-1 flex gap-1 items-center">
-                        {user.name || user.mobile}
-                        <span className="text-secondary-200 font-bold">
-                            {user.role === 'ADMIN' ? '(Quản trị viên)' : ''}
-                        </span>
-                        <Link
-                            onClick={handleClose}
-                            to={'/dashboard/profile'}
-                            className="hover:text-secondary-100 text-secondary-200 lg:mb-[2px] mb-[1px]"
-                            title="Quản lý tài khoản"
+                    <div className="mt-1 flex items-center gap-1">
+                        <GradientText
+                            colors={[
+                                '#FFD700',
+                                '#FFFFFF',
+                                '#FFD700',
+                                '#FFFACD',
+                                '#FF6347',
+                            ]}
+                            animationSpeed={3}
+                            showBorder={false}
+                            className="custom-class"
                         >
-                            <BiLinkExternal size={18} />
-                        </Link>
+                            <div className="flex items-center gap-1">
+                                Điểm thưởng:{' '}
+                                {user.rewardsPoint?.toLocaleString() || 0} điểm
+                            </div>
+                        </GradientText>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                fetchUserPoints();
+                            }}
+                            className={`transition-colors text-yellow-600 ${
+                                isLoadingPoints ? 'animate-spin' : ''
+                            }`}
+                            disabled={isLoadingPoints}
+                            title="Làm mới điểm"
+                        >
+                            <BiRefresh size={20} className="mb-1" />
+                        </button>
                     </div>
-                    <div className="text-gray-600 mt-1 flex items-center gap-2">
+                </div>
+            </div>
+            {/* <div className="text-sm flex items-start gap-2 px-4 lg:px-2 py-2 font-semibold">
+                <div className="w-full grid gap-1">
+                    <div className="text-gray-600 mt-1 flex items-center gap-1">
                         <div className="flex items-center gap-1">
-                            <span className="font-medium text-yellow-600">
+                            <span className="font-medium text-yellow-500">
                                 Điểm thưởng:
                             </span>
-                            <span className="font-bold text-yellow-600">
+                            <span className="font-bold text-yellow-500">
                                 {user.rewardsPoint?.toLocaleString() || 0} điểm
                             </span>
                         </div>
@@ -131,30 +156,32 @@ const UserMenu = ({ close }) => {
                                 e.stopPropagation();
                                 fetchUserPoints();
                             }}
-                            className={`text-yellow-600 hover:text-yellow-500 transition-colors ${
+                            className={`text-yellow-500 hover:text-yellow-500 transition-colors ${
                                 isLoadingPoints ? 'animate-spin' : ''
                             }`}
                             disabled={isLoadingPoints}
                             title="Làm mới điểm"
                         >
-                            <BiRefresh size={16} />
+                            <BiRefresh size={20} className="mb-1" />
                         </button>
                     </div>
                 </div>
-            </div>
+            </div> */}
             <Divider />
             <div className="lg:text-sm text-xs grid gap-2 font-semibold">
-                {isAdmin(user.role) && (
+                {/* {isAdmin(user.role) && (
                     <Link
                         onClick={handleClose}
                         to={'/dashboard/category'}
-                        className={`px-4 lg:px-2 py-1 hover:bg-base-100 rounded-md transition-colors ${
+                        className={`flex items-center text-bl gap-4 px-4 py-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] ${
                             isActive('/dashboard/category')
-                                ? 'bg-primary-100 text-secondary-200'
+                                ? 'bg-white/20 shadow-md'
                                 : ''
                         }`}
                     >
-                        Danh mục
+                        <span className="text-white font-medium text-sm">
+                            Danh mục
+                        </span>
                     </Link>
                 )}
 
@@ -162,13 +189,15 @@ const UserMenu = ({ close }) => {
                     <Link
                         onClick={handleClose}
                         to={'/dashboard/product'}
-                        className={`px-4 lg:px-2 py-[6px] hover:bg-base-100 rounded-md transition-colors ${
+                        className={`flex items-center text-bl gap-4 px-4 py-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] ${
                             isActive('/dashboard/product')
-                                ? 'bg-primary-100 text-secondary-200'
+                                ? 'bg-white/20 shadow-md'
                                 : ''
                         }`}
                     >
-                        Sản phẩm
+                        <span className="text-white font-medium text-sm">
+                            Sản phẩm
+                        </span>
                     </Link>
                 )}
 
@@ -176,13 +205,15 @@ const UserMenu = ({ close }) => {
                     <Link
                         onClick={handleClose}
                         to={'/dashboard/bill'}
-                        className={`px-4 lg:px-2 py-[6px] hover:bg-base-100 rounded-md transition-colors ${
+                        className={`flex items-center text-bl gap-4 px-4 py-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] ${
                             isActive('/dashboard/bill')
-                                ? 'bg-primary-100 text-secondary-200'
+                                ? 'bg-white/20 shadow-md'
                                 : ''
                         }`}
                     >
-                        Đơn hàng
+                        <span className="text-white font-medium text-sm">
+                            Đơn hàng
+                        </span>
                     </Link>
                 )}
 
@@ -190,13 +221,15 @@ const UserMenu = ({ close }) => {
                     <Link
                         onClick={handleClose}
                         to={'/dashboard/report'}
-                        className={`px-4 lg:px-2 py-[6px] hover:bg-base-100 rounded-md transition-colors ${
+                        className={`flex items-center text-bl gap-4 px-4 py-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] ${
                             isActive('/dashboard/report')
-                                ? 'bg-primary-100 text-secondary-200'
+                                ? 'bg-white/20 shadow-md'
                                 : ''
                         }`}
                     >
-                        Báo cáo
+                        <span className="text-white font-medium text-sm">
+                            Báo cáo
+                        </span>
                     </Link>
                 )}
 
@@ -204,46 +237,67 @@ const UserMenu = ({ close }) => {
                     <Link
                         onClick={handleClose}
                         to={'/dashboard/voucher'}
-                        className={`px-4 lg:px-2 py-[6px] hover:bg-base-100 rounded-md transition-colors ${
+                        className={`flex items-center text-bl gap-4 px-4 py-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] ${
                             isActive('/dashboard/voucher')
-                                ? 'bg-primary-100 text-secondary-200'
+                                ? 'bg-white/20 shadow-md'
                                 : ''
                         }`}
                     >
-                        Mã giảm giá
+                        <span className="text-white font-medium text-sm">
+                            Mã giảm giá
+                        </span>
                     </Link>
-                )}
+                )} */}
+                <Link
+                    onClick={handleClose}
+                    to={'/dashboard/profile'}
+                    className={`flex items-center text-bl gap-4 px-4 py-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] ${
+                        isActive('/dashboard/profile')
+                            ? 'bg-white/20 shadow-md'
+                            : ''
+                    }`}
+                >
+                    <span className="text-white font-medium text-sm">
+                        Thông tin tài khoản
+                    </span>
+                </Link>
 
                 <Link
                     onClick={handleClose}
                     to={'/dashboard/address'}
-                    className={`px-4 lg:px-2 py-[6px] hover:bg-base-100 rounded-md transition-colors ${
+                    className={`flex items-center text-bl gap-4 px-4 py-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] ${
                         isActive('/dashboard/address')
-                            ? 'bg-primary-100 text-secondary-200'
+                            ? 'bg-white/20 shadow-md'
                             : ''
                     }`}
                 >
-                    Địa chỉ
+                    <span className="text-white font-medium text-sm">
+                        Địa chỉ
+                    </span>
                 </Link>
 
                 <Link
                     onClick={handleClose}
                     to={'/dashboard/my-orders'}
-                    className={`px-4 lg:px-2 py-[6px] hover:bg-base-100 rounded-md transition-colors ${
+                    className={`flex items-center text-bl gap-4 px-4 py-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] ${
                         isActive('/dashboard/my-orders')
-                            ? 'bg-primary-100 text-secondary-200'
+                            ? 'bg-white/20 shadow-md'
                             : ''
                     }`}
                 >
-                    Lịch sử mua hàng
+                    <span className="text-white font-medium text-sm">
+                        Lịch sử mua hàng
+                    </span>
                 </Link>
 
                 <Divider />
                 <button
                     onClick={handleLogout}
-                    className="text-left px-4 lg:px-2 py-[6px] hover:bg-base-100 rounded-md"
+                    className="flex items-center text-bl gap-4 px-4 py-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
                 >
-                    Đăng xuất
+                    <span className="text-white font-medium text-sm">
+                        Đăng xuất
+                    </span>
                 </button>
             </div>
         </div>
