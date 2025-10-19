@@ -4,7 +4,7 @@ import CategoryWiseProductDisplay from './../components/CategoryWiseProductDispl
 import { Hero } from '../components/home/hero';
 import { LogoMarquee } from '../components/home/logo-marquee';
 import { AppverseFooter } from '../components/home/appverse-footer';
-import LiquidEther from '../components/ui/liquid-ether.tsx';
+import LiquidEther from '@/components/LiquidEther';
 
 const Home = () => {
     const categoryData = useSelector((state) => state.product.allCategory);

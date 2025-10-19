@@ -118,7 +118,7 @@ export default function Header() {
                             ))}
                         </nav>
                         {/* User */}
-                        <div className="hidden md:flex items-center justify-end gap-6">
+                        <div className="hidden md:flex items-center justify-end gap-5">
                             {user?._id ? (
                                 <div className="relative" ref={menuRef}>
                                     <div className="relative">
@@ -205,7 +205,7 @@ export default function Header() {
                                 }
                                 className={`${
                                     cartItem[0] ? ' py-1.5' : ' py-3'
-                                } flex items-center gap-2 bg-lime-400 text-gray-700 font-medium rounded-lg px-4
+                                } flex items-center gap-2 bg-lime-400 text-gray-700 font-medium rounded-lg px-3.5
                                 hover:bg-lime-300 hover:shadow-md hover:scale-[1.02] transition-all`}
                             >
                                 <div className="animate-bounce">

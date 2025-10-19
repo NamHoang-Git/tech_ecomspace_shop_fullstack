@@ -9,6 +9,7 @@ import AxiosToastError from './../utils/AxiosToastError';
 import CardProduct from './CardProduct';
 import CardLoading from './CardLoading';
 import { ProductCard } from './product/product-card';
+import GradientText from './GradientText';
 
 const CategoryWiseProductDisplay = ({ id, name }) => {
     const [data, setData] = useState([]);
@@ -60,7 +61,26 @@ const CategoryWiseProductDisplay = ({ id, name }) => {
     return (
         <div className="container mx-auto px-4">
             <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-emerald-400">{name}</h2>
+                <GradientText
+                    colors={[
+                        '#2D9C7B',
+                        '#00B16A',
+                        '#48C9B0',
+                        '#FFFFFF',
+                        '#7FDBDB',
+                        '#059669',
+                        '#10B981',
+                        '#34D399',
+                        '#6EE7B7',
+                        '#A7F3D0',
+                    ]}
+                    animationSpeed={5.5}
+                    showBorder={false}
+                    className="custom-class text-2xl font-bold"
+                >
+                    {name}
+                </GradientText>
+                {/* <h2 className="text-2xl font-bold text-emerald-400">{name}</h2> */}
                 <Link
                     to={redirectURL}
                     onClick={scrollToTop}

@@ -100,7 +100,7 @@ const UserMenu = ({ close }) => {
     return (
         <div
             ref={menuRef}
-            className="p-6 rounded-2xl bg-neutral-600/90 backdrop-blur-lg border border-white/20 shadow-xl"
+            className="p-6 rounded-2xl bg-neutral-600/95 backdrop-blur-lg border border-white/20 shadow-xl"
         >
             <div className="text-lime-200 font-medium">Tài khoản</div>
 
