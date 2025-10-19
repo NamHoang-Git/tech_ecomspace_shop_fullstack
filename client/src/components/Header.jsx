@@ -49,7 +49,7 @@ export default function Header() {
         <>
             <header className="sticky top-0 z-50 p-4">
                 <div className="container mx-auto">
-                    <div className="flex h-14 items-center justify-between px-6 liquid-glass-header rounded-full">
+                    <div className="flex h-16 items-center justify-between px-6 liquid-glass-header rounded-full">
                         {/* Brand Logo */}
                         <Link
                             to="/"
@@ -94,7 +94,7 @@ export default function Header() {
                                         className="flex select-none items-center gap-2 cursor-pointer transition-all duration-300 ease-in-out
                                         text-white"
                                     >
-                                        <div className='relative p-0.5 overflow-hidden rounded-full liquid-glass'>
+                                        <div className="relative p-0.5 overflow-hidden rounded-full liquid-glass">
                                             <img
                                                 src={
                                                     user.avatar || defaultAvatar
@@ -145,8 +145,10 @@ export default function Header() {
                                 }
                                 // className="flex items-center gap-2 bg-primary-3 hover:bg-green-800 px-4 py-3
                                 //         rounded-lg text-secondary-200 font-bold"
-                                className="flex items-center gap-2 bg-lime-400 text-gray-700 font-medium rounded-lg px-4 py-2.5
-                                hover:bg-lime-300 hover:shadow-md hover:scale-[1.02] transition-all"
+                                className={`${
+                                    cartItem[0] ? ' py-1.5' : ' py-3'
+                                } flex items-center gap-2 bg-lime-400 text-gray-700 font-medium rounded-lg px-4
+                                hover:bg-lime-300 hover:shadow-md hover:scale-[1.02] transition-all`}
                             >
                                 {/* { Add to cart icons } */}
                                 <div className="animate-bounce">
@@ -155,7 +157,7 @@ export default function Header() {
                                 <div className="font-bold text-sm">
                                     {cartItem[0] ? (
                                         <div className="ml-1 flex flex-col items-center justify-center">
-                                            <p>{totalQty} items</p>
+                                            <p>{totalQty} sản phẩm</p>
                                             <p>
                                                 {DisplayPriceInVND(totalPrice)}
                                             </p>

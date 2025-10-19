@@ -65,7 +65,7 @@ const CategoryWiseProductDisplay = ({ id, name }) => {
                     to={redirectURL}
                     onClick={scrollToTop}
                     className="hover:bg-zinc-800 hover:border-emerald-500
-                    transition-all duration-300 text-white border border-zinc-700 px-4 py-2 rounded-md"
+                    transition-all duration-300 text-white border-2 border-zinc-700 px-4 py-2 rounded-md"
                 >
                     Xem tất cả
                 </Link>

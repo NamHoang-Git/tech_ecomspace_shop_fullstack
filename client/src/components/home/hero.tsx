@@ -41,7 +41,7 @@ export function Hero() {
                             Tech EcomSpace
                         </p>
                     </div>
-                    <h1 className="mt-3 text-center text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl uppercase grid gap-2">
+                    <h1 className="mt-3 text-center text-gray-300 text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl uppercase grid gap-2">
                         <span className="block">Công nghệ</span>
                         <span className="block text-lime-300 drop-shadow-[0_0_20px_rgba(132,204,22,0.35)]">
                             đỉnh cao
