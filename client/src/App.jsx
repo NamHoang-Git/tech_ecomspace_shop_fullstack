@@ -1,6 +1,5 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
-import Header from './components/Header';
 import { Toaster } from 'react-hot-toast';
 import { useEffect } from 'react';
 import fetchUserDetails from './utils/fetchUserDetails';
@@ -12,7 +11,12 @@ import SummaryApi from './common/SummaryApi';
 import GlobalProvider from './provider/GlobalProvider';
 import CartMobileLink from './components/CartMobile';
 import AxiosToastError from './utils/AxiosToastError';
-import { Footer } from './components/footer.tsx';
+import MainLayout from './layouts/MainLayout';
+import AuthLayout from './layouts/AuthLayout';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Profile from './pages/Profile';
 
 function App() {
     const dispatch = useDispatch();
@@ -48,11 +52,18 @@ function App() {
 
     return (
         <GlobalProvider>
-            <Header />
-            <main className="min-h-[80vh]">
-                <Outlet />
-            </main>
-            <Footer />
+            <Routes>
+                <Route element={<MainLayout />}>
+                    <Route path="/" element={<Home />} />
+                </Route>
+
+                <Route element={<AuthLayout />}>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/dashboard/profile" element={<Profile />} />
+                </Route>
+            </Routes>
+
             <Toaster />
             {!hiddenCartLinkPaths.includes(location.pathname) && (
                 <CartMobileLink />

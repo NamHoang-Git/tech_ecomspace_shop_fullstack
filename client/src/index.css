@@ -7,7 +7,7 @@ html {
 }
 
 body {
-    @apply bg-black text-neutral-700 scroll-smooth;
+    @apply bg-black scroll-smooth;
     font-family: 'Bahnschrift', sans-serif;
     font-weight: 400;
     font-style: normal;
@@ -43,6 +43,16 @@ body {
     background: #ffffff14;
     border: 1px solid #ffffff1f;
     box-shadow: 0 4px 16px #0000001a, inset 0 1px #fff3;
+}
+
+.liquid-glass-2 {
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: rgba(255, 255, 255, 0.2); /* thay vì #ffffff14 */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1),
+        inset 0 1px rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
 }
 
 .glass-border {
@@ -397,7 +407,7 @@ body {
     body {
         @apply bg-background text-foreground;
     }
-  :root {
+    :root {
         --background: 0 0% 100%;
         --foreground: 0 0% 3.9%;
         --card: 0 0% 100%;
@@ -424,7 +434,7 @@ body {
         --chart-5: 27 87% 67%;
         --radius: 0.5rem;
     }
-  .dark {
+    .dark {
         --background: 0 0% 3.9%;
         --foreground: 0 0% 98%;
         --card: 0 0% 3.9%;
@@ -452,13 +462,11 @@ body {
     }
 }
 
-
-
 @layer base {
-  * {
-    @apply border-border;
+    * {
+        @apply border-border;
     }
-  body {
-    @apply bg-background text-foreground;
+    body {
+        @apply bg-background text-foreground;
     }
 }

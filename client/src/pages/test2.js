@@ -1,299 +1,235 @@
-import { Button } from '../components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '../components/ui/sheet';
-import { Menu, Briefcase, Tag, HelpCircle, FileText, Info } from 'lucide-react';
-import logo from '../assets/logo.png';
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
+import { FaEye, FaEyeSlash } from 'react-icons/fa6';
+import toast from 'react-hot-toast';
+import Axios from '../utils/Axios';
+import SummaryApi from '../common/SummaryApi';
+import AxiosToastError from '../utils/AxiosToastError';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaCartPlus } from 'react-icons/fa6';
-import { FaCaretDown, FaCaretUp, FaSearch } from 'react-icons/fa';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useSelector } from 'react-redux';
-import UserMenu from './UserMenu';
-import { DisplayPriceInVND } from '../utils/DisplayPriceInVND';
-import { useGlobalContext } from '../provider/GlobalProvider';
-import DisplayCartItem from './DisplayCartItem';
-import defaultAvatar from '../assets/defaultAvatar.png';
-import Search from './Search';
+import fetchUserDetails from './../utils/fetchUserDetails';
+import { useDispatch } from 'react-redux';
+import { setUserDetails } from '../store/userSlice';
+import banner from '../assets/register_banner.jpg';
+import { TypeAnimation } from 'react-type-animation';
+import Loading from '../components/Loading';
 
-export default function Header() {
-    const links = [
-        { href: '/', label: 'Trang chủ' },
-        { href: '/', label: 'Sản phẩm' },
-        {
-            href: '/search',
-            label: 'Tìm kiếm',
-            icon: <FaSearch size={14} className="mb-[3px]" />,
-        },
-    ];
+const Login = () => {
+    const [data, setData] = useState({
+        email: '',
+        password: '',
+    });
+
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
-    const user = useSelector((state) => state?.user);
-    const [openUserMenu, setOpenUserMenu] = useState(false);
-    const menuRef = useRef(null);
-    const cartItem = useSelector((state) => state.cartItem.cart);
-    const { totalPrice, totalQty } = useGlobalContext();
-    const [openCartSection, setOpenCartSection] = useState(false);
+    const dispatch = useDispatch();
+    const [loading, setLoading] = useState(false);
 
-    // Handle clicks outside the menu
-    useEffect(() => {
-        const handleClick = (event) => {
-            if (!menuRef.current) return;
-            const isClickInside = menuRef.current.contains(event.target);
-            const isToggleButton = event.target.closest(
-                'button[aria-haspopup="true"]'
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+
+            // lấy tất cả input hợp lệ trong form
+            const form = e.target.form;
+            const focusable = Array.from(form.elements).filter(
+                (el) =>
+                    el.tagName === 'INPUT' ||
+                    el.tagName === 'SELECT' ||
+                    el.tagName === 'TEXTAREA'
             );
-            if (!isClickInside && !isToggleButton) {
-                setOpenUserMenu(false);
+
+            // tìm vị trí hiện tại
+            const index = focusable.indexOf(e.target);
+
+            // focus phần tử tiếp theo nếu có
+            if (index > -1 && index < focusable.length - 1) {
+                focusable[index + 1].focus();
             }
-        };
-
-        const handleEscape = (event) => {
-            if (event.key === 'Escape') {
-                setOpenUserMenu(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClick, true);
-        document.addEventListener('keydown', handleEscape);
-        return () => {
-            document.removeEventListener('mousedown', handleClick, true);
-            document.removeEventListener('keydown', handleEscape);
-        };
-    }, []);
-
-    // Chỉ mở menu nếu đang đóng, đóng menu nếu đang mở
-    const toggleUserMenu = useCallback((e) => {
-        e.stopPropagation();
-        setOpenUserMenu((prev) => (prev ? false : true)); // Chỉ mở nếu đang đóng, đóng nếu đang mở
-    }, []);
-
-    // Hàm đóng menu
-    const closeMenu = useCallback(() => {
-        setOpenUserMenu(false);
-    }, []);
-
-    const redirectToLoginPage = () => {
-        navigate('/login');
+        }
     };
 
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        setData((prev) => {
+            return {
+                ...prev,
+                [name]: value,
+            };
+        });
+    };
+
+    const valideValue = Object.values(data).every((el) => el);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            setLoading(true);
+            const response = await Axios({
+                ...SummaryApi.login,
+                data: data,
+            });
+
+            if (response.data.error) {
+                toast.error(response.data.message);
+            }
+
+            if (response.data.success) {
+                toast.success(response.data.message);
+                localStorage.setItem(
+                    'accesstoken',
+                    response.data.data.accessToken
+                );
+                localStorage.setItem(
+                    'refreshToken',
+                    response.data.data.refreshToken
+                );
+
+                const userDetails = await fetchUserDetails();
+                dispatch(setUserDetails(userDetails.data));
+
+                // Reset form
+                setData({
+                    email: '',
+                    password: '',
+                });
+                navigate('/');
+            }
+        } catch (error) {
+            AxiosToastError(error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <>
-            <header className="sticky top-0 z-50 p-4">
-                <div className="container mx-auto">
-                    <div className="flex h-16 items-center justify-between px-6 liquid-glass-header rounded-full">
-                        {/* Brand Logo */}
-                        <Link
-                            to="/"
-                            onClick={scrollToTop}
-                            className="flex items-center gap-1.5"
-                        >
-                            <img
-                                src={logo}
-                                alt="TechSpace logo"
-                                width={25}
-                                height={25}
-                                className="h-5 w-5"
+        <section className="container mx-auto my-12 max-w-4xl">
+            <div
+                className="grid grid-flow-col sm:grid-cols-[1fr_1fr] lg:grid-cols-[2fr_1.5fr] mx-5 rounded-md shadow-md
+            shadow-secondary-100"
+            >
+                {/* Banner */}
+                <div
+                    className="hidden rounded-s-md opacity-80 sm:flex flex-col justify-center gap-3"
+                    style={{
+                        backgroundImage: `url(${banner})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat',
+                    }}
+                >
+                    <h1 className="px-4 text-white font-bold text-4xl">
+                        <TypeAnimation
+                            sequence={['Chào mừng trở lại!', 800, '', 500]}
+                            wrapper="span"
+                            speed={65}
+                            repeat={Infinity}
+                        />
+                    </h1>
+                    <p className="px-4 text-primary-200 text-lg">
+                        Đăng nhập để truy cập tất cả các tính năng!
+                    </p>
+                </div>
+
+                {/* Login Form */}
+                <div className="bg-white p-6 rounded-e-md">
+                    <p className="font-bold lg:text-lg text-base text-center text-secondary-200 uppercase select-none">
+                        Đăng nhập
+                    </p>
+                    <form
+                        action=""
+                        className="grid gap-4 mt-6 lg:text-base text-sm text-secondary-200"
+                        onSubmit={handleSubmit}
+                    >
+                        <div className="grid gap-2">
+                            <label className="font-medium" htmlFor="email">
+                                Email:
+                            </label>
+                            <input
+                                type="email"
+                                id="email"
+                                autoFocus
+                                className="bg-base-100 lg:p-2 px-2 py-[6px] lg:text-base text-xs border rounded outline-none focus-within:border-secondary-200"
+                                name="email"
+                                placeholder="Nhập email của bạn"
+                                value={data.email}
+                                onChange={handleChange}
+                                onKeyDown={handleKeyDown}
+                                spellCheck={false}
                             />
-                            <span className="font-semibold tracking-wide text-white">
-                                TechSpace
-                            </span>
-                        </Link>
-                        {/* Desktop Nav */}
-                        <nav className="hidden items-center gap-6 text-sm text-gray-300 md:flex">
-                            {links.map((l) => (
-                                <Link
-                                    key={l.href}
-                                    to={l.href}
-                                    onClick={scrollToTop}
-                                    className="hover:text-purple-300 transition-colors flex items-center gap-[6px]"
+                        </div>
+                        <div className="grid gap-2">
+                            <label className="font-medium" htmlFor="password">
+                                Mật khẩu:
+                            </label>
+                            <div className="bg-base-100 lg:p-2 px-2 py-[6px] lg:text-base text-xs border rounded flex items-center focus-within:border-secondary-200">
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    id="password"
+                                    className="w-full outline-none bg-transparent"
+                                    name="password"
+                                    placeholder="Nhập mật khẩu của bạn"
+                                    value={data.password}
+                                    onChange={handleChange}
+                                    spellCheck={false}
+                                />
+                                <div
+                                    onClick={() =>
+                                        setShowPassword((prev) => !prev)
+                                    }
+                                    className="cursor-pointer text-secondary-100 lg:block hidden"
                                 >
-                                    {l.icon}
-                                    {l.label}
-                                </Link>
-                            ))}
-                        </nav>
-                        {/* User */}
-                        <div className="hidden md:flex items-center justify-end gap-6">
-                            {user?._id ? (
-                                <div className="relative" ref={menuRef}>
-                                    <div className="relative">
-                                        <button
-                                            onClick={toggleUserMenu}
-                                            className="flex items-center gap-2 w-full px-2 py-1.5 text-white rounded-lg hover:bg-white/10 transition-colors"
-                                            aria-expanded={openUserMenu}
-                                            aria-haspopup="true"
-                                            aria-label="User menu"
-                                            type="button"
-                                        >
-                                            <div className="relative p-0.5 overflow-hidden rounded-full liquid-glass">
-                                                <img
-                                                    src={
-                                                        user.avatar ||
-                                                        defaultAvatar
-                                                    }
-                                                    alt={user.name}
-                                                    className="w-8 h-8 rounded-full object-cover"
-                                                    width={32}
-                                                    height={32}
-                                                />
-                                            </div>
-                                            <div className="flex flex-col items-start flex-1 min-w-0">
-                                                <span className="text-sm font-medium text-white truncate max-w-[120px]">
-                                                    {user.name}
-                                                </span>
-                                                {user.role === 'ADMIN' && (
-                                                    <span className="text-xs text-purple-400">
-                                                        Quản trị viên
-                                                    </span>
-                                                )}
-                                            </div>
-                                            {openUserMenu ? (
-                                                <FaCaretUp
-                                                    className="flex-shrink-0 ml-2"
-                                                    size={15}
-                                                />
-                                            ) : (
-                                                <FaCaretDown
-                                                    className="flex-shrink-0 ml-2"
-                                                    size={15}
-                                                />
-                                            )}
-                                        </button>
-                                    </div>
-                                    <AnimatePresence>
-                                        {openUserMenu && (
-                                            <motion.div
-                                                className="absolute right-0 top-full mt-2 z-50 w-64"
-                                                initial={{ opacity: 0, y: -10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, y: -10 }}
-                                                transition={{
-                                                    duration: 0.15,
-                                                    ease: 'easeOut',
-                                                }}
-                                            >
-                                                <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                                                    <UserMenu
-                                                        close={closeMenu}
-                                                    />
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </div>
-                            ) : (
-                                <button
-                                    onClick={redirectToLoginPage}
-                                    className="text-sm text-gray-300 hover:text-purple-300 transition-colors"
-                                >
-                                    Đăng nhập
-                                </button>
-                            )}
-                            <button
-                                onClick={
-                                    user?._id
-                                        ? () => setOpenCartSection(true)
-                                        : redirectToLoginPage
-                                }
-                                className={`${
-                                    cartItem[0] ? ' py-1.5' : ' py-3'
-                                } flex items-center gap-2 bg-lime-400 text-gray-700 font-medium rounded-lg px-4
-                                hover:bg-lime-300 hover:shadow-md hover:scale-[1.02] transition-all`}
-                            >
-                                <div className="animate-bounce">
-                                    <FaCartPlus size={20} />
-                                </div>
-                                <div className="font-bold text-sm">
-                                    {cartItem[0] ? (
-                                        <div className="ml-1 flex flex-col items-center justify-center">
-                                            <p>{totalQty} sản phẩm</p>
-                                            <p>
-                                                {DisplayPriceInVND(totalPrice)}
-                                            </p>
-                                        </div>
+                                    {showPassword ? (
+                                        <FaEye size={20} />
                                     ) : (
-                                        <p>Giỏ hàng</p>
+                                        <FaEyeSlash size={20} />
                                     )}
                                 </div>
-                            </button>
-                        </div>
-                        {/* Mobile Nav */}
-                        <div className="md:hidden">
-                            <Sheet>
-                                <SheetTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className="border-gray-700 bg-gray-900/80 text-gray-200 hover:bg-gray-800"
-                                    >
-                                        <Menu className="h-5 w-5" />
-                                        <span className="sr-only">
-                                            Open menu
-                                        </span>
-                                    </Button>
-                                </SheetTrigger>
-                                <SheetContent
-                                    side="right"
-                                    className="liquid-glass border-gray-800 p-0 w-64 flex flex-col"
+
+                                <div
+                                    onClick={() =>
+                                        setShowPassword((prev) => !prev)
+                                    }
+                                    className="cursor-pointer text-secondary-100 lg:hidden block"
                                 >
-                                    <div className="flex items-center gap-1.5 px-4 py-4 border-b border-gray-800">
-                                        <img
-                                            alt="Skitbit logo"
-                                            width={24}
-                                            height={24}
-                                            className="h-6 w-6"
-                                        />
-                                        <span className="font-semibold tracking-wide text-white text-lg">
-                                            Skitbit
-                                        </span>
-                                    </div>
-                                    <nav className="flex flex-col gap-1 mt-2 text-gray-200">
-                                        {links.map((l) => (
-                                            <Link
-                                                key={l.href}
-                                                to={l.href}
-                                                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-900 hover:text-purple-300 transition-colors"
-                                            >
-                                                <span className="inline-flex items-center justify-center w-5 h-5 text-gray-400">
-                                                    <l.icon className="h-4 w-4" />
-                                                </span>
-                                                <span className="text-sm">
-                                                    {l.label}
-                                                </span>
-                                            </Link>
-                                        ))}
-                                    </nav>
-                                    <div className="mt-auto border-t border-gray-800 p-4">
-                                        <Button
-                                            asChild
-                                            className="w-full bg-lime-400 text-black font-medium rounded-lg px-6 py-2.5
-                                                hover:bg-lime-300 hover:shadow-md hover:scale-[1.02]
-                                                transition-all"
-                                        >
-                                            <a
-                                                href="https://wa.link/65mf3i"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                Get a Quote
-                                            </a>
-                                        </Button>
-                                    </div>
-                                </SheetContent>
-                            </Sheet>
+                                    {showPassword ? (
+                                        <FaEye size={16} />
+                                    ) : (
+                                        <FaEyeSlash size={16} />
+                                    )}
+                                </div>
+                            </div>
+                            <Link
+                                to={'/forgot-password'}
+                                className="block ml-auto mt-1 font-semibold lg:text-base text-xs text-secondary-100 hover:text-secondary-200 select-none"
+                            >
+                                Quên mật khẩu?
+                            </Link>
                         </div>
-                    </div>
+                        <button
+                            disabled={!valideValue}
+                            className={`${
+                                valideValue
+                                    ? 'bg-primary-2 border border-secondary-200 text-secondary-200 hover:opacity-80 cursor-pointer'
+                                    : 'bg-gray-400 text-white cursor-no-drop'
+                            } py-2 rounded-md font-bold mb-2`}
+                        >
+                            {loading ? <Loading /> : 'Đăng nhập'}
+                        </button>
+                    </form>
+
+                    <p className="py-2 lg:text-base text-xs font-medium">
+                        Bạn chưa có tài khoản?{' '}
+                        <Link
+                            to={'/register'}
+                            className="font-bold text-secondary-200 hover:text-secondary-100"
+                        >
+                            Đăng ký
+                        </Link>
+                    </p>
                 </div>
-            </header>
-            <div className="hidden md:block">
-                <Search />
             </div>
-            {openCartSection && (
-                <DisplayCartItem close={() => setOpenCartSection(false)} />
-            )}
-        </>
+        </section>
     );
-}
+};
+
+export default Login;
