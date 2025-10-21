@@ -12,29 +12,28 @@ import { useDispatch } from 'react-redux';
 import Axios from '@/utils/Axios';
 import SummaryApi from '@/common/SummaryApi';
 import toast from 'react-hot-toast';
-import fetchUserDetails from '@/utils/fetchUserDetails';
-import { setUserDetails } from '@/store/userSlice';
 import AxiosToastError from '@/utils/AxiosToastError';
 import Loading from '../Loading';
 
-export function LoginForm({
+export function RegisterForm({
     className,
     ...props
 }: React.ComponentPropsWithoutRef<'form'>) {
     const [data, setData] = useState({
+        name: '',
         email: '',
         password: '',
+        confirmPassword: '',
     });
 
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const navigate = useNavigate();
-    const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
 
     // const handleKeyDown = (e) => {
     //     if (e.key === 'Enter') {
     //         e.preventDefault();
-
-    //         // lấy tất cả input hợp lệ trong form
     //         const form = e.target.form;
     //         const focusable = Array.from(form.elements).filter(
     //             (el) =>
@@ -42,11 +41,7 @@ export function LoginForm({
     //                 el.tagName === 'SELECT' ||
     //                 el.tagName === 'TEXTAREA'
     //         );
-
-    //         // tìm vị trí hiện tại
     //         const index = focusable.indexOf(e.target);
-
-    //         // focus phần tử tiếp theo nếu có
     //         if (index > -1 && index < focusable.length - 1) {
     //             focusable[index + 1].focus();
     //         }
@@ -66,13 +61,62 @@ export function LoginForm({
 
     const valideValue = Object.values(data).every((el) => el);
 
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+
+        const validTLDs = [
+            'com',
+            'net',
+            'org',
+            'io',
+            'co',
+            'ai',
+            'vn',
+            'com.vn',
+            'edu.vn',
+            'gov.vn',
+        ];
+
+        if (!emailRegex.test(email)) {
+            return false;
+        }
+
+        const domain = email.split('@')[1];
+        const tld = domain.split('.').slice(1).join('.');
+
+        if (!validTLDs.includes(tld)) {
+            return false;
+        }
+
+        if (
+            email.includes('..') ||
+            email.startsWith('.') ||
+            email.endsWith('.') ||
+            email.split('@')[0].endsWith('.')
+        ) {
+            return false;
+        }
+
+        return true;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!validateEmail(data.email)) {
+            toast.error('Vui lòng nhập địa chỉ email hợp lệ');
+            return;
+        }
+
+        if (data.password !== data.confirmPassword) {
+            toast.error('Mật khẩu và mật khẩu xác nhận phải giống nhau');
+            return;
+        }
 
         try {
             setLoading(true);
             const response = await Axios({
-                ...SummaryApi.login,
+                ...SummaryApi.register,
                 data: data,
             });
 
@@ -82,24 +126,11 @@ export function LoginForm({
 
             if (response.data.success) {
                 toast.success(response.data.message);
-                localStorage.setItem(
-                    'accesstoken',
-                    response.data.data.accessToken
-                );
-                localStorage.setItem(
-                    'refreshToken',
-                    response.data.data.refreshToken
-                );
 
-                const userDetails = await fetchUserDetails();
-                dispatch(setUserDetails(userDetails.data));
-
-                // Reset form
-                setData({
-                    email: '',
-                    password: '',
+                navigate('/registration-success', {
+                    state: { email: data.email },
+                    replace: true,
                 });
-                navigate('/');
             }
         } catch (error) {
             AxiosToastError(error);
@@ -108,8 +139,6 @@ export function LoginForm({
         }
     };
 
-    const [showPassword, setShowPassword] = useState(false);
-
     return (
         <form
             className={cn('flex flex-col gap-6 text-white', className)}
@@ -117,13 +146,26 @@ export function LoginForm({
             onSubmit={handleSubmit}
         >
             <div className="flex flex-col items-center gap-2 text-center">
-                <h1 className="text-2xl font-bold">Đăng Nhập Vào Tài Khoản</h1>
+                <h1 className="text-2xl font-bold">Tạo Tài Khoản</h1>
                 <p className="text-balance text-sm text-muted-foreground">
-                    Nhập email của bạn bên dưới để đăng nhập vào tài khoản của
-                    bạn
+                    Tạo một tài khoản mới để bắt đầu sử dụng TechSpace.
                 </p>
             </div>
             <div className="grid gap-6">
+                <div className="grid gap-2">
+                    <Label htmlFor="name">Tên người dùng</Label>
+                    <Input
+                        id="name"
+                        type="text"
+                        name="name"
+                        autoFocus
+                        placeholder="Nhập tên của bạn"
+                        onChange={handleChange}
+                        value={data.name}
+                        className="h-12 border-gray-200 focus:ring-0 shadow-none rounded-lg bg-white/20 focus:border-[#3F3FF3]"
+                        required
+                    />
+                </div>
                 <div className="grid gap-2">
                     <Label htmlFor="email">Email</Label>
                     <Input
@@ -166,30 +208,39 @@ export function LoginForm({
                         </Button>
                     </div>
                 </div>
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                        <input
-                            type="checkbox"
-                            id="remember"
-                            className="rounded border-gray-300 cursor-pointer"
+                <div className="grid gap-2">
+                    <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
+                    <div className="relative">
+                        <Input
+                            id="confirmPassword"
+                            type={showConfirmPassword ? 'text' : 'password'}
+                            name="confirmPassword"
+                            placeholder="Nhập lại mật khẩu để xác nhận"
+                            onChange={handleChange}
+                            value={data.confirmPassword}
+                            className="h-12 pr-10 border-gray-200 focus:ring-0 shadow-none rounded-lg bg-white/20 focus:border-[#3F3FF3]"
+                            required
                         />
-                        <Label
-                            htmlFor="remember"
-                            className="text-sm text-muted-foreground cursor-pointer"
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent cursor-pointer"
+                            onClick={() =>
+                                setShowConfirmPassword(!showConfirmPassword)
+                            }
                         >
-                            Ghi nhớ đăng nhập
-                        </Label>
+                            {showConfirmPassword ? (
+                                <EyeOff className="h-4 w-4 text-muted-foreground" />
+                            ) : (
+                                <Eye className="h-4 w-4 text-muted-foreground" />
+                            )}
+                        </Button>
                     </div>
-                    <Link
-                        to={'/forgot-password'}
-                        className="p-0 h-auto text-sm hover:text-opacity-80 cursor-pointer text-lime-300"
-                    >
-                        Quên mật khẩu?
-                    </Link>
                 </div>
 
                 <GlareHover
-                    glareColor="#ffffff"
+                    glareColor="#d8b4fe"
                     glareOpacity={0.3}
                     glareAngle={-30}
                     glareSize={300}
@@ -202,7 +253,7 @@ export function LoginForm({
                         className="w-full h-12 text-sm font-medium text-white hover:opacity-90 rounded-lg shadow-none cursor-pointer"
                         style={{ backgroundColor: '#000' }}
                     >
-                        {loading ? <Loading /> : 'Đăng nhập'}
+                        {loading ? <Loading /> : 'Đăng ký'}
                     </Button>
                 </GlareHover>
 
@@ -214,7 +265,7 @@ export function LoginForm({
                         after:border-t after:border-border w-36 md:w-28 xl:w-56"
                             ></div>
                             <span className="relative z-10 px-2 text-muted-foreground">
-                                Hoặc đăng nhập bằng
+                                Hoặc đăng ký bằng
                             </span>
                             <div
                                 className="relative after:absolute after:inset-0 after:top-1/2 after:right-0 after:z-0 after:flex after:items-start
@@ -244,12 +295,12 @@ export function LoginForm({
                 </>
             </div>
             <div className="text-center text-sm text-muted-foreground">
-                Bạn chưa có tài khoản?{' '}
+                Bạn đã có tài khoản?{' '}
                 <Link
-                    to={'/register'}
+                    to={'/login'}
                     className="p-0 h-auto text-sm hover:text-opacity-80 font-medium cursor-pointer text-lime-300"
                 >
-                    Đăng ký ngay.
+                    Đăng nhập.
                 </Link>
             </div>
         </form>

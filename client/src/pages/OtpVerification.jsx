@@ -1,139 +1,63 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { FaEye, FaEyeSlash } from 'react-icons/fa6';
-import toast from 'react-hot-toast';
-import Axios from '../utils/Axios';
-import SummaryApi from '../common/SummaryApi';
-import AxiosToastError from '../utils/AxiosToastError';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import Loading from '../components/Loading';
+import logo from '@/assets/logo.png';
+import { Link } from 'react-router-dom';
+import LiquidEther from '@/components/LiquidEther';
+import { ForgotPasswordForm } from '@/components/forgotPassword/forgot-password-form';
+import { OtpVerificationForm } from '@/components/otpVerification/otp-verification-form';
 
-const OtpVerification = () => {
-    const [data, setData] = useState(['', '', '', '', '', '']);
-    const navigate = useNavigate();
-    const inputRef = useRef([]);
-    const location = useLocation();
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        if (!location?.state?.email) {
-            navigate('/forgot-password');
-        }
-    }, []);
-
-    const valideValue = data.every((el) => el);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        try {
-            setLoading(true);
-            const response = await Axios({
-                ...SummaryApi.forgot_password_otp_verification,
-                data: {
-                    otp: data.join(''),
-                    email: location?.state?.email,
-                },
-            });
-
-            if (response.data.error) {
-                toast.error(response.data.message);
-                return;
-            }
-
-            if (response.data.success) {
-                toast.success(response.data.message);
-
-                // Reset form
-                setData(['', '', '', '', '', '']);
-                navigate('/reset-password', {
-                    state: {
-                        data: response.data,
-                        email: location?.state?.email,
-                    },
-                });
-            }
-        } catch (error) {
-            AxiosToastError(error);
-        } finally {
-            setLoading(false);
-        }
+export default function OtpVerificationPage() {
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     return (
-        <section className="container mx-auto my-12 max-w-lg px-2">
-            <div className="bg-white rounded-md p-6 shadow-md shadow-secondary-100">
-                <p className="font-bold lg:text-lg text-base text-secondary-200 uppercase">
-                    Xác nhận OTP
-                </p>
-                <form
-                    action=""
-                    className="grid gap-4 mt-4 lg:text-base text-sm text-secondary-200"
-                    onSubmit={handleSubmit}
+        <div className="relative container mx-auto lg:p-0 p-3">
+            <div className="fixed inset-0 z-0 pointer-events-none">
+                <LiquidEther
+                    colors={['#5227FF', '#FF9FFC', '#B19EEF']}
+                    mouseForce={20}
+                    cursorSize={100}
+                    isViscous={false}
+                    viscous={30}
+                    iterationsViscous={32}
+                    iterationsPoisson={32}
+                    resolution={0.5}
+                    isBounce={false}
+                    autoDemo={true}
+                    autoSpeed={0.5}
+                    autoIntensity={2.2}
+                    takeoverDuration={0.25}
+                    autoResumeDelay={3000}
+                    autoRampDuration={0.6}
+                    style={{ width: '100%', height: '100%' }}
+                />
+            </div>
+            <div className="relative flex justify-center gap-2 text-xl md:justify-start py-8">
+                <Link
+                    to="/"
+                    onClick={scrollToTop}
+                    className="flex items-center gap-1.5"
                 >
-                    <div className="grid gap-2">
-                        <label className="font-medium" htmlFor="otp">
-                            Nhập mã OTP:
-                        </label>
-                        <div className="flex items-center justify-between gap-2">
-                            {data.map((element, index) => {
-                                return (
-                                    <input
-                                        key={'otp' + index}
-                                        type="number"
-                                        inputmode="numeric"
-                                        pattern="[0-9]*"
-                                        id="otp"
-                                        ref={(ref) => {
-                                            inputRef.current[index] = ref;
-                                            return ref;
-                                        }}
-                                        value={data[index]}
-                                        onChange={(e) => {
-                                            const value = e.target.value;
-
-                                            const newData = [...data];
-                                            newData[index] = value;
-                                            setData(newData);
-
-                                            if (value && index < 5) {
-                                                inputRef.current[
-                                                    index + 1
-                                                ].focus();
-                                            }
-                                        }}
-                                        maxLength={1}
-                                        className="bg-base-100 w-full max-w-16 p-2 border rounded
-                                        outline-none focus-within:border-secondary-200 text-center
-                                        font-bold text-secondary-200 no-spinner"
-                                    />
-                                );
-                            })}
+                    <img
+                        src={logo}
+                        alt="TechSpace logo"
+                        width={25}
+                        height={25}
+                        className="h-6 w-6"
+                    />
+                    <span className="font-semibold tracking-wide text-white">
+                        TechSpace
+                    </span>
+                </Link>
+            </div>
+            <div className="rounded-2xl liquid-glass overflow-hidden">
+                <div className="relative flex flex-col gap-4 p-6 md:p-10">
+                    <div className="flex flex-1 items-center justify-center">
+                        <div className="w-full md:max-w-md xl:max-w-2xl">
+                            <OtpVerificationForm />
                         </div>
                     </div>
-                    <button
-                        disabled={!valideValue}
-                        className={`${
-                            valideValue
-                                ? 'bg-primary-2 border border-secondary-200 text-secondary-200 hover:opacity-80 cursor-pointer'
-                                : 'bg-gray-400 text-white cursor-no-drop'
-                        } py-2 rounded-md font-bold mt-1 mb-2`}
-                    >
-                        {loading ? <Loading /> : 'Xác nhận OTP'}
-                    </button>
-                </form>
-
-                <p className="py-2 lg:text-base text-xs font-medium">
-                    Bạn muốn đăng nhập?{' '}
-                    <Link
-                        to={'/login'}
-                        className="font-bold text-secondary-200 hover:text-secondary-100"
-                    >
-                        Đăng nhập
-                    </Link>
-                </p>
+                </div>
             </div>
-        </section>
+        </div>
     );
-};
-
-export default OtpVerification;
+}

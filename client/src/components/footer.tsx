@@ -36,7 +36,7 @@ export function Footer() {
     }, []);
 
     return (
-        <section className="text-white">
+        <section className="text-white liquid-glass-menu">
             {/* Footer */}
             <footer className="border-t border-white/10 pb-20 md:pb-10">
                 <div className="container mx-auto px-4 py-10">
@@ -49,7 +49,7 @@ export function Footer() {
                                     TechSpace
                                 </span>
                             </div>
-                            <p className="max-w-sm text-sm text-neutral-400">
+                            <p className="max-w-sm text-sm">
                                 {content.tagline}
                             </p>
                         </div>
@@ -57,7 +57,7 @@ export function Footer() {
                         {/* Navigation */}
                         <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-2">
                             <div>
-                                <h5 className="mb-2 text-xs font-semibold uppercase tracking-widest text-neutral-400">
+                                <h5 className="mb-2 text-xs font-semibold uppercase tracking-widest">
                                     Navigation
                                 </h5>
                                 <ul className="space-y-2 text-sm text-neutral-300">
@@ -78,12 +78,12 @@ export function Footer() {
                                 </ul>
                             </div>
                             <div>
-                                <h5 className="mb-2 text-xs font-semibold uppercase tracking-widest text-neutral-400">
+                                <h5 className="mb-2 text-xs font-semibold uppercase tracking-widest">
                                     Social media
                                 </h5>
                                 <ul className="space-y-2 text-sm text-neutral-300">
                                     <li className="flex items-center gap-2">
-                                        <Twitter className="h-4 w-4 text-neutral-400" />
+                                        <Twitter className="h-4 w-4" />
                                         <a
                                             href="https://twitter.com/theskitbit"
                                             target="_blank"
@@ -95,7 +95,7 @@ export function Footer() {
                                         </a>
                                     </li>
                                     <li className="flex items-center gap-2">
-                                        <Youtube className="h-4 w-4 text-neutral-400" />
+                                        <Youtube className="h-4 w-4" />
                                         <a
                                             href="https://www.youtube.com/@skitbitinternational"
                                             target="_blank"
@@ -107,7 +107,7 @@ export function Footer() {
                                         </a>
                                     </li>
                                     <li className="flex items-center gap-2">
-                                        <Instagram className="h-4 w-4 text-neutral-400" />
+                                        <Instagram className="h-4 w-4" />
                                         <a
                                             href="https://instagram.com/theskitbit"
                                             target="_blank"
@@ -119,7 +119,7 @@ export function Footer() {
                                         </a>
                                     </li>
                                     <li className="flex items-center gap-2">
-                                        <MessageCircle className="h-4 w-4 text-neutral-400" />
+                                        <MessageCircle className="h-4 w-4" />
                                         <a
                                             href="https://threads.com/theskitbit"
                                             target="_blank"
@@ -136,7 +136,10 @@ export function Footer() {
                     </div>
 
                     {/* Bottom bar */}
-                    <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-xs text-neutral-500 sm:flex-row">
+                    <div
+                        className="mt-8 flex flex-col items-center justify-between gap-4 border-t
+                    border-white/10 pt-6 text-xs sm:flex-row"
+                    >
                         <p>{content.copyright}</p>
                         <div className="flex items-center gap-6">
                             <a

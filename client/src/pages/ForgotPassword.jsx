@@ -1,109 +1,62 @@
-import React, { useState } from 'react';
-import { FaEye, FaEyeSlash } from 'react-icons/fa6';
-import toast from 'react-hot-toast';
-import Axios from '../utils/Axios';
-import SummaryApi from '../common/SummaryApi';
-import AxiosToastError from '../utils/AxiosToastError';
-import { Link, useNavigate } from 'react-router-dom';
+import logo from '@/assets/logo.png';
+import { Link } from 'react-router-dom';
+import LiquidEther from '@/components/LiquidEther';
+import { ForgotPasswordForm } from '@/components/forgotPassword/forgot-password-form';
 
-const ForgotPassword = () => {
-    const [data, setData] = useState({
-        email: '',
-    });
-
-    const navigate = useNavigate();
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-
-        setData((prev) => {
-            return {
-                ...prev,
-                [name]: value,
-            };
-        });
-    };
-
-    const valideValue = Object.values(data).every((el) => el);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        try {
-            const response = await Axios({
-                ...SummaryApi.forgot_password,
-                data: data,
-            });
-
-            if (response.data.error) {
-                toast.error(response.data.message);
-            }
-
-            if (response.data.success) {
-                toast.success(response.data.message);
-                navigate('/verification-otp', {
-                    state: data,
-                });
-
-                // Reset form
-                setData({
-                    email: '',
-                });
-            }
-        } catch (error) {
-            AxiosToastError(error);
-        }
+export default function ForgotPasswordPage() {
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     return (
-        <section className="container mx-auto my-12 max-w-lg px-2">
-            <div className="bg-white rounded-md p-6 shadow-md shadow-secondary-100">
-                <p className="font-bold lg:text-lg text-base text-secondary-200 uppercase">
-                    Quên Mật Khẩu
-                </p>
-                <form
-                    action=""
-                    className="grid gap-4 mt-4 lg:text-base text-sm text-secondary-200"
-                    onSubmit={handleSubmit}
-                >
-                    <div className="grid gap-2">
-                        <label className="font-medium" htmlFor="email">
-                            Email:{' '}
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            className="bg-base-100 lg:p-2 px-2 py-[6px] lg:text-base text-xs border rounded outline-none focus-within:border-secondary-200"
-                            name="email"
-                            placeholder="Nhập email của bạn"
-                            value={data.email}
-                            onChange={handleChange}
-                        />
-                    </div>
-                    <button
-                        disabled={!valideValue}
-                        className={`${
-                            valideValue
-                                ? 'bg-primary-2 border border-secondary-200 text-secondary-200 hover:opacity-80 cursor-pointer'
-                                : 'bg-gray-400 text-white cursor-no-drop'
-                        } py-2 rounded-md font-bold mt-1 mb-2`}
-                    >
-                        Gửi OTP
-                    </button>
-                </form>
-
-                <p className="py-2 lg:text-base text-xs font-medium">
-                    Bạn muốn đăng nhập?{' '}
-                    <Link
-                        to={'/login'}
-                        className="font-bold text-secondary-200 hover:text-secondary-100"
-                    >
-                        Đăng nhập
-                    </Link>
-                </p>
+        <div className="relative container mx-auto lg:p-0 p-3">
+            <div className="fixed inset-0 z-0 pointer-events-none">
+                <LiquidEther
+                    colors={['#5227FF', '#FF9FFC', '#B19EEF']}
+                    mouseForce={20}
+                    cursorSize={100}
+                    isViscous={false}
+                    viscous={30}
+                    iterationsViscous={32}
+                    iterationsPoisson={32}
+                    resolution={0.5}
+                    isBounce={false}
+                    autoDemo={true}
+                    autoSpeed={0.5}
+                    autoIntensity={2.2}
+                    takeoverDuration={0.25}
+                    autoResumeDelay={3000}
+                    autoRampDuration={0.6}
+                    style={{ width: '100%', height: '100%' }}
+                />
             </div>
-        </section>
+            <div className="relative flex justify-center gap-2 text-xl md:justify-start py-8">
+                <Link
+                    to="/"
+                    onClick={scrollToTop}
+                    className="flex items-center gap-1.5"
+                >
+                    <img
+                        src={logo}
+                        alt="TechSpace logo"
+                        width={25}
+                        height={25}
+                        className="h-6 w-6"
+                    />
+                    <span className="font-semibold tracking-wide text-white">
+                        TechSpace
+                    </span>
+                </Link>
+            </div>
+            <div className="rounded-2xl liquid-glass overflow-hidden">
+                <div className="relative flex flex-col gap-4 p-6 md:p-10">
+                    <div className="flex flex-1 items-center justify-center">
+                        <div className="w-full md:max-w-md xl:max-w-2xl">
+                            <ForgotPasswordForm />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
-};
-
-export default ForgotPassword;
+}

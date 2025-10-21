@@ -488,7 +488,7 @@ export async function verifyPassword(req, res) {
 // Change Password
 export async function changePassword(req, res) {
     try {
-        const { newPassword, confirmPassword, userId } = req.body;
+        const { newPassword, confirmNewPassword, userId } = req.body;
 
         if (!userId) {
             return res.status(400).json({
@@ -514,7 +514,7 @@ export async function changePassword(req, res) {
             body: {
                 email: user.email,
                 newPassword,
-                confirmPassword
+                confirmNewPassword
             }
         }, res);
 
@@ -530,9 +530,9 @@ export async function changePassword(req, res) {
 // Reset the Password
 export async function resetPassword(req, res) {
     try {
-        const { email, newPassword, confirmPassword } = req.body
+        const { email, newPassword, confirmNewPassword } = req.body
 
-        if (!email || !newPassword || !confirmPassword) {
+        if (!email || !newPassword || !confirmNewPassword) {
             return res.status(400).json({
                 message: "Vui lòng nhập các trường bắt buộc",
                 error: true,
@@ -550,7 +550,7 @@ export async function resetPassword(req, res) {
             })
         }
 
-        if (newPassword !== confirmPassword) {
+        if (newPassword !== confirmNewPassword) {
             return res.status(400).json({
                 message: "Mật khẩu mới và mật khẩu xác nhận phải giống nhau.",
                 error: true,

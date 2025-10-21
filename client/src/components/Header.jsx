@@ -143,7 +143,7 @@ export default function Header() {
                                                 />
                                             </div>
                                             <div className="flex flex-col items-start flex-1 min-w-0">
-                                                <span className="text-sm font-medium text-white truncate max-w-[120px]">
+                                                <span title={user.name} className="text-sm font-medium text-white truncate max-w-16 lg:max-w-20 xl:max-w-max">
                                                     {user.name}
                                                 </span>
                                                 {user.role === 'ADMIN' && (
@@ -192,7 +192,7 @@ export default function Header() {
                             ) : (
                                 <button
                                     onClick={redirectToLoginPage}
-                                    className="text-sm text-gray-300 hover:text-purple-300 transition-colors"
+                                    className="underline text-sm text-gray-300 hover:text-purple-300 transition-colors"
                                 >
                                     Đăng nhập
                                 </button>
