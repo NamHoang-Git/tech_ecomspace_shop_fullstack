@@ -52,7 +52,7 @@ export function ProductCard({ data }: ProductCardProps) {
                 }}
             >
                 <Card
-                    className="bg-white rounded-3xl shadow-md shadow-secondary-100 hover:shadow-lg transition-all duration-300 overflow-hidden group relative"
+                    className="rounded-3xl shadow-md shadow-secondary-100 hover:shadow-lg transition-all duration-300 overflow-hidden group relative"
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
                 >
@@ -76,7 +76,7 @@ export function ProductCard({ data }: ProductCardProps) {
                         <img
                             src={data.image[0]}
                             alt={data.name}
-                            className={`w-full h-52 object-contain bg-white transition-transform duration-700 ${
+                            className={`w-full p-2 h-52 object-contain bg-white transition-transform duration-700 ${
                                 isHovered ? 'scale-100' : 'scale-100'
                             }`}
                         />
@@ -111,71 +111,57 @@ export function ProductCard({ data }: ProductCardProps) {
                             </div>
                         )}
 
-                        {/* Add to cart button on hover */}
                         <div
                             className={`absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent md:flex hidden items-end justify-center p-4
                                 transition-opacity duration-300 ${
                                     isHovered ? 'opacity-100' : 'opacity-0'
                                 }`}
                         >
-                            {/* <Button
-                                className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/20"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    // Add to cart logic here
-                                }}
-                            >
-                                <ShoppingCart className="w-4 h-4 mr-2" />
-                                Thêm vào giỏ
-                            </Button> */}
                             <AddToCartButton data={data} />
                         </div>
                     </div>
 
-                    <CardContent className="md:p-4 p-3 relative z-10 text-white grid gap-1 md:h-36">
-                        <h3
-                            className={`font-semibold mb-1 transition-colors duration-300 line-clamp-2 h-fit md:w-auto w-full ${
-                                isHovered ? 'text-emerald-500' : ''
-                            }`}
-                        >
-                            {data.name}
-                        </h3>
+                    <CardContent className="md:p-4 p-3 relative z-10 text-white flex flex-col gap-1 justify-between md:h-32 h-36">
+                        <div className="">
+                            <h3
+                                className={`font-semibold mb-1 transition-colors duration-300 line-clamp-2 h-fit md:w-auto w-full ${
+                                    isHovered ? 'text-emerald-500' : ''
+                                }`}
+                            >
+                                {data.name}
+                            </h3>
 
-                        {/* <div className="flex items-center gap-2 text-sm">
-                            <span className="font-medium">{data.unit}</span>
-                        </div> */}
-
-                        <div className="flex items-center justify-between">
-                            <div className="flex md:flex-col md:items-start items-center justify-between md:gap-0 gap-2 md:w-auto w-full">
-                                {data.discount > 0 ? (
-                                    <>
-                                        <span className="text-gray-400 line-through text-sm">
+                            <div className="flex items-center justify-between">
+                                <div className="flex md:flex-col md:items-start items-center justify-between md:gap-0 gap-2 md:w-auto w-full">
+                                    {data.discount > 0 ? (
+                                        <>
+                                            <span className="text-gray-400 line-through text-sm">
+                                                {DisplayPriceInVND(data.price)}
+                                            </span>
+                                            <span className="text-emerald-500 font-bold text-lg">
+                                                {DisplayPriceInVND(
+                                                    pricewithDiscount(
+                                                        data.price,
+                                                        data.discount
+                                                    )
+                                                )}
+                                            </span>
+                                        </>
+                                    ) : (
+                                        <span className="text-emerald-500 font-bold text-lg">
                                             {DisplayPriceInVND(data.price)}
                                         </span>
-                                        <span className="text-emerald-500 font-bold text-lg">
-                                            {DisplayPriceInVND(
-                                                pricewithDiscount(
-                                                    data.price,
-                                                    data.discount
-                                                )
-                                            )}
-                                        </span>
-                                    </>
-                                ) : (
-                                    <span className="text-emerald-500 font-bold text-lg">
-                                        {DisplayPriceInVND(data.price)}
+                                    )}
+                                </div>
+
+                                {data.stock == 0 && (
+                                    <span className="text-rose-400 text-sm font-medium md:block hidden">
+                                        Hết hàng
                                     </span>
                                 )}
                             </div>
-
-                            {data.stock == 0 && (
-                                <span className="text-rose-400 text-sm font-medium md:block hidden">
-                                    Hết hàng
-                                </span>
-                            )}
                         </div>
-                        <div className='w-full md:hidden block'>
+                        <div className="w-full md:hidden block">
                             <AddToCartButton data={data} />
                         </div>
                     </CardContent>

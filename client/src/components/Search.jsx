@@ -21,6 +21,7 @@ const Search = () => {
 
     const redirectToSearchPage = () => {
         navigate('/search');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const handleOnChange = (e) => {

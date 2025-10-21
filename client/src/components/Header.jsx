@@ -5,7 +5,13 @@ import logo from '../assets/logo.png';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaCartPlus } from 'react-icons/fa6';
-import { FaCaretDown, FaCaretUp, FaSearch } from 'react-icons/fa';
+import {
+    FaBoxOpen,
+    FaCaretDown,
+    FaCaretUp,
+    FaHome,
+    FaSearch,
+} from 'react-icons/fa';
 // eslint-disable-next-line no-unused-vars
 import { AnimatePresence, motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
@@ -18,12 +24,17 @@ import Search from './Search';
 // import { UserMenu } from './menu/user-menu';
 
 export default function Header() {
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const links = [
-        { href: '/', label: 'Trang chủ' },
-        { href: '/', label: 'Sản phẩm' },
         {
-            href: '/search',
-            icon: <FaSearch size={14} className="mb-[3px]" />,
+            href: '/',
+            icon: <FaHome size={14} className="" />,
+            label: 'Trang chủ',
+        },
+        {
+            href: '/',
+            icon: <FaBoxOpen size={14} className="" />,
+            label: 'Sản phẩm',
         },
     ];
     const navigate = useNavigate();
@@ -72,6 +83,10 @@ export default function Header() {
         setOpenUserMenu(false);
     }, []);
 
+    const closeMobileMenu = useCallback(() => {
+        setIsMobileMenuOpen(false);
+    }, []);
+
     const redirectToLoginPage = () => {
         navigate('/login');
     };
@@ -103,19 +118,27 @@ export default function Header() {
                             </span>
                         </Link>
                         {/* Desktop Nav */}
-                        <nav className="hidden items-center gap-6 text-sm text-gray-300 md:flex">
-                            {links.map((l) => (
-                                <Link
-                                    key={l.href}
-                                    to={l.href}
-                                    onClick={scrollToTop}
-                                    className="hover:text-purple-300 transition-colors flex items-center gap-[6px]"
-                                >
-                                    {l.icon}
-                                    {l.label}
-                                </Link>
-                            ))}
-                        </nav>
+                        <div className="hidden md:flex items-center gap-6">
+                            <nav className="flex items-center gap-6 text-sm text-gray-300">
+                                {links.map((l) => (
+                                    <Link
+                                        key={l.href}
+                                        to={l.href}
+                                        onClick={scrollToTop}
+                                        className="hover:text-purple-300 transition-colors flex items-center gap-[6px]"
+                                    >
+                                        {/* {l.icon} */}
+                                        {l.label}
+                                    </Link>
+                                ))}
+                            </nav>
+                            <Link to="/search">
+                                <FaSearch
+                                    size={14}
+                                    className="text-white mb-[3px]"
+                                />
+                            </Link>
+                        </div>
                         {/* User */}
                         <div className="hidden md:flex items-center justify-end gap-5">
                             {user?._id ? (
@@ -229,12 +252,15 @@ export default function Header() {
                         </div>
                         {/* Mobile Nav */}
                         <div className="md:hidden">
-                            <Sheet>
+                            <Sheet
+                                open={isMobileMenuOpen}
+                                onOpenChange={setIsMobileMenuOpen}
+                            >
                                 <SheetTrigger asChild>
                                     <Button
                                         variant="outline"
                                         size="icon"
-                                        className="border-gray-700 bg-gray-900/80 text-gray-200 hover:bg-gray-800"
+                                        className="border-gray-700 bg-gray-800 text-white hover:bg-gray-600 hover:text-lime-300"
                                     >
                                         <Menu className="h-5 w-5" />
                                         <span className="sr-only">
@@ -272,20 +298,22 @@ export default function Header() {
                                             <Link
                                                 key={l.href}
                                                 to={l.href}
-                                                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-900 hover:text-purple-300 transition-colors"
+                                                onClick={() => {
+                                                    closeMenu();
+                                                    closeMobileMenu();
+                                                    scrollToTop();
+                                                }}
+                                                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-900 hover:text-purple-400 transition-colors"
                                             >
-                                                {/* <span className="inline-flex items-center justify-center w-5 h-5 text-gray-400">
-                                                    <l.icon className="h-4 w-4" />
-                                                </span> */}
+                                                <span className="inline-flex items-center justify-center w-5 h-5">
+                                                    {l.icon}
+                                                </span>
                                                 <span className="text-sm">
                                                     {l.label}
                                                 </span>
                                             </Link>
                                         ))}
                                     </nav>
-                                    {/* <div className='bg-transparent'>
-                                        <UserMenu />
-                                    </div> */}
                                     <div className="mt-auto border-t border-gray-800 p-4">
                                         <div className="flex items-center justify-center w-full gap-5">
                                             {user?._id ? (
@@ -371,14 +399,11 @@ export default function Header() {
                                                                     ease: 'easeOut',
                                                                 }}
                                                             >
-                                                                {/* <UserMenu
-                                                        close={closeMenu}
-                                                        menuTriggerRef={menuRef}
-                                                    /> */}
                                                                 <UserMenu
-                                                                    close={
-                                                                        closeMenu
-                                                                    }
+                                                                    close={() => {
+                                                                        closeMenu();
+                                                                        closeMobileMenu();
+                                                                    }}
                                                                     menuTriggerRef={
                                                                         menuRef
                                                                     }

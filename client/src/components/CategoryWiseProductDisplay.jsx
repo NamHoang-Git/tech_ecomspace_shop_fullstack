@@ -94,9 +94,8 @@ const CategoryWiseProductDisplay = ({ id, name }) => {
             <div className="relative">
                 <div
                     ref={containerRef}
-                    className="grid grid-flow-col auto-cols-[minmax(200px,1fr)] md:auto-cols-[minmax(220px,1fr)]
-                lg:auto-cols-[minmax(240px,1fr)] xl:auto-cols-[minmax(260px,1fr)]
-                gap-4 sm:gap-6 overflow-x-auto scroll-smooth scrollbar-hide pb-6"
+                    className="grid grid-flow-col auto-cols-[minmax(220px,1fr)] lg:auto-cols-[minmax(240px,1fr)] xl:auto-cols-[minmax(260px,1fr)]
+                gap-4 md:gap-6 overflow-x-auto scroll-smooth scrollbar-hide pb-6"
                 >
                     {loading
                         ? loadingCardNumber.map((_, index) => (
@@ -125,7 +124,7 @@ const CategoryWiseProductDisplay = ({ id, name }) => {
                     <div className="absolute hidden md:block right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10">
                         <button
                             onClick={handleScrollRight}
-                            className="bg-white/20 text-white backdrop-blur-sm p-2  rounded-full hover:bg-white/30 transition-colors"
+                            className="bg-white/20 text-white backdrop-blur-sm p-2 rounded-full hover:bg-white/30 transition-colors"
                             aria-label="Next products"
                         >
                             <FaAngleRight size={20} />

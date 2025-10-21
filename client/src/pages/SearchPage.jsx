@@ -12,6 +12,10 @@ import { IoFilter } from 'react-icons/io5';
 import AxiosToastError from '../utils/AxiosToastError';
 import NoData from '../components/NoData';
 import Search from '@/components/Search';
+import ProductCard from '@/components/product/product-card';
+import LiquidEther from '@/components/LiquidEther';
+import GlareHover from '@/components/GlareHover';
+import { Button } from '@/components/ui/button';
 
 const SearchPage = () => {
     const [data, setData] = useState([]);
@@ -330,132 +334,164 @@ const SearchPage = () => {
     }, []);
 
     return (
-        <div className="container mx-auto sm:px-4 px-2">
-            {/* Filter Controls */}
-            <div className='block md:hidden'>
-                <Search />
+        <div className="relative min-h-screen">
+            {/* Background effect - position absolute */}
+            <div className="fixed inset-0 z-0 pointer-events-none">
+                <LiquidEther
+                    colors={['#5227FF', '#FF9FFC', '#B19EEF']}
+                    mouseForce={20}
+                    cursorSize={100}
+                    isViscous={false}
+                    viscous={30}
+                    iterationsViscous={32}
+                    iterationsPoisson={32}
+                    resolution={0.5}
+                    isBounce={false}
+                    autoDemo={true}
+                    autoSpeed={0.5}
+                    autoIntensity={2.2}
+                    takeoverDuration={0.25}
+                    autoResumeDelay={3000}
+                    autoRampDuration={0.6}
+                    style={{ width: '100%', height: '100%' }}
+                />
             </div>
-            <div className="mb-4 mt-4">
-                <button
+            <div className="relative z-10 container mx-auto xl:px-0 px-4">
+                {/* Filter Controls */}
+                <div className="block md:hidden mx-auto max-w-xl">
+                    <Search />
+                </div>
+                <div
                     onClick={() => setShowFilters(!showFilters)}
-                    className="flex items-center gap-1 px-4 sm:py-2 py-[6px] bg-primary-5 text-secondary-200 rounded-md
-                hover:bg-gray-100 transition-colors text-xs sm:text-base font-medium shadow-md shadow-secondary-100"
+                    className="mb-4 mt-4"
                 >
-                    <IoFilter className="mb-[3px]" />
-                    <span className="font-bold">Lọc</span>
-                </button>
-                {showFilters && renderFilterControls()}
-            </div>
+                    <GlareHover
+                        background="#000"
+                        glareColor="#ffffff"
+                        glareOpacity={0.8}
+                        glareAngle={-30}
+                        glareSize={300}
+                        transitionDuration={800}
+                        playOnce={false}
+                    >
+                        <Button className="flex items-center gap-2 px-4 text-lime-300 py-2">
+                            <IoFilter className="mb-[3px]" />
+                            <span className="font-bold text-sm">Lọc</span>
+                        </Button>
+                    </GlareHover>
+                    {showFilters && renderFilterControls()}
+                </div>
 
-            <div
-                className={`w-full mx-auto mb-3 ${
-                    !loading && searchQuery && data.length > 0
-                        ? 'block'
-                        : 'hidden'
-                }`}
-            >
-                {!loading && searchQuery && data.length > 0 && (
-                    <p className="mt-2 sm:text-sm text-xs text-gray-600">
-                        Tìm thấy{' '}
-                        <span className="font-semibold text-secondary-200">
-                            {totalCount}
-                        </span>{' '}
-                        kết quả cho "{searchQuery}"
-                    </p>
-                )}
-            </div>
-
-            {/* Search Results */}
-            {searchQuery ? (
-                loading && page === 1 ? (
-                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 sm:gap-4 gap-[10px]">
-                        {Array(12)
-                            .fill(null)
-                            .map((_, index) => (
-                                <CardLoading key={index} />
-                            ))}
-                    </div>
-                ) : data.length > 0 ? (
-                    <>
-                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 sm:gap-4 gap-[10px]">
-                            {data.map((product) => (
-                                <CardProduct key={product._id} data={product} />
-                            ))}
-                        </div>
-                        {loading && page > 1 && (
-                            <div className="flex justify-center mt-8">
-                                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-600"></div>
-                            </div>
-                        )}
-                    </>
-                ) : (
-                    <div className="text-center py-4 grid gap-2">
-                        <h3 className="text-sm sm:text-xl font-semibold text-gray-600">
-                            Không tìm thấy sản phẩm
-                        </h3>
-                        <p className="text-xs sm:text-base text-gray-500">
-                            Không có sản phẩm nào phù hợp với từ khóa "
-                            {searchQuery}"
+                <div
+                    className={`w-full mx-auto mb-3 ${
+                        !loading && searchQuery && data.length > 0
+                            ? 'block'
+                            : 'hidden'
+                    }`}
+                >
+                    {!loading && searchQuery && data.length > 0 && (
+                        <p className="mt-2 sm:text-sm text-xs text-gray-600">
+                            Tìm thấy{' '}
+                            <span className="font-semibold text-secondary-200">
+                                {totalCount}
+                            </span>{' '}
+                            kết quả cho "{searchQuery}"
                         </p>
-                    </div>
-                )
-            ) : (
-                /* Initial products display */
-                <InfiniteScroll
-                    dataLength={initialProducts.length}
-                    next={loadMoreInitialProducts}
-                    hasMore={hasMore}
-                >
-                    <div className="bg-white rounded-md pb-2">
-                        <h2
-                            className="px-4 py-2 bg-primary-4 rounded-md shadow-md shadow-secondary-100
-                        font-bold text-secondary-200 sm:text-lg text-sm"
-                        >
-                            Sản phẩm nổi bật
-                        </h2>
-                        <div className="text-center sm:pt-8 sm:pb-6 pt-6 pb-4 grid sm:gap-2 gap-1">
-                            <h3 className="text-sm sm:text-xl font-semibold text-gray-600">
-                                Nhập từ khóa để tìm kiếm
-                            </h3>
-                            <p className="text-xs sm:text-base text-gray-500">
-                                Tìm kiếm sản phẩm theo tên
-                            </p>
+                    )}
+                </div>
+
+                {/* Search Results */}
+                {searchQuery ? (
+                    loading && page === 1 ? (
+                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 sm:gap-4 gap-[10px]">
+                            {Array(12)
+                                .fill(null)
+                                .map((_, index) => (
+                                    <CardLoading key={index} />
+                                ))}
                         </div>
-                        {loadingInitial ? (
-                            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 sm:gap-4 gap-[10px] pb-2 sm:px-4 px-2">
-                                {Array(6)
-                                    .fill(null)
-                                    .map((_, index) => (
-                                        <CardLoading key={index} />
-                                    ))}
-                            </div>
-                        ) : initialProducts.length > 0 ? (
-                            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 sm:gap-4 gap-[10px] pb-2 sm:px-4 px-2">
-                                {initialProducts.map((product) => (
-                                    <CardProduct
+                    ) : data.length > 0 ? (
+                        <>
+                            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 sm:gap-4 gap-[10px]">
+                                {data.map((product) => (
+                                    <ProductCard
                                         key={product._id}
                                         data={product}
                                     />
                                 ))}
                             </div>
-                        ) : (
-                            <NoData />
-                        )}
-                    </div>
-                </InfiniteScroll>
-            )}
+                            {loading && page > 1 && (
+                                <div className="flex justify-center mt-8">
+                                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-600"></div>
+                                </div>
+                            )}
+                        </>
+                    ) : (
+                        <div className="text-center py-4 grid gap-2">
+                            <h3 className="text-sm sm:text-xl font-semibold text-gray-600">
+                                Không tìm thấy sản phẩm
+                            </h3>
+                            <p className="text-xs sm:text-base text-gray-500">
+                                Không có sản phẩm nào phù hợp với từ khóa "
+                                {searchQuery}"
+                            </p>
+                        </div>
+                    )
+                ) : (
+                    /* Initial products display */
+                    <InfiniteScroll
+                        dataLength={initialProducts.length}
+                        next={loadMoreInitialProducts}
+                        hasMore={hasMore}
+                    >
+                        <div className="rounded-md pb-2 liquid-glass-menu p-4 mb-4">
+                            <h2 className="border-b-4 py-2 uppercase text-lime-300 drop-shadow-[0_0_20px_rgba(132,204,22,0.35)]">
+                                Sản phẩm nổi bật
+                            </h2>
+                            <div className="text-center text-white sm:pt-8 sm:pb-6 pt-6 pb-4 grid gap-1">
+                                <h3 className="text-xl font-semibold">
+                                    Nhập từ khóa để tìm kiếm
+                                </h3>
+                                <p className="text-sm">
+                                    Tìm kiếm sản phẩm theo tên
+                                </p>
+                            </div>
+                            {loadingInitial ? (
+                                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 sm:gap-4 gap-[10px] pb-2 sm:px-4 px-2">
+                                    {Array(6)
+                                        .fill(null)
+                                        .map((_, index) => (
+                                            <CardLoading key={index} />
+                                        ))}
+                                </div>
+                            ) : initialProducts.length > 0 ? (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 h-full">
+                                    {initialProducts.map((product) => (
+                                        <ProductCard
+                                            key={product._id}
+                                            data={product}
+                                        />
+                                    ))}
+                                </div>
+                            ) : (
+                                <NoData />
+                            )}
+                        </div>
+                    </InfiniteScroll>
+                )}
 
-            {showScrollToTop && (
-                <button
-                    onClick={scrollToTop}
-                    className="fixed bottom-32 sm:bottom-28 right-4 sm:right-8 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2
-                                focus:ring-rose-500 bg-secondary-200 rounded-full p-3 sm:p-4 md:p-4 hover:bg-secondary-100 text-white z-50"
-                    aria-label="Lên đầu trang"
-                >
-                    <FaArrowUp size={24} className="hidden sm:block" />
-                    <FaArrowUp className="block sm:hidden" />
-                </button>
-            )}
+                {showScrollToTop && (
+                    <button
+                        onClick={scrollToTop}
+                        className="fixed bottom-32 sm:bottom-28 right-4 sm:right-8 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2
+                                focus:ring-purple-500 liquid-glass-2 rounded-full p-3 sm:p-4 md:p-4 hover:bg-purple-600/30 text-white z-50"
+                        aria-label="Lên đầu trang"
+                    >
+                        <FaArrowUp size={24} className="hidden sm:block" />
+                        <FaArrowUp className="block sm:hidden" />
+                    </button>
+                )}
+            </div>
         </div>
     );
 };
