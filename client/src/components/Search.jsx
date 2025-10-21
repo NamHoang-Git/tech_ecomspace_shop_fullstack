@@ -36,10 +36,8 @@ const Search = () => {
     return (
         <search className="cursor-pointer liquid-glass max-w-2xl container mx-auto rounded-3xl">
             <div
-                className={`${
-                    !isSearchPage ? 'my-0' : 'my-2'
-                } px-8 sm:my-0 h-8 sm:h-12 rounded-3xl border-[3px] border-inset overflow-hidden
-                flex items-center text-sm text-gray-300 liquid-glass group focus-within:border-purple-400`}
+                className="md:px-8 px-2 sm:my-0 h-8 sm:h-12 rounded-3xl border-[3px] border-inset overflow-hidden
+                flex items-center text-sm text-gray-300 liquid-glass group focus-within:border-purple-400"
             >
                 <div>
                     {isMobile && isSearchPage ? (
@@ -59,7 +57,7 @@ const Search = () => {
                         </button>
                     )}
                 </div>
-                <div className="w-full h-full">
+                <div className="w-full h-full outline-none">
                     {!isSearchPage ? (
                         // Not in Search Page
                         <div
@@ -86,13 +84,12 @@ const Search = () => {
                         </div>
                     ) : (
                         // Search Page
-                        <div className="relative w-full h-full">
+                        <div className="relative w-full h-full outline-none">
                             <input
                                 type="text"
                                 placeholder="Bạn muốn mua gì hôm nay?"
                                 autoFocus={true}
-                                className="w-full h-full sm:text-base sm:pt-0 pt-[1px] outline-none
-                            text-sm text-gray-300 bg-transparent"
+                                className="w-full h-full bg-transparent text-white outline-none"
                                 defaultValue={searchText}
                                 onChange={handleOnChange}
                                 spellCheck={false}

@@ -11,6 +11,7 @@ import { FaArrowUp } from 'react-icons/fa6';
 import { IoFilter } from 'react-icons/io5';
 import AxiosToastError from '../utils/AxiosToastError';
 import NoData from '../components/NoData';
+import Search from '@/components/Search';
 
 const SearchPage = () => {
     const [data, setData] = useState([]);
@@ -329,9 +330,12 @@ const SearchPage = () => {
     }, []);
 
     return (
-        <div className="container mx-auto sm:px-4 px-2 py-6">
+        <div className="container mx-auto sm:px-4 px-2">
             {/* Filter Controls */}
-            <div className="mb-4">
+            <div className='block md:hidden'>
+                <Search />
+            </div>
+            <div className="mb-4 mt-4">
                 <button
                     onClick={() => setShowFilters(!showFilters)}
                     className="flex items-center gap-1 px-4 sm:py-2 py-[6px] bg-primary-5 text-secondary-200 rounded-md

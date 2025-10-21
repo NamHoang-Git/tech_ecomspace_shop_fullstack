@@ -21,6 +21,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import OtpVerification from './pages/OtpVerification';
 import ResetPassword from './pages/ResetPassword';
 import CategoryPage from './pages/CategoryPage';
+import SearchPage from './pages/SearchPage';
 
 function App() {
     const dispatch = useDispatch();
@@ -59,17 +60,27 @@ function App() {
             <Routes>
                 <Route element={<MainLayout />}>
                     <Route path="/" element={<Home />} />
+                    <Route path="/search" element={<SearchPage />} />
                 </Route>
 
                 <Route element={<AuthLayout />}>
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
-                    <Route path="/forgot-password" element={<ForgotPassword />} />
-                    <Route path="/verification-otp" element={<OtpVerification />} />
+                    <Route
+                        path="/forgot-password"
+                        element={<ForgotPassword />}
+                    />
+                    <Route
+                        path="/verification-otp"
+                        element={<OtpVerification />}
+                    />
                     <Route path="/reset-password" element={<ResetPassword />} />
 
                     <Route path="/dashboard/profile" element={<Profile />} />
-                    <Route path="/dashboard/category" element={<CategoryPage />} />
+                    <Route
+                        path="/dashboard/category"
+                        element={<CategoryPage />}
+                    />
                 </Route>
             </Routes>
 

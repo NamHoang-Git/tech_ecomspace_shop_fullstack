@@ -23,7 +23,6 @@ export default function Header() {
         { href: '/', label: 'Sản phẩm' },
         {
             href: '/search',
-            label: 'Tìm kiếm',
             icon: <FaSearch size={14} className="mb-[3px]" />,
         },
     ];
@@ -143,7 +142,10 @@ export default function Header() {
                                                 />
                                             </div>
                                             <div className="flex flex-col items-start flex-1 min-w-0">
-                                                <span title={user.name} className="text-sm font-medium text-white truncate max-w-16 lg:max-w-20 xl:max-w-max">
+                                                <span
+                                                    title={user.name}
+                                                    className="text-sm font-medium text-white truncate max-w-16 lg:max-w-20 xl:max-w-max"
+                                                >
                                                     {user.name}
                                                 </span>
                                                 {user.role === 'ADMIN' && (
@@ -242,18 +244,28 @@ export default function Header() {
                                 </SheetTrigger>
                                 <SheetContent
                                     side="right"
-                                    className="liquid-glass border-gray-800 p-0 w-64 flex flex-col"
+                                    className="liquid-glass text-white border-gray-800 p-0 w-72 flex flex-col"
                                 >
                                     <div className="flex items-center gap-1.5 px-4 py-4 border-b border-gray-800">
-                                        <img
-                                            alt="Skitbit logo"
-                                            width={24}
-                                            height={24}
-                                            className="h-6 w-6"
-                                        />
-                                        <span className="font-semibold tracking-wide text-white text-lg">
-                                            Skitbit
-                                        </span>
+                                        <Link
+                                            to="/"
+                                            onClick={scrollToTop}
+                                            className="flex items-center gap-1.5"
+                                        >
+                                            <img
+                                                src={logo}
+                                                alt="TechSpace logo"
+                                                width={25}
+                                                height={25}
+                                                className="h-5 w-5"
+                                            />
+                                            <span className="font-semibold tracking-wide text-white">
+                                                TechSpace
+                                            </span>
+                                        </Link>
+                                    </div>
+                                    <div className="px-2">
+                                        <Search />
                                     </div>
                                     <nav className="flex flex-col gap-1 mt-2 text-gray-200">
                                         {links.map((l) => (
@@ -262,30 +274,131 @@ export default function Header() {
                                                 to={l.href}
                                                 className="flex items-center gap-3 px-4 py-3 hover:bg-gray-900 hover:text-purple-300 transition-colors"
                                             >
-                                                <span className="inline-flex items-center justify-center w-5 h-5 text-gray-400">
+                                                {/* <span className="inline-flex items-center justify-center w-5 h-5 text-gray-400">
                                                     <l.icon className="h-4 w-4" />
-                                                </span>
+                                                </span> */}
                                                 <span className="text-sm">
                                                     {l.label}
                                                 </span>
                                             </Link>
                                         ))}
                                     </nav>
+                                    {/* <div className='bg-transparent'>
+                                        <UserMenu />
+                                    </div> */}
                                     <div className="mt-auto border-t border-gray-800 p-4">
-                                        <Button
-                                            asChild
-                                            className="w-full bg-lime-400 text-black font-medium rounded-lg px-6 py-2.5
-                                                hover:bg-lime-300 hover:shadow-md hover:scale-[1.02]
-                                                transition-all"
-                                        >
-                                            <a
-                                                href="https://wa.link/65mf3i"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                Get a Quote
-                                            </a>
-                                        </Button>
+                                        <div className="flex items-center justify-center w-full gap-5">
+                                            {user?._id ? (
+                                                <div
+                                                    className="relative w-full"
+                                                    ref={menuRef}
+                                                >
+                                                    <div className="relative">
+                                                        <button
+                                                            onClick={
+                                                                toggleUserMenu
+                                                            }
+                                                            className="flex items-center gap-2 w-full px-2 py-1.5 text-white rounded-lg hover:bg-white/10 transition-colors"
+                                                            aria-expanded={
+                                                                openUserMenu
+                                                            }
+                                                            aria-haspopup="true"
+                                                            aria-label="User menu"
+                                                            type="button"
+                                                        >
+                                                            <div className="relative p-0.5 overflow-hidden rounded-full liquid-glass">
+                                                                <img
+                                                                    src={
+                                                                        user.avatar ||
+                                                                        defaultAvatar
+                                                                    }
+                                                                    alt={
+                                                                        user.name
+                                                                    }
+                                                                    className="w-8 h-8 rounded-full object-cover"
+                                                                    width={32}
+                                                                    height={32}
+                                                                />
+                                                            </div>
+                                                            <div className="flex flex-col items-start flex-1 min-w-0">
+                                                                <span
+                                                                    title={
+                                                                        user.name
+                                                                    }
+                                                                    className="text-sm font-medium text-white"
+                                                                >
+                                                                    {user.name}
+                                                                </span>
+                                                                {user.role ===
+                                                                    'ADMIN' && (
+                                                                    <span className="text-xs text-purple-400">
+                                                                        Quản trị
+                                                                        viên
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            {openUserMenu ? (
+                                                                <FaCaretDown
+                                                                    className="flex-shrink-0 ml-2"
+                                                                    size={15}
+                                                                />
+                                                            ) : (
+                                                                <FaCaretUp
+                                                                    className="flex-shrink-0 ml-2"
+                                                                    size={15}
+                                                                />
+                                                            )}
+                                                        </button>
+                                                    </div>
+                                                    <AnimatePresence>
+                                                        {openUserMenu && (
+                                                            <motion.div
+                                                                className="absolute right-0 bottom-full mb-2 z-50 w-64"
+                                                                initial={{
+                                                                    opacity: 0,
+                                                                    y: 10,
+                                                                }}
+                                                                animate={{
+                                                                    opacity: 1,
+                                                                    y: 0,
+                                                                }}
+                                                                exit={{
+                                                                    opacity: 0,
+                                                                    y: -10,
+                                                                }}
+                                                                transition={{
+                                                                    duration: 0.15,
+                                                                    ease: 'easeOut',
+                                                                }}
+                                                            >
+                                                                {/* <UserMenu
+                                                        close={closeMenu}
+                                                        menuTriggerRef={menuRef}
+                                                    /> */}
+                                                                <UserMenu
+                                                                    close={
+                                                                        closeMenu
+                                                                    }
+                                                                    menuTriggerRef={
+                                                                        menuRef
+                                                                    }
+                                                                />
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    onClick={
+                                                        redirectToLoginPage
+                                                    }
+                                                    className="w-full bg-lime-400 text-black font-medium rounded-lg px-6 py-2.5
+                                                hover:bg-lime-300 hover:shadow-md hover:scale-[1.02] transition-all"
+                                                >
+                                                    Đăng nhập
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 </SheetContent>
                             </Sheet>

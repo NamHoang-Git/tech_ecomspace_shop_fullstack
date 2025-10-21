@@ -10,7 +10,7 @@ export default function OtpVerificationPage() {
     };
 
     return (
-        <div className="relative container mx-auto lg:p-0 p-3">
+        <div className="relative container mx-auto p-3">
             <div className="fixed inset-0 z-0 pointer-events-none">
                 <LiquidEther
                     colors={['#5227FF', '#FF9FFC', '#B19EEF']}
