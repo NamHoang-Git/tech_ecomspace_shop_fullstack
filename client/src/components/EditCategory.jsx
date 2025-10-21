@@ -37,13 +37,6 @@ const EditCategory = ({ close, fetchData, data: CategoryData }) => {
             return;
         }
 
-        // Validate file size (5MB for images)
-        const maxSize = 5 * 1024 * 1024; // 5MB
-        if (file.size > maxSize) {
-            console.error('File is too large. Maximum size: 5MB');
-            return;
-        }
-
         setLoading(true);
         try {
             const response = await uploadImage(file);

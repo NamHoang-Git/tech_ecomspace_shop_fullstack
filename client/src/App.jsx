@@ -20,6 +20,7 @@ import Profile from './pages/Profile';
 import ForgotPassword from './pages/ForgotPassword';
 import OtpVerification from './pages/OtpVerification';
 import ResetPassword from './pages/ResetPassword';
+import CategoryPage from './pages/CategoryPage';
 
 function App() {
     const dispatch = useDispatch();
@@ -68,6 +69,7 @@ function App() {
                     <Route path="/reset-password" element={<ResetPassword />} />
 
                     <Route path="/dashboard/profile" element={<Profile />} />
+                    <Route path="/dashboard/category" element={<CategoryPage />} />
                 </Route>
             </Routes>
 
