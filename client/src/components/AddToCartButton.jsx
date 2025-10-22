@@ -133,30 +133,35 @@ const AddToCartButton = ({ data }) => {
     };
 
     return (
-        <div className="w-full md:max-w-[150px]">
+        <div className="w-full text-white">
             {isAvailableCart && cartItemDetails ? (
-                <div className="flex items-center justify-center w-full sm:h-full h-6 bg-primary-100">
-                    <button
+                <div
+                    className="flex items-center justify-center w-full border-gray-200 focus:ring-0 shadow-none rounded-lg
+                focus:border-[#3F3FF3] liquid-glass-2"
+                >
+                    <Button
                         onClick={decreaseQty}
-                        className="bg-primary hover:opacity-80 text-white flex-1 w-full p-1 sm:p-[6px] rounded flex items-center justify-center"
+                        className="flex items-center justify-center flex-1 w-full bg-gradient-to-r from-emerald-300 to-cyan-600 hover:from-emerald-600
+                    hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/20"
                         disabled={loading}
                     >
                         <FaMinus className="sm:hidden" size={10} />
                         <FaMinus className="hidden sm:block" size={14} />
-                    </button>
+                    </Button>
 
-                    <p className="flex-1 text-[10px] sm:text-base text-secondary-200 font-bold w-9 flex items-center justify-center">
+                    <p className="flex-1 text-sm text-lime-100 w-9 flex items-center justify-center">
                         {qty}
                     </p>
 
-                    <button
+                    <Button
                         onClick={increaseQty}
-                        className="bg-primary hover:opacity-80 text-white flex-1 w-full p-1 sm:p-[6px] rounded flex items-center justify-center"
+                        className="flex items-center justify-center flex-1 w-full bg-gradient-to-r from-emerald-300 to-cyan-600 hover:from-emerald-600
+                    hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/20"
                         disabled={loading}
                     >
                         <FaPlus className="sm:hidden" size={10} />
                         <FaPlus className="hidden sm:block" size={14} />
-                    </button>
+                    </Button>
                 </div>
             ) : (
                 <Button
@@ -168,9 +173,13 @@ const AddToCartButton = ({ data }) => {
                     {loading ? (
                         <Loading />
                     ) : (
-                        <span className="flex items-center gap-2 text-sm text-white font-semibold">
+                        <span
+                            className={`${
+                                data?.stock <= 0 ? 'text-black' : ''
+                            } flex items-center gap-2 text-sm font-bold`}
+                        >
                             <ShoppingCart className="w-4 h-4 mb-1" />
-                            <p className="">
+                            <p>
                                 {data?.stock <= 0 ? 'Hết hàng' : 'Thêm vào giỏ'}
                             </p>
                         </span>

@@ -1,13 +1,7 @@
-import logo from '@/assets/logo.png';
-import { Link } from 'react-router-dom';
 import LiquidEther from '@/components/LiquidEther';
 import { ForgotPasswordForm } from '@/components/forgotPassword/forgot-password-form';
 
 export default function ForgotPasswordPage() {
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
     return (
         <div className="relative container mx-auto p-3">
             <div className="fixed inset-0 z-0 pointer-events-none">
@@ -30,25 +24,7 @@ export default function ForgotPasswordPage() {
                     style={{ width: '100%', height: '100%' }}
                 />
             </div>
-            <div className="relative flex justify-center gap-2 text-xl md:justify-start py-8">
-                <Link
-                    to="/"
-                    onClick={scrollToTop}
-                    className="flex items-center gap-1.5"
-                >
-                    <img
-                        src={logo}
-                        alt="TechSpace logo"
-                        width={25}
-                        height={25}
-                        className="h-6 w-6"
-                    />
-                    <span className="font-semibold tracking-wide text-white">
-                        TechSpace
-                    </span>
-                </Link>
-            </div>
-            <div className="rounded-2xl liquid-glass overflow-hidden">
+            <div className="rounded-2xl liquid-glass overflow-hidden md:mt-8 mt-0">
                 <div className="relative flex flex-col gap-4 p-6 md:p-10">
                     <div className="flex flex-1 items-center justify-center">
                         <div className="w-full md:max-w-md xl:max-w-2xl">

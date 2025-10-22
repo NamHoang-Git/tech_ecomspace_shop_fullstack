@@ -211,14 +211,14 @@ export function LoginForm({
                         <div className="relative text-center text-sm uppercase flex items-center justify-between px-1.5">
                             <div
                                 className="relative after:absolute after:inset-0 after:top-1/2 after:left-0 after:z-0 after:flex after:items-end
-                        after:border-t after:border-border w-36 md:w-28 xl:w-56"
+                        after:border-t after:border-border w-16 md:w-28 xl:w-56"
                             ></div>
                             <span className="relative z-10 px-2 text-muted-foreground">
                                 Hoặc đăng nhập bằng
                             </span>
                             <div
                                 className="relative after:absolute after:inset-0 after:top-1/2 after:right-0 after:z-0 after:flex after:items-start
-                        after:border-t after:border-border w-36 md:w-28 xl:w-56"
+                        after:border-t after:border-border w-16 md:w-28 xl:w-56"
                             ></div>
                         </div>
                     </div>

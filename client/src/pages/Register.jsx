@@ -1,15 +1,9 @@
 import banner from '@/assets/register_banner.jpg';
-import logo from '@/assets/logo.png';
-import { Link } from 'react-router-dom';
 import LiquidEther from '@/components/LiquidEther';
 import { TypeAnimation } from 'react-type-animation';
 import { RegisterForm } from '@/components/register/register-form';
 
 export default function RegisterPage() {
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
     return (
         <div className="relative container mx-auto p-3">
             <div className="fixed inset-0 z-0 pointer-events-none">
@@ -32,25 +26,7 @@ export default function RegisterPage() {
                     style={{ width: '100%', height: '100%' }}
                 />
             </div>
-            <div className="relative flex justify-center gap-2 text-xl md:justify-start py-8">
-                <Link
-                    to="/"
-                    onClick={scrollToTop}
-                    className="flex items-center gap-1.5"
-                >
-                    <img
-                        src={logo}
-                        alt="TechSpace logo"
-                        width={25}
-                        height={25}
-                        className="h-6 w-6"
-                    />
-                    <span className="font-semibold tracking-wide text-white">
-                        TechSpace
-                    </span>
-                </Link>
-            </div>
-            <div className="rounded-2xl liquid-glass overflow-hidden grid lg:grid-cols-[1.5fr_2fr]">
+            <div className="rounded-2xl liquid-glass overflow-hidden grid lg:grid-cols-[1.5fr_2fr] md:mt-8 mt-0">
                 <div
                     className="hidden bg-muted lg:flex justify-center items-center"
                     style={{

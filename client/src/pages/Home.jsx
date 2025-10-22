@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import CategoryWiseProductDisplay from './../components/CategoryWiseProductDisplay';
-import { Hero } from '../components/home/hero';
+import { CategoryPanel } from '../components/home/category-panel';
 import { LogoMarquee } from '../components/home/logo-marquee';
 import { AppverseFooter } from '../components/home/appverse-footer';
 import LiquidEther from '@/components/LiquidEther';
@@ -35,7 +35,7 @@ const Home = () => {
 
             {/* Content - position relative để nổi lên trên background */}
             <div className="relative z-10">
-                <Hero />
+                <CategoryPanel />
                 <LogoMarquee />
 
                 {/* Display Category Product */}

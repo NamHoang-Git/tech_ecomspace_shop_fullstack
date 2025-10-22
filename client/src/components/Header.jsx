@@ -23,8 +23,12 @@ import defaultAvatar from '../assets/defaultAvatar.png';
 import Search from './Search';
 import { valideURLConvert } from '@/utils/valideURLConvert';
 
-export default function Header({id, cat}) {
+export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const categoryData =
+        useSelector((state) => state.product.allCategory) || [];
+    const firstCategory = categoryData.length > 0 ? categoryData[0] : null;
+
     const links = [
         {
             href: '/',
@@ -32,7 +36,7 @@ export default function Header({id, cat}) {
             label: 'Trang chủ',
         },
         {
-            href: `/${valideURLConvert(cat)}-${id}`,
+            href: firstCategory ? `/${valideURLConvert(firstCategory.name)}-${firstCategory._id}` : '/products',
             icon: <FaBoxOpen size={14} className="" />,
             label: 'Sản phẩm',
         },
@@ -203,10 +207,6 @@ export default function Header({id, cat}) {
                                                     ease: 'easeOut',
                                                 }}
                                             >
-                                                {/* <UserMenu
-                                                        close={closeMenu}
-                                                        menuTriggerRef={menuRef}
-                                                    /> */}
                                                 <UserMenu
                                                     close={closeMenu}
                                                     menuTriggerRef={menuRef}
@@ -415,9 +415,12 @@ export default function Header({id, cat}) {
                                                 </div>
                                             ) : (
                                                 <button
-                                                    onClick={
-                                                        redirectToLoginPage
-                                                    }
+                                                    onClick={() => {
+                                                        redirectToLoginPage();
+                                                        closeMenu();
+                                                        closeMobileMenu();
+                                                        scrollToTop();
+                                                    }}
                                                     className="w-full bg-lime-400 text-black font-medium rounded-lg px-6 py-2.5
                                                 hover:bg-lime-300 hover:shadow-md hover:scale-[1.02] transition-all"
                                                 >

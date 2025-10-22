@@ -33,7 +33,6 @@ function App() {
 
     useEffect(() => {
         (async () => {
-            // 1) User
             const res = await fetchUserDetails();
             dispatch(setUserDetails(res?.success ? res.data : null));
 

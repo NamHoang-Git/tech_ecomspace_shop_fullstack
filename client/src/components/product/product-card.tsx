@@ -65,7 +65,7 @@ export function ProductCard({ data }: ProductCardProps) {
 
                     {/* Border glow */}
                     <div
-                        className={`absolute inset-0 rounded-lg border-2 border-emerald-500/0 transition-all duration-500 ${
+                        className={`absolute inset-0 rounded-3xl border-2 border-emerald-500/0 transition-all duration-500 ${
                             isHovered
                                 ? 'border-emerald-500/70 shadow-[0_0_15px_rgba(16,185,129,0.3)]'
                                 : ''
@@ -76,18 +76,10 @@ export function ProductCard({ data }: ProductCardProps) {
                         <img
                             src={data.image[0]}
                             alt={data.name}
-                            className={`w-full p-2 h-52 object-contain bg-white transition-transform duration-700 ${
+                            className={`w-full p-2 h-44 object-contain bg-white transition-transform duration-700 ${
                                 isHovered ? 'scale-100' : 'scale-100'
                             }`}
                         />
-
-                        {/* Time badge */}
-                        {/* <div className="absolute top-2 right-2 bg-green-100 text-green-800 sm:px-2 sm:py-1 px-1 py-[2px] rounded-md flex items-center gap-1">
-                            <MdAccessTime size={13} className="mb-[2px]" />
-                            <p className="sm:text-xs text-[8px] font-medium leading-[14px]">
-                                10 min
-                            </p>
-                        </div> */}
 
                         {data.discount > 0 && (
                             <div className="absolute top-2 left-2 z-10">
@@ -110,35 +102,26 @@ export function ProductCard({ data }: ProductCardProps) {
                                 </motion.div>
                             </div>
                         )}
-
-                        <div
-                            className={`absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent md:flex hidden items-end justify-center p-4
-                                transition-opacity duration-300 ${
-                                    isHovered ? 'opacity-100' : 'opacity-0'
-                                }`}
-                        >
-                            <AddToCartButton data={data} />
-                        </div>
                     </div>
 
-                    <CardContent className="md:p-4 p-3 relative z-10 text-white flex flex-col gap-1 justify-between md:h-32 h-36">
+                    <CardContent className="p-3 relative z-10 text-white flex flex-col gap-1.5 justify-between h-36 w-full">
                         <div className="">
                             <h3
-                                className={`font-semibold mb-1 transition-colors duration-300 line-clamp-2 h-fit md:w-auto w-full ${
-                                    isHovered ? 'text-emerald-500' : ''
+                                className={`font-semibold mb-1 transition-colors duration-300 line-clamp-2 h-fit w-full ${
+                                    isHovered ? 'text-emerald-200' : ''
                                 }`}
                             >
                                 {data.name}
                             </h3>
 
                             <div className="flex items-center justify-between">
-                                <div className="flex md:flex-col md:items-start items-center justify-between md:gap-0 gap-2 md:w-auto w-full">
+                                <div className="flex items-center justify-between gap-2 w-full">
                                     {data.discount > 0 ? (
                                         <>
-                                            <span className="text-gray-400 line-through text-sm">
+                                            <span className="text-gray-300 line-through text-sm">
                                                 {DisplayPriceInVND(data.price)}
                                             </span>
-                                            <span className="text-emerald-500 font-bold text-lg">
+                                            <span className="text-emerald-300 font-bold text-lg">
                                                 {DisplayPriceInVND(
                                                     pricewithDiscount(
                                                         data.price,
@@ -153,15 +136,9 @@ export function ProductCard({ data }: ProductCardProps) {
                                         </span>
                                     )}
                                 </div>
-
-                                {data.stock == 0 && (
-                                    <span className="text-rose-400 text-sm font-medium md:block hidden">
-                                        Hết hàng
-                                    </span>
-                                )}
                             </div>
                         </div>
-                        <div className="w-full md:hidden block">
+                        <div className="w-full">
                             <AddToCartButton data={data} />
                         </div>
                     </CardContent>

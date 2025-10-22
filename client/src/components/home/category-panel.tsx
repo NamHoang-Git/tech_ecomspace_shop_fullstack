@@ -1,15 +1,13 @@
 // @ts-nocheck
-
 import { useSelector } from 'react-redux';
 import { Button } from '../ui/button';
-// import Image from "next/image"
 import LazyVideo from './lazy-video';
 import { useNavigate } from 'react-router-dom';
 import { useRef, useState, useEffect } from 'react';
 import { valideURLConvert } from '../../utils/valideURLConvert';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-export function Hero() {
+export function CategoryPanel() {
     const loadingCategory = useSelector(
         (state) => state.product.loadingCategory
     );
@@ -17,17 +15,30 @@ export function Hero() {
     const navigate = useNavigate();
     const containerRef = useRef();
 
+    const firstCategory = categoryData?.[0];
+
     const handleRedirectProductListPage = (id, cat) => {
         const url = `/${valideURLConvert(cat)}-${id}`;
         navigate(url);
     };
 
+    const handleExploreClick = () => {
+        handleRedirectProductListPage(firstCategory._id, firstCategory.name);
+    };
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
     const buttonNew = (
         <Button
-            asChild
+            onClick={() => {
+                handleExploreClick();
+                scrollToTop();
+            }}
             className="rounded-full bg-lime-400 px-6 text-black hover:bg-lime-300"
         >
-            <a href="#">Khám phá ngay</a>
+            Khám phá ngay
         </Button>
     );
 
@@ -36,7 +47,6 @@ export function Hero() {
             <div className="container mx-auto px-4">
                 <div className="flex flex-col items-center justify-center py-14 sm:py-20">
                     <div className="mb-5 flex items-center gap-2">
-                        {/* <Image src="/icons/skitbit-white.svg" alt="Skitbit logo" width={32} height={32} className="h-8 w-8" /> */}
                         <p className="text-sm uppercase tracking-[0.25em] text-lime-300/80">
                             Tech EcomSpace
                         </p>
@@ -160,14 +170,12 @@ function PhoneCard({
     sub = 'Clear night. Great for render farm runs.',
     tone = 'calm',
     gradient = 'from-[#0f172a] via-[#14532d] to-[#052e16]',
-    videoSrc,
     imageSrc,
 }: {
     title?: string;
     sub?: string;
     tone?: string;
     gradient?: string;
-    videoSrc?: string;
     imageSrc?: string;
 }) {
     const [isHovered, setIsHovered] = useState(false);
@@ -179,31 +187,14 @@ function PhoneCard({
             className="relative rounded-[28px] p-[2px] transition-all duration-700 ease-out"
         >
             <div className="relative aspect-[9/19] w-full overflow-hidden rounded-2xl bg-black group">
-                {imageSrc ? (
-                    <img
-                        src={imageSrc}
-                        alt={title}
-                        className="h-full w-full object-cover"
-                        loading="lazy"
-                    />
-                ) : videoSrc ? (
-                    <LazyVideo
-                        src={videoSrc}
-                        className="h-full w-full object-cover"
-                        autoplay
-                        loop
-                        muted
-                        playsInline
-                    />
-                ) : (
-                    <div
-                        className={`h-full w-full bg-gradient-to-br ${gradient}`}
-                    />
-                )}
-                {/* <div className="absolute inset-0 bg-gradient-to-b from-black/75 to-black/5" /> */}
-                {/* <div className="absolute inset-0 bg-gradient-to-b from-black/75 to-black/5" /> */}
+                <img
+                    src={imageSrc}
+                    alt={title}
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                />
                 <div
-                    className={`absolute inset-0 bg-gradient-to-b from-black/75 to-black/5 transition-all duration-500 ${
+                    className={`absolute rounded-2xl inset-0 bg-gradient-to-b from-black/75 to-black/5 transition-all duration-500 ${
                         isHovered
                             ? 'border-4 border-lime-200/70 bg-gradient-to-b from-black/5 to-cyan-500/30 transition-opacity duration-500 shadow-[0_0_25px_rgba(132,204,22,0.45)]'
                             : 'border border-transparent'

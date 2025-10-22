@@ -63,16 +63,16 @@ const CategoryWiseProductDisplay = ({ id, name }) => {
             <div className="flex items-center justify-between mb-4">
                 <GradientText
                     colors={[
-                        '#2D9C7B',
-                        '#00B16A',
-                        '#48C9B0',
-                        '#FFFFFF',
-                        '#7FDBDB',
-                        '#059669',
-                        '#10B981',
-                        '#34D399',
-                        '#6EE7B7',
+                        '#84CC16',
+                        '#A3E635',
+                        '#D9F99D',
                         '#A7F3D0',
+                        '#BBF7D0',
+                        '#D4F6C7',
+                        '#B9F1B7',
+                        '#C4E023',
+                        '#A1E91D',
+                        '#A9F97F',
                     ]}
                     animationSpeed={5.5}
                     showBorder={false}
@@ -85,7 +85,7 @@ const CategoryWiseProductDisplay = ({ id, name }) => {
                     to={redirectURL}
                     onClick={scrollToTop}
                     className="hover:bg-zinc-800 hover:border-emerald-500
-                    transition-all duration-300 text-white border-2 border-zinc-700 px-4 py-2 rounded-md"
+                    transition-all duration-300 text-white border-2 border-zinc-300 px-4 py-2 rounded-md"
                 >
                     Xem tất cả
                 </Link>
