@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import { Toaster } from 'react-hot-toast';
 import { useEffect } from 'react';
@@ -22,6 +22,9 @@ import OtpVerification from './pages/OtpVerification';
 import ResetPassword from './pages/ResetPassword';
 import CategoryPage from './pages/CategoryPage';
 import SearchPage from './pages/SearchPage';
+import Header from './components/Header';
+import { Footer } from './components/footer';
+import ProductListPage from './pages/ProductListPage';
 
 function App() {
     const dispatch = useDispatch();
@@ -56,34 +59,45 @@ function App() {
     }, [dispatch]);
 
     return (
+        // <GlobalProvider>
+        //     <Routes>
+        //         <Route element={<MainLayout />}>
+        //             <Route path="/" element={<Home />} />
+        //             <Route path="/search" element={<SearchPage />} />
+        //         </Route>
+
+        //         <Route element={<AuthLayout />}>
+        //             <Route path="/login" element={<Login />} />
+        //             <Route path="/register" element={<Register />} />
+        //             <Route
+        //                 path="/forgot-password"
+        //                 element={<ForgotPassword />}
+        //             />
+        //             <Route
+        //                 path="/verification-otp"
+        //                 element={<OtpVerification />}
+        //             />
+        //             <Route path="/reset-password" element={<ResetPassword />} />
+
+        //             <Route path="/dashboard/profile" element={<Profile />} />
+        //             <Route
+        //                 path="/dashboard/category"
+        //                 element={<CategoryPage />}
+        //             />
+        //         </Route>
+        //     </Routes>
+
+        //     <Toaster />
+        //     {!hiddenCartLinkPaths.includes(location.pathname) && (
+        //         <CartMobileLink />
+        //     )}
+        // </GlobalProvider>
         <GlobalProvider>
-            <Routes>
-                <Route element={<MainLayout />}>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/search" element={<SearchPage />} />
-                </Route>
-
-                <Route element={<AuthLayout />}>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route
-                        path="/forgot-password"
-                        element={<ForgotPassword />}
-                    />
-                    <Route
-                        path="/verification-otp"
-                        element={<OtpVerification />}
-                    />
-                    <Route path="/reset-password" element={<ResetPassword />} />
-
-                    <Route path="/dashboard/profile" element={<Profile />} />
-                    <Route
-                        path="/dashboard/category"
-                        element={<CategoryPage />}
-                    />
-                </Route>
-            </Routes>
-
+            <Header />
+            <main className="min-h-[80vh]">
+                <Outlet />
+            </main>
+            <Footer />
             <Toaster />
             {!hiddenCartLinkPaths.includes(location.pathname) && (
                 <CartMobileLink />

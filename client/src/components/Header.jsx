@@ -21,9 +21,9 @@ import { useGlobalContext } from '../provider/GlobalProvider';
 import DisplayCartItem from './DisplayCartItem';
 import defaultAvatar from '../assets/defaultAvatar.png';
 import Search from './Search';
-// import { UserMenu } from './menu/user-menu';
+import { valideURLConvert } from '@/utils/valideURLConvert';
 
-export default function Header() {
+export default function Header({id, cat}) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const links = [
         {
@@ -32,11 +32,12 @@ export default function Header() {
             label: 'Trang chủ',
         },
         {
-            href: '/',
+            href: `/${valideURLConvert(cat)}-${id}`,
             icon: <FaBoxOpen size={14} className="" />,
             label: 'Sản phẩm',
         },
     ];
+
     const navigate = useNavigate();
     const user = useSelector((state) => state?.user);
     const [openUserMenu, setOpenUserMenu] = useState(false);
