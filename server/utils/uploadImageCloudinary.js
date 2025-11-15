@@ -7,15 +7,38 @@ cloudinary.config({
 })
 
 const uploadImageCloudinary = async (image) => {
-    const buffer = image?.buffer || Buffer.from(await image.arrayBuffer())
+    try {
+        const buffer = image?.buffer || Buffer.from(await image.arrayBuffer())
 
-    const uploadImage = await new Promise((resolve, reject) => {
-        cloudinary.uploader.upload_stream({ folder: "tech_ecomspace_shop" }, (error, uploadResult) => {
-            return resolve(uploadResult)
-        }).end(buffer)
-    })
+        const uploadImage = await new Promise((resolve, reject) => {
+            cloudinary.uploader.upload_stream(
+                {
+                    folder: "tech_ecomspace_shop",
+                    resource_type: "auto"
+                },
+                (error, uploadResult) => {
+                    if (error) {
+                        reject(error)
+                    } else {
+                        resolve(uploadResult)
+                    }
+                }
+            ).end(buffer)
+        })
 
-    return uploadImage
+        return {
+            success: true,
+            data: {
+                url: uploadImage.secure_url
+            }
+        }
+    } catch (error) {
+        console.error('Cloudinary upload error:', error)
+        return {
+            success: false,
+            error: error.message || "Lỗi khi tải ảnh lên Cloudinary"
+        }
+    }
 }
 
 export default uploadImageCloudinary

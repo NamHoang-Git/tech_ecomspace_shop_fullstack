@@ -22,8 +22,6 @@ export function OtpVerificationForm({
     const location = useLocation();
     const [loading, setLoading] = useState(false);
 
-    const valideValue = Object.values(data).every((el) => el);
-
     useEffect(() => {
         if (!location?.state?.email) {
             navigate('/forgot-password');
@@ -32,6 +30,11 @@ export function OtpVerificationForm({
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!data.join('')) {
+            toast.error('Vui lòng nhập mã OTP');
+            return;
+        }
 
         try {
             setLoading(true);
@@ -124,7 +127,6 @@ export function OtpVerificationForm({
                     playOnce={false}
                 >
                     <Button
-                        disabled={!valideValue}
                         type="submit"
                         className="w-full h-12 text-sm font-medium text-white hover:opacity-90 rounded-lg shadow-none cursor-pointer"
                         style={{ backgroundColor: '#000' }}

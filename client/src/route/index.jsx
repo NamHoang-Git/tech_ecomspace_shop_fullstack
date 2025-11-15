@@ -28,6 +28,7 @@ import CartPage from '../pages/CartPage';
 import BillPage from './../pages/BillPage';
 import ReportPage from './../pages/ReportPage';
 import VoucherPage from '../pages/VoucherPage';
+import AdminDashboard from '@/layouts/AdminDashboard';
 
 const router = createBrowserRouter([
     {
@@ -102,7 +103,7 @@ const router = createBrowserRouter([
                 path: 'dashboard',
                 element: (
                     <ProtectedRoute>
-                        <Dashboard />
+                        <AdminDashboard />
                     </ProtectedRoute>
                 ),
                 children: [

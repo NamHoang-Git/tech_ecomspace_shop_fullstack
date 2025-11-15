@@ -335,7 +335,7 @@ export async function forgotPasswordController(req, res) {
 
         if (!user) {
             return res.status(400).json({
-                message: "Email không tồn tại",
+                message: "Tài khoản không tồn tại",
                 error: true,
                 success: false
             })

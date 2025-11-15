@@ -1,760 +1,75 @@
 "use client";
 import {
-  arrow,
-  autoUpdate,
-  computePosition,
-  flip,
-  hide,
-  limitShift,
-  offset,
-  shift,
-  size
-} from "./chunk-BIDPXX6L.js";
+  VISUALLY_HIDDEN_STYLES
+} from "./chunk-ZFPCWFAJ.js";
+import {
+  createCollection,
+  useDirection
+} from "./chunk-GTPFZGMF.js";
+import {
+  Anchor,
+  Arrow,
+  Content,
+  Root2,
+  createPopperScope
+} from "./chunk-AQIBCG6S.js";
+import "./chunk-BIDPXX6L.js";
 import {
   Combination_default,
-  DismissableLayer,
   FocusScope,
-  Portal,
+  hideOthers,
+  useFocusGuards
+} from "./chunk-ATEILT37.js";
+import {
+  DismissableLayer,
+  Portal
+} from "./chunk-2GCGA4EL.js";
+import {
   composeEventHandlers,
   createContextScope,
-  hideOthers,
-  useCallbackRef,
   useControllableState,
-  useFocusGuards,
-  useId,
-  useLayoutEffect2
-} from "./chunk-OJYUZAGS.js";
+  useId
+} from "./chunk-OMNWOPVK.js";
 import {
   Primitive
-} from "./chunk-3N5LEFOU.js";
+} from "./chunk-4KVVEHBE.js";
 import {
-  createSlot,
+  createSlot
+} from "./chunk-TZUS373Z.js";
+import {
+  useCallbackRef,
+  useLayoutEffect2
+} from "./chunk-AEUQ5J2I.js";
+import {
   useComposedRefs
-} from "./chunk-XDTNHN7B.js";
+} from "./chunk-3RKDWLCG.js";
 import {
   require_react_dom
-} from "./chunk-NA6NXLYZ.js";
+} from "./chunk-EKFKCRXB.js";
 import {
   require_jsx_runtime
-} from "./chunk-OAOR5NGZ.js";
+} from "./chunk-J3XBGEQK.js";
 import {
   require_react
-} from "./chunk-7KC2DZ2O.js";
+} from "./chunk-ULSRCYB6.js";
 import {
   __toESM
-} from "./chunk-DC5AMYBS.js";
+} from "./chunk-G3PMV62Z.js";
 
 // node_modules/@radix-ui/react-select/dist/index.mjs
-var React10 = __toESM(require_react(), 1);
-var ReactDOM2 = __toESM(require_react_dom(), 1);
+var React2 = __toESM(require_react(), 1);
+var ReactDOM = __toESM(require_react_dom(), 1);
 
 // node_modules/@radix-ui/number/dist/index.mjs
 function clamp(value, [min, max]) {
   return Math.min(max, Math.max(min, value));
 }
 
-// node_modules/@radix-ui/react-collection/dist/index.mjs
-var import_react = __toESM(require_react(), 1);
-var import_jsx_runtime = __toESM(require_jsx_runtime(), 1);
-var import_react2 = __toESM(require_react(), 1);
-var import_jsx_runtime2 = __toESM(require_jsx_runtime(), 1);
-function createCollection(name) {
-  const PROVIDER_NAME = name + "CollectionProvider";
-  const [createCollectionContext, createCollectionScope2] = createContextScope(PROVIDER_NAME);
-  const [CollectionProviderImpl, useCollectionContext] = createCollectionContext(
-    PROVIDER_NAME,
-    { collectionRef: { current: null }, itemMap: /* @__PURE__ */ new Map() }
-  );
-  const CollectionProvider = (props) => {
-    const { scope, children } = props;
-    const ref = import_react.default.useRef(null);
-    const itemMap = import_react.default.useRef(/* @__PURE__ */ new Map()).current;
-    return (0, import_jsx_runtime.jsx)(CollectionProviderImpl, { scope, itemMap, collectionRef: ref, children });
-  };
-  CollectionProvider.displayName = PROVIDER_NAME;
-  const COLLECTION_SLOT_NAME = name + "CollectionSlot";
-  const CollectionSlotImpl = createSlot(COLLECTION_SLOT_NAME);
-  const CollectionSlot = import_react.default.forwardRef(
-    (props, forwardedRef) => {
-      const { scope, children } = props;
-      const context = useCollectionContext(COLLECTION_SLOT_NAME, scope);
-      const composedRefs = useComposedRefs(forwardedRef, context.collectionRef);
-      return (0, import_jsx_runtime.jsx)(CollectionSlotImpl, { ref: composedRefs, children });
-    }
-  );
-  CollectionSlot.displayName = COLLECTION_SLOT_NAME;
-  const ITEM_SLOT_NAME = name + "CollectionItemSlot";
-  const ITEM_DATA_ATTR = "data-radix-collection-item";
-  const CollectionItemSlotImpl = createSlot(ITEM_SLOT_NAME);
-  const CollectionItemSlot = import_react.default.forwardRef(
-    (props, forwardedRef) => {
-      const { scope, children, ...itemData } = props;
-      const ref = import_react.default.useRef(null);
-      const composedRefs = useComposedRefs(forwardedRef, ref);
-      const context = useCollectionContext(ITEM_SLOT_NAME, scope);
-      import_react.default.useEffect(() => {
-        context.itemMap.set(ref, { ref, ...itemData });
-        return () => void context.itemMap.delete(ref);
-      });
-      return (0, import_jsx_runtime.jsx)(CollectionItemSlotImpl, { ...{ [ITEM_DATA_ATTR]: "" }, ref: composedRefs, children });
-    }
-  );
-  CollectionItemSlot.displayName = ITEM_SLOT_NAME;
-  function useCollection2(scope) {
-    const context = useCollectionContext(name + "CollectionConsumer", scope);
-    const getItems = import_react.default.useCallback(() => {
-      const collectionNode = context.collectionRef.current;
-      if (!collectionNode) return [];
-      const orderedNodes = Array.from(collectionNode.querySelectorAll(`[${ITEM_DATA_ATTR}]`));
-      const items = Array.from(context.itemMap.values());
-      const orderedItems = items.sort(
-        (a, b) => orderedNodes.indexOf(a.ref.current) - orderedNodes.indexOf(b.ref.current)
-      );
-      return orderedItems;
-    }, [context.collectionRef, context.itemMap]);
-    return getItems;
-  }
-  return [
-    { Provider: CollectionProvider, Slot: CollectionSlot, ItemSlot: CollectionItemSlot },
-    useCollection2,
-    createCollectionScope2
-  ];
-}
-
-// node_modules/@radix-ui/react-direction/dist/index.mjs
-var React3 = __toESM(require_react(), 1);
-var import_jsx_runtime3 = __toESM(require_jsx_runtime(), 1);
-var DirectionContext = React3.createContext(void 0);
-function useDirection(localDir) {
-  const globalDir = React3.useContext(DirectionContext);
-  return localDir || globalDir || "ltr";
-}
-
-// node_modules/@radix-ui/react-popper/dist/index.mjs
-var React7 = __toESM(require_react(), 1);
-
-// node_modules/@floating-ui/react-dom/dist/floating-ui.react-dom.mjs
-var React4 = __toESM(require_react(), 1);
-var import_react3 = __toESM(require_react(), 1);
-var ReactDOM = __toESM(require_react_dom(), 1);
-var isClient = typeof document !== "undefined";
-var noop = function noop2() {
-};
-var index = isClient ? import_react3.useLayoutEffect : noop;
-function deepEqual(a, b) {
-  if (a === b) {
-    return true;
-  }
-  if (typeof a !== typeof b) {
-    return false;
-  }
-  if (typeof a === "function" && a.toString() === b.toString()) {
-    return true;
-  }
-  let length;
-  let i;
-  let keys;
-  if (a && b && typeof a === "object") {
-    if (Array.isArray(a)) {
-      length = a.length;
-      if (length !== b.length) return false;
-      for (i = length; i-- !== 0; ) {
-        if (!deepEqual(a[i], b[i])) {
-          return false;
-        }
-      }
-      return true;
-    }
-    keys = Object.keys(a);
-    length = keys.length;
-    if (length !== Object.keys(b).length) {
-      return false;
-    }
-    for (i = length; i-- !== 0; ) {
-      if (!{}.hasOwnProperty.call(b, keys[i])) {
-        return false;
-      }
-    }
-    for (i = length; i-- !== 0; ) {
-      const key = keys[i];
-      if (key === "_owner" && a.$$typeof) {
-        continue;
-      }
-      if (!deepEqual(a[key], b[key])) {
-        return false;
-      }
-    }
-    return true;
-  }
-  return a !== a && b !== b;
-}
-function getDPR(element) {
-  if (typeof window === "undefined") {
-    return 1;
-  }
-  const win = element.ownerDocument.defaultView || window;
-  return win.devicePixelRatio || 1;
-}
-function roundByDPR(element, value) {
-  const dpr = getDPR(element);
-  return Math.round(value * dpr) / dpr;
-}
-function useLatestRef(value) {
-  const ref = React4.useRef(value);
-  index(() => {
-    ref.current = value;
-  });
-  return ref;
-}
-function useFloating(options) {
-  if (options === void 0) {
-    options = {};
-  }
-  const {
-    placement = "bottom",
-    strategy = "absolute",
-    middleware = [],
-    platform: platform2,
-    elements: {
-      reference: externalReference,
-      floating: externalFloating
-    } = {},
-    transform = true,
-    whileElementsMounted,
-    open
-  } = options;
-  const [data, setData] = React4.useState({
-    x: 0,
-    y: 0,
-    strategy,
-    placement,
-    middlewareData: {},
-    isPositioned: false
-  });
-  const [latestMiddleware, setLatestMiddleware] = React4.useState(middleware);
-  if (!deepEqual(latestMiddleware, middleware)) {
-    setLatestMiddleware(middleware);
-  }
-  const [_reference, _setReference] = React4.useState(null);
-  const [_floating, _setFloating] = React4.useState(null);
-  const setReference = React4.useCallback((node) => {
-    if (node !== referenceRef.current) {
-      referenceRef.current = node;
-      _setReference(node);
-    }
-  }, []);
-  const setFloating = React4.useCallback((node) => {
-    if (node !== floatingRef.current) {
-      floatingRef.current = node;
-      _setFloating(node);
-    }
-  }, []);
-  const referenceEl = externalReference || _reference;
-  const floatingEl = externalFloating || _floating;
-  const referenceRef = React4.useRef(null);
-  const floatingRef = React4.useRef(null);
-  const dataRef = React4.useRef(data);
-  const hasWhileElementsMounted = whileElementsMounted != null;
-  const whileElementsMountedRef = useLatestRef(whileElementsMounted);
-  const platformRef = useLatestRef(platform2);
-  const openRef = useLatestRef(open);
-  const update = React4.useCallback(() => {
-    if (!referenceRef.current || !floatingRef.current) {
-      return;
-    }
-    const config = {
-      placement,
-      strategy,
-      middleware: latestMiddleware
-    };
-    if (platformRef.current) {
-      config.platform = platformRef.current;
-    }
-    computePosition(referenceRef.current, floatingRef.current, config).then((data2) => {
-      const fullData = {
-        ...data2,
-        // The floating element's position may be recomputed while it's closed
-        // but still mounted (such as when transitioning out). To ensure
-        // `isPositioned` will be `false` initially on the next open, avoid
-        // setting it to `true` when `open === false` (must be specified).
-        isPositioned: openRef.current !== false
-      };
-      if (isMountedRef.current && !deepEqual(dataRef.current, fullData)) {
-        dataRef.current = fullData;
-        ReactDOM.flushSync(() => {
-          setData(fullData);
-        });
-      }
-    });
-  }, [latestMiddleware, placement, strategy, platformRef, openRef]);
-  index(() => {
-    if (open === false && dataRef.current.isPositioned) {
-      dataRef.current.isPositioned = false;
-      setData((data2) => ({
-        ...data2,
-        isPositioned: false
-      }));
-    }
-  }, [open]);
-  const isMountedRef = React4.useRef(false);
-  index(() => {
-    isMountedRef.current = true;
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
-  index(() => {
-    if (referenceEl) referenceRef.current = referenceEl;
-    if (floatingEl) floatingRef.current = floatingEl;
-    if (referenceEl && floatingEl) {
-      if (whileElementsMountedRef.current) {
-        return whileElementsMountedRef.current(referenceEl, floatingEl, update);
-      }
-      update();
-    }
-  }, [referenceEl, floatingEl, update, whileElementsMountedRef, hasWhileElementsMounted]);
-  const refs = React4.useMemo(() => ({
-    reference: referenceRef,
-    floating: floatingRef,
-    setReference,
-    setFloating
-  }), [setReference, setFloating]);
-  const elements = React4.useMemo(() => ({
-    reference: referenceEl,
-    floating: floatingEl
-  }), [referenceEl, floatingEl]);
-  const floatingStyles = React4.useMemo(() => {
-    const initialStyles = {
-      position: strategy,
-      left: 0,
-      top: 0
-    };
-    if (!elements.floating) {
-      return initialStyles;
-    }
-    const x = roundByDPR(elements.floating, data.x);
-    const y = roundByDPR(elements.floating, data.y);
-    if (transform) {
-      return {
-        ...initialStyles,
-        transform: "translate(" + x + "px, " + y + "px)",
-        ...getDPR(elements.floating) >= 1.5 && {
-          willChange: "transform"
-        }
-      };
-    }
-    return {
-      position: strategy,
-      left: x,
-      top: y
-    };
-  }, [strategy, transform, elements.floating, data.x, data.y]);
-  return React4.useMemo(() => ({
-    ...data,
-    update,
-    refs,
-    elements,
-    floatingStyles
-  }), [data, update, refs, elements, floatingStyles]);
-}
-var arrow$1 = (options) => {
-  function isRef(value) {
-    return {}.hasOwnProperty.call(value, "current");
-  }
-  return {
-    name: "arrow",
-    options,
-    fn(state) {
-      const {
-        element,
-        padding
-      } = typeof options === "function" ? options(state) : options;
-      if (element && isRef(element)) {
-        if (element.current != null) {
-          return arrow({
-            element: element.current,
-            padding
-          }).fn(state);
-        }
-        return {};
-      }
-      if (element) {
-        return arrow({
-          element,
-          padding
-        }).fn(state);
-      }
-      return {};
-    }
-  };
-};
-var offset2 = (options, deps) => ({
-  ...offset(options),
-  options: [options, deps]
-});
-var shift2 = (options, deps) => ({
-  ...shift(options),
-  options: [options, deps]
-});
-var limitShift2 = (options, deps) => ({
-  ...limitShift(options),
-  options: [options, deps]
-});
-var flip2 = (options, deps) => ({
-  ...flip(options),
-  options: [options, deps]
-});
-var size2 = (options, deps) => ({
-  ...size(options),
-  options: [options, deps]
-});
-var hide2 = (options, deps) => ({
-  ...hide(options),
-  options: [options, deps]
-});
-var arrow2 = (options, deps) => ({
-  ...arrow$1(options),
-  options: [options, deps]
-});
-
-// node_modules/@radix-ui/react-arrow/dist/index.mjs
-var React5 = __toESM(require_react(), 1);
-var import_jsx_runtime4 = __toESM(require_jsx_runtime(), 1);
-var NAME = "Arrow";
-var Arrow = React5.forwardRef((props, forwardedRef) => {
-  const { children, width = 10, height = 5, ...arrowProps } = props;
-  return (0, import_jsx_runtime4.jsx)(
-    Primitive.svg,
-    {
-      ...arrowProps,
-      ref: forwardedRef,
-      width,
-      height,
-      viewBox: "0 0 30 10",
-      preserveAspectRatio: "none",
-      children: props.asChild ? children : (0, import_jsx_runtime4.jsx)("polygon", { points: "0,0 30,0 15,10" })
-    }
-  );
-});
-Arrow.displayName = NAME;
-var Root = Arrow;
-
-// node_modules/@radix-ui/react-use-size/dist/index.mjs
-var React6 = __toESM(require_react(), 1);
-function useSize(element) {
-  const [size3, setSize] = React6.useState(void 0);
-  useLayoutEffect2(() => {
-    if (element) {
-      setSize({ width: element.offsetWidth, height: element.offsetHeight });
-      const resizeObserver = new ResizeObserver((entries) => {
-        if (!Array.isArray(entries)) {
-          return;
-        }
-        if (!entries.length) {
-          return;
-        }
-        const entry = entries[0];
-        let width;
-        let height;
-        if ("borderBoxSize" in entry) {
-          const borderSizeEntry = entry["borderBoxSize"];
-          const borderSize = Array.isArray(borderSizeEntry) ? borderSizeEntry[0] : borderSizeEntry;
-          width = borderSize["inlineSize"];
-          height = borderSize["blockSize"];
-        } else {
-          width = element.offsetWidth;
-          height = element.offsetHeight;
-        }
-        setSize({ width, height });
-      });
-      resizeObserver.observe(element, { box: "border-box" });
-      return () => resizeObserver.unobserve(element);
-    } else {
-      setSize(void 0);
-    }
-  }, [element]);
-  return size3;
-}
-
-// node_modules/@radix-ui/react-popper/dist/index.mjs
-var import_jsx_runtime5 = __toESM(require_jsx_runtime(), 1);
-var POPPER_NAME = "Popper";
-var [createPopperContext, createPopperScope] = createContextScope(POPPER_NAME);
-var [PopperProvider, usePopperContext] = createPopperContext(POPPER_NAME);
-var Popper = (props) => {
-  const { __scopePopper, children } = props;
-  const [anchor, setAnchor] = React7.useState(null);
-  return (0, import_jsx_runtime5.jsx)(PopperProvider, { scope: __scopePopper, anchor, onAnchorChange: setAnchor, children });
-};
-Popper.displayName = POPPER_NAME;
-var ANCHOR_NAME = "PopperAnchor";
-var PopperAnchor = React7.forwardRef(
-  (props, forwardedRef) => {
-    const { __scopePopper, virtualRef, ...anchorProps } = props;
-    const context = usePopperContext(ANCHOR_NAME, __scopePopper);
-    const ref = React7.useRef(null);
-    const composedRefs = useComposedRefs(forwardedRef, ref);
-    const anchorRef = React7.useRef(null);
-    React7.useEffect(() => {
-      const previousAnchor = anchorRef.current;
-      anchorRef.current = (virtualRef == null ? void 0 : virtualRef.current) || ref.current;
-      if (previousAnchor !== anchorRef.current) {
-        context.onAnchorChange(anchorRef.current);
-      }
-    });
-    return virtualRef ? null : (0, import_jsx_runtime5.jsx)(Primitive.div, { ...anchorProps, ref: composedRefs });
-  }
-);
-PopperAnchor.displayName = ANCHOR_NAME;
-var CONTENT_NAME = "PopperContent";
-var [PopperContentProvider, useContentContext] = createPopperContext(CONTENT_NAME);
-var PopperContent = React7.forwardRef(
-  (props, forwardedRef) => {
-    var _a, _b, _c, _d, _e, _f;
-    const {
-      __scopePopper,
-      side = "bottom",
-      sideOffset = 0,
-      align = "center",
-      alignOffset = 0,
-      arrowPadding = 0,
-      avoidCollisions = true,
-      collisionBoundary = [],
-      collisionPadding: collisionPaddingProp = 0,
-      sticky = "partial",
-      hideWhenDetached = false,
-      updatePositionStrategy = "optimized",
-      onPlaced,
-      ...contentProps
-    } = props;
-    const context = usePopperContext(CONTENT_NAME, __scopePopper);
-    const [content, setContent] = React7.useState(null);
-    const composedRefs = useComposedRefs(forwardedRef, (node) => setContent(node));
-    const [arrow3, setArrow] = React7.useState(null);
-    const arrowSize = useSize(arrow3);
-    const arrowWidth = (arrowSize == null ? void 0 : arrowSize.width) ?? 0;
-    const arrowHeight = (arrowSize == null ? void 0 : arrowSize.height) ?? 0;
-    const desiredPlacement = side + (align !== "center" ? "-" + align : "");
-    const collisionPadding = typeof collisionPaddingProp === "number" ? collisionPaddingProp : { top: 0, right: 0, bottom: 0, left: 0, ...collisionPaddingProp };
-    const boundary = Array.isArray(collisionBoundary) ? collisionBoundary : [collisionBoundary];
-    const hasExplicitBoundaries = boundary.length > 0;
-    const detectOverflowOptions = {
-      padding: collisionPadding,
-      boundary: boundary.filter(isNotNull),
-      // with `strategy: 'fixed'`, this is the only way to get it to respect boundaries
-      altBoundary: hasExplicitBoundaries
-    };
-    const { refs, floatingStyles, placement, isPositioned, middlewareData } = useFloating({
-      // default to `fixed` strategy so users don't have to pick and we also avoid focus scroll issues
-      strategy: "fixed",
-      placement: desiredPlacement,
-      whileElementsMounted: (...args) => {
-        const cleanup = autoUpdate(...args, {
-          animationFrame: updatePositionStrategy === "always"
-        });
-        return cleanup;
-      },
-      elements: {
-        reference: context.anchor
-      },
-      middleware: [
-        offset2({ mainAxis: sideOffset + arrowHeight, alignmentAxis: alignOffset }),
-        avoidCollisions && shift2({
-          mainAxis: true,
-          crossAxis: false,
-          limiter: sticky === "partial" ? limitShift2() : void 0,
-          ...detectOverflowOptions
-        }),
-        avoidCollisions && flip2({ ...detectOverflowOptions }),
-        size2({
-          ...detectOverflowOptions,
-          apply: ({ elements, rects, availableWidth, availableHeight }) => {
-            const { width: anchorWidth, height: anchorHeight } = rects.reference;
-            const contentStyle = elements.floating.style;
-            contentStyle.setProperty("--radix-popper-available-width", `${availableWidth}px`);
-            contentStyle.setProperty("--radix-popper-available-height", `${availableHeight}px`);
-            contentStyle.setProperty("--radix-popper-anchor-width", `${anchorWidth}px`);
-            contentStyle.setProperty("--radix-popper-anchor-height", `${anchorHeight}px`);
-          }
-        }),
-        arrow3 && arrow2({ element: arrow3, padding: arrowPadding }),
-        transformOrigin({ arrowWidth, arrowHeight }),
-        hideWhenDetached && hide2({ strategy: "referenceHidden", ...detectOverflowOptions })
-      ]
-    });
-    const [placedSide, placedAlign] = getSideAndAlignFromPlacement(placement);
-    const handlePlaced = useCallbackRef(onPlaced);
-    useLayoutEffect2(() => {
-      if (isPositioned) {
-        handlePlaced == null ? void 0 : handlePlaced();
-      }
-    }, [isPositioned, handlePlaced]);
-    const arrowX = (_a = middlewareData.arrow) == null ? void 0 : _a.x;
-    const arrowY = (_b = middlewareData.arrow) == null ? void 0 : _b.y;
-    const cannotCenterArrow = ((_c = middlewareData.arrow) == null ? void 0 : _c.centerOffset) !== 0;
-    const [contentZIndex, setContentZIndex] = React7.useState();
-    useLayoutEffect2(() => {
-      if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
-    }, [content]);
-    return (0, import_jsx_runtime5.jsx)(
-      "div",
-      {
-        ref: refs.setFloating,
-        "data-radix-popper-content-wrapper": "",
-        style: {
-          ...floatingStyles,
-          transform: isPositioned ? floatingStyles.transform : "translate(0, -200%)",
-          // keep off the page when measuring
-          minWidth: "max-content",
-          zIndex: contentZIndex,
-          ["--radix-popper-transform-origin"]: [
-            (_d = middlewareData.transformOrigin) == null ? void 0 : _d.x,
-            (_e = middlewareData.transformOrigin) == null ? void 0 : _e.y
-          ].join(" "),
-          // hide the content if using the hide middleware and should be hidden
-          // set visibility to hidden and disable pointer events so the UI behaves
-          // as if the PopperContent isn't there at all
-          ...((_f = middlewareData.hide) == null ? void 0 : _f.referenceHidden) && {
-            visibility: "hidden",
-            pointerEvents: "none"
-          }
-        },
-        dir: props.dir,
-        children: (0, import_jsx_runtime5.jsx)(
-          PopperContentProvider,
-          {
-            scope: __scopePopper,
-            placedSide,
-            onArrowChange: setArrow,
-            arrowX,
-            arrowY,
-            shouldHideArrow: cannotCenterArrow,
-            children: (0, import_jsx_runtime5.jsx)(
-              Primitive.div,
-              {
-                "data-side": placedSide,
-                "data-align": placedAlign,
-                ...contentProps,
-                ref: composedRefs,
-                style: {
-                  ...contentProps.style,
-                  // if the PopperContent hasn't been placed yet (not all measurements done)
-                  // we prevent animations so that users's animation don't kick in too early referring wrong sides
-                  animation: !isPositioned ? "none" : void 0
-                }
-              }
-            )
-          }
-        )
-      }
-    );
-  }
-);
-PopperContent.displayName = CONTENT_NAME;
-var ARROW_NAME = "PopperArrow";
-var OPPOSITE_SIDE = {
-  top: "bottom",
-  right: "left",
-  bottom: "top",
-  left: "right"
-};
-var PopperArrow = React7.forwardRef(function PopperArrow2(props, forwardedRef) {
-  const { __scopePopper, ...arrowProps } = props;
-  const contentContext = useContentContext(ARROW_NAME, __scopePopper);
-  const baseSide = OPPOSITE_SIDE[contentContext.placedSide];
-  return (
-    // we have to use an extra wrapper because `ResizeObserver` (used by `useSize`)
-    // doesn't report size as we'd expect on SVG elements.
-    // it reports their bounding box which is effectively the largest path inside the SVG.
-    (0, import_jsx_runtime5.jsx)(
-      "span",
-      {
-        ref: contentContext.onArrowChange,
-        style: {
-          position: "absolute",
-          left: contentContext.arrowX,
-          top: contentContext.arrowY,
-          [baseSide]: 0,
-          transformOrigin: {
-            top: "",
-            right: "0 0",
-            bottom: "center 0",
-            left: "100% 0"
-          }[contentContext.placedSide],
-          transform: {
-            top: "translateY(100%)",
-            right: "translateY(50%) rotate(90deg) translateX(-50%)",
-            bottom: `rotate(180deg)`,
-            left: "translateY(50%) rotate(-90deg) translateX(50%)"
-          }[contentContext.placedSide],
-          visibility: contentContext.shouldHideArrow ? "hidden" : void 0
-        },
-        children: (0, import_jsx_runtime5.jsx)(
-          Root,
-          {
-            ...arrowProps,
-            ref: forwardedRef,
-            style: {
-              ...arrowProps.style,
-              // ensures the element can be measured correctly (mostly for if SVG)
-              display: "block"
-            }
-          }
-        )
-      }
-    )
-  );
-});
-PopperArrow.displayName = ARROW_NAME;
-function isNotNull(value) {
-  return value !== null;
-}
-var transformOrigin = (options) => ({
-  name: "transformOrigin",
-  options,
-  fn(data) {
-    var _a, _b, _c;
-    const { placement, rects, middlewareData } = data;
-    const cannotCenterArrow = ((_a = middlewareData.arrow) == null ? void 0 : _a.centerOffset) !== 0;
-    const isArrowHidden = cannotCenterArrow;
-    const arrowWidth = isArrowHidden ? 0 : options.arrowWidth;
-    const arrowHeight = isArrowHidden ? 0 : options.arrowHeight;
-    const [placedSide, placedAlign] = getSideAndAlignFromPlacement(placement);
-    const noArrowAlign = { start: "0%", center: "50%", end: "100%" }[placedAlign];
-    const arrowXCenter = (((_b = middlewareData.arrow) == null ? void 0 : _b.x) ?? 0) + arrowWidth / 2;
-    const arrowYCenter = (((_c = middlewareData.arrow) == null ? void 0 : _c.y) ?? 0) + arrowHeight / 2;
-    let x = "";
-    let y = "";
-    if (placedSide === "bottom") {
-      x = isArrowHidden ? noArrowAlign : `${arrowXCenter}px`;
-      y = `${-arrowHeight}px`;
-    } else if (placedSide === "top") {
-      x = isArrowHidden ? noArrowAlign : `${arrowXCenter}px`;
-      y = `${rects.floating.height + arrowHeight}px`;
-    } else if (placedSide === "right") {
-      x = `${-arrowHeight}px`;
-      y = isArrowHidden ? noArrowAlign : `${arrowYCenter}px`;
-    } else if (placedSide === "left") {
-      x = `${rects.floating.width + arrowHeight}px`;
-      y = isArrowHidden ? noArrowAlign : `${arrowYCenter}px`;
-    }
-    return { data: { x, y } };
-  }
-});
-function getSideAndAlignFromPlacement(placement) {
-  const [side, align = "center"] = placement.split("-");
-  return [side, align];
-}
-var Root2 = Popper;
-var Anchor = PopperAnchor;
-var Content = PopperContent;
-var Arrow2 = PopperArrow;
-
 // node_modules/@radix-ui/react-use-previous/dist/index.mjs
-var React8 = __toESM(require_react(), 1);
+var React = __toESM(require_react(), 1);
 function usePrevious(value) {
-  const ref = React8.useRef({ value, previous: value });
-  return React8.useMemo(() => {
+  const ref = React.useRef({ value, previous: value });
+  return React.useMemo(() => {
     if (ref.current.value !== value) {
       ref.current.previous = ref.current.value;
       ref.current.value = value;
@@ -763,39 +78,8 @@ function usePrevious(value) {
   }, [value]);
 }
 
-// node_modules/@radix-ui/react-visually-hidden/dist/index.mjs
-var React9 = __toESM(require_react(), 1);
-var import_jsx_runtime6 = __toESM(require_jsx_runtime(), 1);
-var VISUALLY_HIDDEN_STYLES = Object.freeze({
-  // See: https://github.com/twbs/bootstrap/blob/main/scss/mixins/_visually-hidden.scss
-  position: "absolute",
-  border: 0,
-  width: 1,
-  height: 1,
-  padding: 0,
-  margin: -1,
-  overflow: "hidden",
-  clip: "rect(0, 0, 0, 0)",
-  whiteSpace: "nowrap",
-  wordWrap: "normal"
-});
-var NAME2 = "VisuallyHidden";
-var VisuallyHidden = React9.forwardRef(
-  (props, forwardedRef) => {
-    return (0, import_jsx_runtime6.jsx)(
-      Primitive.span,
-      {
-        ...props,
-        ref: forwardedRef,
-        style: { ...VISUALLY_HIDDEN_STYLES, ...props.style }
-      }
-    );
-  }
-);
-VisuallyHidden.displayName = NAME2;
-
 // node_modules/@radix-ui/react-select/dist/index.mjs
-var import_jsx_runtime7 = __toESM(require_jsx_runtime(), 1);
+var import_jsx_runtime = __toESM(require_jsx_runtime(), 1);
 var OPEN_KEYS = [" ", "Enter", "ArrowUp", "ArrowDown"];
 var SELECTION_KEYS = [" ", "Enter"];
 var SELECT_NAME = "Select";
@@ -825,9 +109,9 @@ var Select = (props) => {
     form
   } = props;
   const popperScope = usePopperScope(__scopeSelect);
-  const [trigger, setTrigger] = React10.useState(null);
-  const [valueNode, setValueNode] = React10.useState(null);
-  const [valueNodeHasChildren, setValueNodeHasChildren] = React10.useState(false);
+  const [trigger, setTrigger] = React2.useState(null);
+  const [valueNode, setValueNode] = React2.useState(null);
+  const [valueNodeHasChildren, setValueNodeHasChildren] = React2.useState(false);
   const direction = useDirection(dir);
   const [open, setOpen] = useControllableState({
     prop: openProp,
@@ -841,11 +125,11 @@ var Select = (props) => {
     onChange: onValueChange,
     caller: SELECT_NAME
   });
-  const triggerPointerDownPosRef = React10.useRef(null);
+  const triggerPointerDownPosRef = React2.useRef(null);
   const isFormControl = trigger ? form || !!trigger.closest("form") : true;
-  const [nativeOptionsSet, setNativeOptionsSet] = React10.useState(/* @__PURE__ */ new Set());
+  const [nativeOptionsSet, setNativeOptionsSet] = React2.useState(/* @__PURE__ */ new Set());
   const nativeSelectKey = Array.from(nativeOptionsSet).map((option) => option.props.value).join(";");
-  return (0, import_jsx_runtime7.jsx)(Root2, { ...popperScope, children: (0, import_jsx_runtime7.jsxs)(
+  return (0, import_jsx_runtime.jsx)(Root2, { ...popperScope, children: (0, import_jsx_runtime.jsxs)(
     SelectProvider,
     {
       required,
@@ -865,14 +149,14 @@ var Select = (props) => {
       triggerPointerDownPosRef,
       disabled,
       children: [
-        (0, import_jsx_runtime7.jsx)(Collection.Provider, { scope: __scopeSelect, children: (0, import_jsx_runtime7.jsx)(
+        (0, import_jsx_runtime.jsx)(Collection.Provider, { scope: __scopeSelect, children: (0, import_jsx_runtime.jsx)(
           SelectNativeOptionsProvider,
           {
             scope: props.__scopeSelect,
-            onNativeOptionAdd: React10.useCallback((option) => {
+            onNativeOptionAdd: React2.useCallback((option) => {
               setNativeOptionsSet((prev) => new Set(prev).add(option));
             }, []),
-            onNativeOptionRemove: React10.useCallback((option) => {
+            onNativeOptionRemove: React2.useCallback((option) => {
               setNativeOptionsSet((prev) => {
                 const optionsSet = new Set(prev);
                 optionsSet.delete(option);
@@ -882,7 +166,7 @@ var Select = (props) => {
             children
           }
         ) }),
-        isFormControl ? (0, import_jsx_runtime7.jsxs)(
+        isFormControl ? (0, import_jsx_runtime.jsxs)(
           SelectBubbleInput,
           {
             "aria-hidden": true,
@@ -895,7 +179,7 @@ var Select = (props) => {
             disabled,
             form,
             children: [
-              value === void 0 ? (0, import_jsx_runtime7.jsx)("option", { value: "" }) : null,
+              value === void 0 ? (0, import_jsx_runtime.jsx)("option", { value: "" }) : null,
               Array.from(nativeOptionsSet)
             ]
           },
@@ -907,7 +191,7 @@ var Select = (props) => {
 };
 Select.displayName = SELECT_NAME;
 var TRIGGER_NAME = "SelectTrigger";
-var SelectTrigger = React10.forwardRef(
+var SelectTrigger = React2.forwardRef(
   (props, forwardedRef) => {
     const { __scopeSelect, disabled = false, ...triggerProps } = props;
     const popperScope = usePopperScope(__scopeSelect);
@@ -915,7 +199,7 @@ var SelectTrigger = React10.forwardRef(
     const isDisabled = context.disabled || disabled;
     const composedRefs = useComposedRefs(forwardedRef, context.onTriggerChange);
     const getItems = useCollection(__scopeSelect);
-    const pointerTypeRef = React10.useRef("touch");
+    const pointerTypeRef = React2.useRef("touch");
     const [searchRef, handleTypeaheadSearch, resetTypeahead] = useTypeaheadSearch((search) => {
       const enabledItems = getItems().filter((item) => !item.disabled);
       const currentItem = enabledItems.find((item) => item.value === context.value);
@@ -936,7 +220,7 @@ var SelectTrigger = React10.forwardRef(
         };
       }
     };
-    return (0, import_jsx_runtime7.jsx)(Anchor, { asChild: true, ...popperScope, children: (0, import_jsx_runtime7.jsx)(
+    return (0, import_jsx_runtime.jsx)(Anchor, { asChild: true, ...popperScope, children: (0, import_jsx_runtime.jsx)(
       Primitive.button,
       {
         type: "button",
@@ -985,7 +269,7 @@ var SelectTrigger = React10.forwardRef(
 );
 SelectTrigger.displayName = TRIGGER_NAME;
 var VALUE_NAME = "SelectValue";
-var SelectValue = React10.forwardRef(
+var SelectValue = React2.forwardRef(
   (props, forwardedRef) => {
     const { __scopeSelect, className, style, children, placeholder = "", ...valueProps } = props;
     const context = useSelectContext(VALUE_NAME, __scopeSelect);
@@ -995,55 +279,55 @@ var SelectValue = React10.forwardRef(
     useLayoutEffect2(() => {
       onValueNodeHasChildrenChange(hasChildren);
     }, [onValueNodeHasChildrenChange, hasChildren]);
-    return (0, import_jsx_runtime7.jsx)(
+    return (0, import_jsx_runtime.jsx)(
       Primitive.span,
       {
         ...valueProps,
         ref: composedRefs,
         style: { pointerEvents: "none" },
-        children: shouldShowPlaceholder(context.value) ? (0, import_jsx_runtime7.jsx)(import_jsx_runtime7.Fragment, { children: placeholder }) : children
+        children: shouldShowPlaceholder(context.value) ? (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, { children: placeholder }) : children
       }
     );
   }
 );
 SelectValue.displayName = VALUE_NAME;
 var ICON_NAME = "SelectIcon";
-var SelectIcon = React10.forwardRef(
+var SelectIcon = React2.forwardRef(
   (props, forwardedRef) => {
     const { __scopeSelect, children, ...iconProps } = props;
-    return (0, import_jsx_runtime7.jsx)(Primitive.span, { "aria-hidden": true, ...iconProps, ref: forwardedRef, children: children || "▼" });
+    return (0, import_jsx_runtime.jsx)(Primitive.span, { "aria-hidden": true, ...iconProps, ref: forwardedRef, children: children || "▼" });
   }
 );
 SelectIcon.displayName = ICON_NAME;
 var PORTAL_NAME = "SelectPortal";
 var SelectPortal = (props) => {
-  return (0, import_jsx_runtime7.jsx)(Portal, { asChild: true, ...props });
+  return (0, import_jsx_runtime.jsx)(Portal, { asChild: true, ...props });
 };
 SelectPortal.displayName = PORTAL_NAME;
-var CONTENT_NAME2 = "SelectContent";
-var SelectContent = React10.forwardRef(
+var CONTENT_NAME = "SelectContent";
+var SelectContent = React2.forwardRef(
   (props, forwardedRef) => {
-    const context = useSelectContext(CONTENT_NAME2, props.__scopeSelect);
-    const [fragment, setFragment] = React10.useState();
+    const context = useSelectContext(CONTENT_NAME, props.__scopeSelect);
+    const [fragment, setFragment] = React2.useState();
     useLayoutEffect2(() => {
       setFragment(new DocumentFragment());
     }, []);
     if (!context.open) {
       const frag = fragment;
-      return frag ? ReactDOM2.createPortal(
-        (0, import_jsx_runtime7.jsx)(SelectContentProvider, { scope: props.__scopeSelect, children: (0, import_jsx_runtime7.jsx)(Collection.Slot, { scope: props.__scopeSelect, children: (0, import_jsx_runtime7.jsx)("div", { children: props.children }) }) }),
+      return frag ? ReactDOM.createPortal(
+        (0, import_jsx_runtime.jsx)(SelectContentProvider, { scope: props.__scopeSelect, children: (0, import_jsx_runtime.jsx)(Collection.Slot, { scope: props.__scopeSelect, children: (0, import_jsx_runtime.jsx)("div", { children: props.children }) }) }),
         frag
       ) : null;
     }
-    return (0, import_jsx_runtime7.jsx)(SelectContentImpl, { ...props, ref: forwardedRef });
+    return (0, import_jsx_runtime.jsx)(SelectContentImpl, { ...props, ref: forwardedRef });
   }
 );
-SelectContent.displayName = CONTENT_NAME2;
+SelectContent.displayName = CONTENT_NAME;
 var CONTENT_MARGIN = 10;
-var [SelectContentProvider, useSelectContentContext] = createSelectContext(CONTENT_NAME2);
+var [SelectContentProvider, useSelectContentContext] = createSelectContext(CONTENT_NAME);
 var CONTENT_IMPL_NAME = "SelectContentImpl";
 var Slot = createSlot("SelectContent.RemoveScroll");
-var SelectContentImpl = React10.forwardRef(
+var SelectContentImpl = React2.forwardRef(
   (props, forwardedRef) => {
     const {
       __scopeSelect,
@@ -1066,55 +350,54 @@ var SelectContentImpl = React10.forwardRef(
       //
       ...contentProps
     } = props;
-    const context = useSelectContext(CONTENT_NAME2, __scopeSelect);
-    const [content, setContent] = React10.useState(null);
-    const [viewport, setViewport] = React10.useState(null);
+    const context = useSelectContext(CONTENT_NAME, __scopeSelect);
+    const [content, setContent] = React2.useState(null);
+    const [viewport, setViewport] = React2.useState(null);
     const composedRefs = useComposedRefs(forwardedRef, (node) => setContent(node));
-    const [selectedItem, setSelectedItem] = React10.useState(null);
-    const [selectedItemText, setSelectedItemText] = React10.useState(
+    const [selectedItem, setSelectedItem] = React2.useState(null);
+    const [selectedItemText, setSelectedItemText] = React2.useState(
       null
     );
     const getItems = useCollection(__scopeSelect);
-    const [isPositioned, setIsPositioned] = React10.useState(false);
-    const firstValidItemFoundRef = React10.useRef(false);
-    React10.useEffect(() => {
+    const [isPositioned, setIsPositioned] = React2.useState(false);
+    const firstValidItemFoundRef = React2.useRef(false);
+    React2.useEffect(() => {
       if (content) return hideOthers(content);
     }, [content]);
     useFocusGuards();
-    const focusFirst = React10.useCallback(
+    const focusFirst = React2.useCallback(
       (candidates) => {
         const [firstItem, ...restItems] = getItems().map((item) => item.ref.current);
         const [lastItem] = restItems.slice(-1);
         const PREVIOUSLY_FOCUSED_ELEMENT = document.activeElement;
         for (const candidate of candidates) {
           if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
-          candidate == null ? void 0 : candidate.scrollIntoView({ block: "nearest" });
+          candidate?.scrollIntoView({ block: "nearest" });
           if (candidate === firstItem && viewport) viewport.scrollTop = 0;
           if (candidate === lastItem && viewport) viewport.scrollTop = viewport.scrollHeight;
-          candidate == null ? void 0 : candidate.focus();
+          candidate?.focus();
           if (document.activeElement !== PREVIOUSLY_FOCUSED_ELEMENT) return;
         }
       },
       [getItems, viewport]
     );
-    const focusSelectedItem = React10.useCallback(
+    const focusSelectedItem = React2.useCallback(
       () => focusFirst([selectedItem, content]),
       [focusFirst, selectedItem, content]
     );
-    React10.useEffect(() => {
+    React2.useEffect(() => {
       if (isPositioned) {
         focusSelectedItem();
       }
     }, [isPositioned, focusSelectedItem]);
     const { onOpenChange, triggerPointerDownPosRef } = context;
-    React10.useEffect(() => {
+    React2.useEffect(() => {
       if (content) {
         let pointerMoveDelta = { x: 0, y: 0 };
         const handlePointerMove = (event) => {
-          var _a, _b;
           pointerMoveDelta = {
-            x: Math.abs(Math.round(event.pageX) - (((_a = triggerPointerDownPosRef.current) == null ? void 0 : _a.x) ?? 0)),
-            y: Math.abs(Math.round(event.pageY) - (((_b = triggerPointerDownPosRef.current) == null ? void 0 : _b.y) ?? 0))
+            x: Math.abs(Math.round(event.pageX) - (triggerPointerDownPosRef.current?.x ?? 0)),
+            y: Math.abs(Math.round(event.pageY) - (triggerPointerDownPosRef.current?.y ?? 0))
           };
         };
         const handlePointerUp = (event) => {
@@ -1138,7 +421,7 @@ var SelectContentImpl = React10.forwardRef(
         };
       }
     }, [content, onOpenChange, triggerPointerDownPosRef]);
-    React10.useEffect(() => {
+    React2.useEffect(() => {
       const close = () => onOpenChange(false);
       window.addEventListener("blur", close);
       window.addEventListener("resize", close);
@@ -1155,7 +438,7 @@ var SelectContentImpl = React10.forwardRef(
         setTimeout(() => nextItem.ref.current.focus());
       }
     });
-    const itemRefCallback = React10.useCallback(
+    const itemRefCallback = React2.useCallback(
       (node, value, disabled) => {
         const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
         const isSelectedItem = context.value !== void 0 && context.value === value;
@@ -1166,8 +449,8 @@ var SelectContentImpl = React10.forwardRef(
       },
       [context.value]
     );
-    const handleItemLeave = React10.useCallback(() => content == null ? void 0 : content.focus(), [content]);
-    const itemTextRefCallback = React10.useCallback(
+    const handleItemLeave = React2.useCallback(() => content?.focus(), [content]);
+    const itemTextRefCallback = React2.useCallback(
       (node, value, disabled) => {
         const isFirstValidItem = !firstValidItemFoundRef.current && !disabled;
         const isSelectedItem = context.value !== void 0 && context.value === value;
@@ -1190,7 +473,7 @@ var SelectContentImpl = React10.forwardRef(
       hideWhenDetached,
       avoidCollisions
     } : {};
-    return (0, import_jsx_runtime7.jsx)(
+    return (0, import_jsx_runtime.jsx)(
       SelectContentProvider,
       {
         scope: __scopeSelect,
@@ -1206,7 +489,7 @@ var SelectContentImpl = React10.forwardRef(
         position,
         isPositioned,
         searchRef,
-        children: (0, import_jsx_runtime7.jsx)(Combination_default, { as: Slot, allowPinchZoom: true, children: (0, import_jsx_runtime7.jsx)(
+        children: (0, import_jsx_runtime.jsx)(Combination_default, { as: Slot, allowPinchZoom: true, children: (0, import_jsx_runtime.jsx)(
           FocusScope,
           {
             asChild: true,
@@ -1215,11 +498,10 @@ var SelectContentImpl = React10.forwardRef(
               event.preventDefault();
             },
             onUnmountAutoFocus: composeEventHandlers(onCloseAutoFocus, (event) => {
-              var _a;
-              (_a = context.trigger) == null ? void 0 : _a.focus({ preventScroll: true });
+              context.trigger?.focus({ preventScroll: true });
               event.preventDefault();
             }),
-            children: (0, import_jsx_runtime7.jsx)(
+            children: (0, import_jsx_runtime.jsx)(
               DismissableLayer,
               {
                 asChild: true,
@@ -1228,7 +510,7 @@ var SelectContentImpl = React10.forwardRef(
                 onPointerDownOutside,
                 onFocusOutside: (event) => event.preventDefault(),
                 onDismiss: () => context.onOpenChange(false),
-                children: (0, import_jsx_runtime7.jsx)(
+                children: (0, import_jsx_runtime.jsx)(
                   SelectPosition,
                   {
                     role: "listbox",
@@ -1279,18 +561,18 @@ var SelectContentImpl = React10.forwardRef(
 );
 SelectContentImpl.displayName = CONTENT_IMPL_NAME;
 var ITEM_ALIGNED_POSITION_NAME = "SelectItemAlignedPosition";
-var SelectItemAlignedPosition = React10.forwardRef((props, forwardedRef) => {
+var SelectItemAlignedPosition = React2.forwardRef((props, forwardedRef) => {
   const { __scopeSelect, onPlaced, ...popperProps } = props;
-  const context = useSelectContext(CONTENT_NAME2, __scopeSelect);
-  const contentContext = useSelectContentContext(CONTENT_NAME2, __scopeSelect);
-  const [contentWrapper, setContentWrapper] = React10.useState(null);
-  const [content, setContent] = React10.useState(null);
+  const context = useSelectContext(CONTENT_NAME, __scopeSelect);
+  const contentContext = useSelectContentContext(CONTENT_NAME, __scopeSelect);
+  const [contentWrapper, setContentWrapper] = React2.useState(null);
+  const [content, setContent] = React2.useState(null);
   const composedRefs = useComposedRefs(forwardedRef, (node) => setContent(node));
   const getItems = useCollection(__scopeSelect);
-  const shouldExpandOnScrollRef = React10.useRef(false);
-  const shouldRepositionRef = React10.useRef(true);
+  const shouldExpandOnScrollRef = React2.useRef(false);
+  const shouldRepositionRef = React2.useRef(true);
   const { viewport, selectedItem, selectedItemText, focusSelectedItem } = contentContext;
-  const position = React10.useCallback(() => {
+  const position = React2.useCallback(() => {
     if (context.trigger && context.valueNode && contentWrapper && content && viewport && selectedItem && selectedItemText) {
       const triggerRect = context.trigger.getBoundingClientRect();
       const contentRect = content.getBoundingClientRect();
@@ -1374,7 +656,7 @@ var SelectItemAlignedPosition = React10.forwardRef((props, forwardedRef) => {
       contentWrapper.style.margin = `${CONTENT_MARGIN}px 0`;
       contentWrapper.style.minHeight = minContentHeight + "px";
       contentWrapper.style.maxHeight = availableHeight + "px";
-      onPlaced == null ? void 0 : onPlaced();
+      onPlaced?.();
       requestAnimationFrame(() => shouldExpandOnScrollRef.current = true);
     }
   }, [
@@ -1390,28 +672,28 @@ var SelectItemAlignedPosition = React10.forwardRef((props, forwardedRef) => {
     onPlaced
   ]);
   useLayoutEffect2(() => position(), [position]);
-  const [contentZIndex, setContentZIndex] = React10.useState();
+  const [contentZIndex, setContentZIndex] = React2.useState();
   useLayoutEffect2(() => {
     if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
   }, [content]);
-  const handleScrollButtonChange = React10.useCallback(
+  const handleScrollButtonChange = React2.useCallback(
     (node) => {
       if (node && shouldRepositionRef.current === true) {
         position();
-        focusSelectedItem == null ? void 0 : focusSelectedItem();
+        focusSelectedItem?.();
         shouldRepositionRef.current = false;
       }
     },
     [position, focusSelectedItem]
   );
-  return (0, import_jsx_runtime7.jsx)(
+  return (0, import_jsx_runtime.jsx)(
     SelectViewportProvider,
     {
       scope: __scopeSelect,
       contentWrapper,
       shouldExpandOnScrollRef,
       onScrollButtonChange: handleScrollButtonChange,
-      children: (0, import_jsx_runtime7.jsx)(
+      children: (0, import_jsx_runtime.jsx)(
         "div",
         {
           ref: setContentWrapper,
@@ -1421,7 +703,7 @@ var SelectItemAlignedPosition = React10.forwardRef((props, forwardedRef) => {
             position: "fixed",
             zIndex: contentZIndex
           },
-          children: (0, import_jsx_runtime7.jsx)(
+          children: (0, import_jsx_runtime.jsx)(
             Primitive.div,
             {
               ...popperProps,
@@ -1443,7 +725,7 @@ var SelectItemAlignedPosition = React10.forwardRef((props, forwardedRef) => {
 });
 SelectItemAlignedPosition.displayName = ITEM_ALIGNED_POSITION_NAME;
 var POPPER_POSITION_NAME = "SelectPopperPosition";
-var SelectPopperPosition = React10.forwardRef((props, forwardedRef) => {
+var SelectPopperPosition = React2.forwardRef((props, forwardedRef) => {
   const {
     __scopeSelect,
     align = "start",
@@ -1451,7 +733,7 @@ var SelectPopperPosition = React10.forwardRef((props, forwardedRef) => {
     ...popperProps
   } = props;
   const popperScope = usePopperScope(__scopeSelect);
-  return (0, import_jsx_runtime7.jsx)(
+  return (0, import_jsx_runtime.jsx)(
     Content,
     {
       ...popperScope,
@@ -1476,17 +758,17 @@ var SelectPopperPosition = React10.forwardRef((props, forwardedRef) => {
   );
 });
 SelectPopperPosition.displayName = POPPER_POSITION_NAME;
-var [SelectViewportProvider, useSelectViewportContext] = createSelectContext(CONTENT_NAME2, {});
+var [SelectViewportProvider, useSelectViewportContext] = createSelectContext(CONTENT_NAME, {});
 var VIEWPORT_NAME = "SelectViewport";
-var SelectViewport = React10.forwardRef(
+var SelectViewport = React2.forwardRef(
   (props, forwardedRef) => {
     const { __scopeSelect, nonce, ...viewportProps } = props;
     const contentContext = useSelectContentContext(VIEWPORT_NAME, __scopeSelect);
     const viewportContext = useSelectViewportContext(VIEWPORT_NAME, __scopeSelect);
     const composedRefs = useComposedRefs(forwardedRef, contentContext.onViewportChange);
-    const prevScrollTopRef = React10.useRef(0);
-    return (0, import_jsx_runtime7.jsxs)(import_jsx_runtime7.Fragment, { children: [
-      (0, import_jsx_runtime7.jsx)(
+    const prevScrollTopRef = React2.useRef(0);
+    return (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+      (0, import_jsx_runtime.jsx)(
         "style",
         {
           dangerouslySetInnerHTML: {
@@ -1495,7 +777,7 @@ var SelectViewport = React10.forwardRef(
           nonce
         }
       ),
-      (0, import_jsx_runtime7.jsx)(Collection.Slot, { scope: __scopeSelect, children: (0, import_jsx_runtime7.jsx)(
+      (0, import_jsx_runtime.jsx)(Collection.Slot, { scope: __scopeSelect, children: (0, import_jsx_runtime.jsx)(
         Primitive.div,
         {
           "data-radix-select-viewport": "",
@@ -1518,7 +800,7 @@ var SelectViewport = React10.forwardRef(
           onScroll: composeEventHandlers(viewportProps.onScroll, (event) => {
             const viewport = event.currentTarget;
             const { contentWrapper, shouldExpandOnScrollRef } = viewportContext;
-            if ((shouldExpandOnScrollRef == null ? void 0 : shouldExpandOnScrollRef.current) && contentWrapper) {
+            if (shouldExpandOnScrollRef?.current && contentWrapper) {
               const scrolledBy = Math.abs(prevScrollTopRef.current - viewport.scrollTop);
               if (scrolledBy > 0) {
                 const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
@@ -1547,26 +829,26 @@ var SelectViewport = React10.forwardRef(
 SelectViewport.displayName = VIEWPORT_NAME;
 var GROUP_NAME = "SelectGroup";
 var [SelectGroupContextProvider, useSelectGroupContext] = createSelectContext(GROUP_NAME);
-var SelectGroup = React10.forwardRef(
+var SelectGroup = React2.forwardRef(
   (props, forwardedRef) => {
     const { __scopeSelect, ...groupProps } = props;
     const groupId = useId();
-    return (0, import_jsx_runtime7.jsx)(SelectGroupContextProvider, { scope: __scopeSelect, id: groupId, children: (0, import_jsx_runtime7.jsx)(Primitive.div, { role: "group", "aria-labelledby": groupId, ...groupProps, ref: forwardedRef }) });
+    return (0, import_jsx_runtime.jsx)(SelectGroupContextProvider, { scope: __scopeSelect, id: groupId, children: (0, import_jsx_runtime.jsx)(Primitive.div, { role: "group", "aria-labelledby": groupId, ...groupProps, ref: forwardedRef }) });
   }
 );
 SelectGroup.displayName = GROUP_NAME;
 var LABEL_NAME = "SelectLabel";
-var SelectLabel = React10.forwardRef(
+var SelectLabel = React2.forwardRef(
   (props, forwardedRef) => {
     const { __scopeSelect, ...labelProps } = props;
     const groupContext = useSelectGroupContext(LABEL_NAME, __scopeSelect);
-    return (0, import_jsx_runtime7.jsx)(Primitive.div, { id: groupContext.id, ...labelProps, ref: forwardedRef });
+    return (0, import_jsx_runtime.jsx)(Primitive.div, { id: groupContext.id, ...labelProps, ref: forwardedRef });
   }
 );
 SelectLabel.displayName = LABEL_NAME;
 var ITEM_NAME = "SelectItem";
 var [SelectItemContextProvider, useSelectItemContext] = createSelectContext(ITEM_NAME);
-var SelectItem = React10.forwardRef(
+var SelectItem = React2.forwardRef(
   (props, forwardedRef) => {
     const {
       __scopeSelect,
@@ -1578,17 +860,14 @@ var SelectItem = React10.forwardRef(
     const context = useSelectContext(ITEM_NAME, __scopeSelect);
     const contentContext = useSelectContentContext(ITEM_NAME, __scopeSelect);
     const isSelected = context.value === value;
-    const [textValue, setTextValue] = React10.useState(textValueProp ?? "");
-    const [isFocused, setIsFocused] = React10.useState(false);
+    const [textValue, setTextValue] = React2.useState(textValueProp ?? "");
+    const [isFocused, setIsFocused] = React2.useState(false);
     const composedRefs = useComposedRefs(
       forwardedRef,
-      (node) => {
-        var _a;
-        return (_a = contentContext.itemRefCallback) == null ? void 0 : _a.call(contentContext, node, value, disabled);
-      }
+      (node) => contentContext.itemRefCallback?.(node, value, disabled)
     );
     const textId = useId();
-    const pointerTypeRef = React10.useRef("touch");
+    const pointerTypeRef = React2.useRef("touch");
     const handleSelect = () => {
       if (!disabled) {
         context.onValueChange(value);
@@ -1600,7 +879,7 @@ var SelectItem = React10.forwardRef(
         "A <Select.Item /> must have a value prop that is not an empty string. This is because the Select value can be set to an empty string to clear the selection and show the placeholder."
       );
     }
-    return (0, import_jsx_runtime7.jsx)(
+    return (0, import_jsx_runtime.jsx)(
       SelectItemContextProvider,
       {
         scope: __scopeSelect,
@@ -1608,17 +887,17 @@ var SelectItem = React10.forwardRef(
         disabled,
         textId,
         isSelected,
-        onItemTextChange: React10.useCallback((node) => {
-          setTextValue((prevTextValue) => prevTextValue || ((node == null ? void 0 : node.textContent) ?? "").trim());
+        onItemTextChange: React2.useCallback((node) => {
+          setTextValue((prevTextValue) => prevTextValue || (node?.textContent ?? "").trim());
         }, []),
-        children: (0, import_jsx_runtime7.jsx)(
+        children: (0, import_jsx_runtime.jsx)(
           Collection.ItemSlot,
           {
             scope: __scopeSelect,
             value,
             disabled,
             textValue,
-            children: (0, import_jsx_runtime7.jsx)(
+            children: (0, import_jsx_runtime.jsx)(
               Primitive.div,
               {
                 role: "option",
@@ -1643,23 +922,20 @@ var SelectItem = React10.forwardRef(
                   pointerTypeRef.current = event.pointerType;
                 }),
                 onPointerMove: composeEventHandlers(itemProps.onPointerMove, (event) => {
-                  var _a;
                   pointerTypeRef.current = event.pointerType;
                   if (disabled) {
-                    (_a = contentContext.onItemLeave) == null ? void 0 : _a.call(contentContext);
+                    contentContext.onItemLeave?.();
                   } else if (pointerTypeRef.current === "mouse") {
                     event.currentTarget.focus({ preventScroll: true });
                   }
                 }),
                 onPointerLeave: composeEventHandlers(itemProps.onPointerLeave, (event) => {
-                  var _a;
                   if (event.currentTarget === document.activeElement) {
-                    (_a = contentContext.onItemLeave) == null ? void 0 : _a.call(contentContext);
+                    contentContext.onItemLeave?.();
                   }
                 }),
                 onKeyDown: composeEventHandlers(itemProps.onKeyDown, (event) => {
-                  var _a;
-                  const isTypingAhead = ((_a = contentContext.searchRef) == null ? void 0 : _a.current) !== "";
+                  const isTypingAhead = contentContext.searchRef?.current !== "";
                   if (isTypingAhead && event.key === " ") return;
                   if (SELECTION_KEYS.includes(event.key)) handleSelect();
                   if (event.key === " ") event.preventDefault();
@@ -1674,26 +950,23 @@ var SelectItem = React10.forwardRef(
 );
 SelectItem.displayName = ITEM_NAME;
 var ITEM_TEXT_NAME = "SelectItemText";
-var SelectItemText = React10.forwardRef(
+var SelectItemText = React2.forwardRef(
   (props, forwardedRef) => {
     const { __scopeSelect, className, style, ...itemTextProps } = props;
     const context = useSelectContext(ITEM_TEXT_NAME, __scopeSelect);
     const contentContext = useSelectContentContext(ITEM_TEXT_NAME, __scopeSelect);
     const itemContext = useSelectItemContext(ITEM_TEXT_NAME, __scopeSelect);
     const nativeOptionsContext = useSelectNativeOptionsContext(ITEM_TEXT_NAME, __scopeSelect);
-    const [itemTextNode, setItemTextNode] = React10.useState(null);
+    const [itemTextNode, setItemTextNode] = React2.useState(null);
     const composedRefs = useComposedRefs(
       forwardedRef,
       (node) => setItemTextNode(node),
       itemContext.onItemTextChange,
-      (node) => {
-        var _a;
-        return (_a = contentContext.itemTextRefCallback) == null ? void 0 : _a.call(contentContext, node, itemContext.value, itemContext.disabled);
-      }
+      (node) => contentContext.itemTextRefCallback?.(node, itemContext.value, itemContext.disabled)
     );
-    const textContent = itemTextNode == null ? void 0 : itemTextNode.textContent;
-    const nativeOption = React10.useMemo(
-      () => (0, import_jsx_runtime7.jsx)("option", { value: itemContext.value, disabled: itemContext.disabled, children: textContent }, itemContext.value),
+    const textContent = itemTextNode?.textContent;
+    const nativeOption = React2.useMemo(
+      () => (0, import_jsx_runtime.jsx)("option", { value: itemContext.value, disabled: itemContext.disabled, children: textContent }, itemContext.value),
       [itemContext.disabled, itemContext.value, textContent]
     );
     const { onNativeOptionAdd, onNativeOptionRemove } = nativeOptionsContext;
@@ -1701,27 +974,27 @@ var SelectItemText = React10.forwardRef(
       onNativeOptionAdd(nativeOption);
       return () => onNativeOptionRemove(nativeOption);
     }, [onNativeOptionAdd, onNativeOptionRemove, nativeOption]);
-    return (0, import_jsx_runtime7.jsxs)(import_jsx_runtime7.Fragment, { children: [
-      (0, import_jsx_runtime7.jsx)(Primitive.span, { id: itemContext.textId, ...itemTextProps, ref: composedRefs }),
-      itemContext.isSelected && context.valueNode && !context.valueNodeHasChildren ? ReactDOM2.createPortal(itemTextProps.children, context.valueNode) : null
+    return (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+      (0, import_jsx_runtime.jsx)(Primitive.span, { id: itemContext.textId, ...itemTextProps, ref: composedRefs }),
+      itemContext.isSelected && context.valueNode && !context.valueNodeHasChildren ? ReactDOM.createPortal(itemTextProps.children, context.valueNode) : null
     ] });
   }
 );
 SelectItemText.displayName = ITEM_TEXT_NAME;
 var ITEM_INDICATOR_NAME = "SelectItemIndicator";
-var SelectItemIndicator = React10.forwardRef(
+var SelectItemIndicator = React2.forwardRef(
   (props, forwardedRef) => {
     const { __scopeSelect, ...itemIndicatorProps } = props;
     const itemContext = useSelectItemContext(ITEM_INDICATOR_NAME, __scopeSelect);
-    return itemContext.isSelected ? (0, import_jsx_runtime7.jsx)(Primitive.span, { "aria-hidden": true, ...itemIndicatorProps, ref: forwardedRef }) : null;
+    return itemContext.isSelected ? (0, import_jsx_runtime.jsx)(Primitive.span, { "aria-hidden": true, ...itemIndicatorProps, ref: forwardedRef }) : null;
   }
 );
 SelectItemIndicator.displayName = ITEM_INDICATOR_NAME;
 var SCROLL_UP_BUTTON_NAME = "SelectScrollUpButton";
-var SelectScrollUpButton = React10.forwardRef((props, forwardedRef) => {
+var SelectScrollUpButton = React2.forwardRef((props, forwardedRef) => {
   const contentContext = useSelectContentContext(SCROLL_UP_BUTTON_NAME, props.__scopeSelect);
   const viewportContext = useSelectViewportContext(SCROLL_UP_BUTTON_NAME, props.__scopeSelect);
-  const [canScrollUp, setCanScrollUp] = React10.useState(false);
+  const [canScrollUp, setCanScrollUp] = React2.useState(false);
   const composedRefs = useComposedRefs(forwardedRef, viewportContext.onScrollButtonChange);
   useLayoutEffect2(() => {
     if (contentContext.viewport && contentContext.isPositioned) {
@@ -1736,7 +1009,7 @@ var SelectScrollUpButton = React10.forwardRef((props, forwardedRef) => {
       return () => viewport.removeEventListener("scroll", handleScroll2);
     }
   }, [contentContext.viewport, contentContext.isPositioned]);
-  return canScrollUp ? (0, import_jsx_runtime7.jsx)(
+  return canScrollUp ? (0, import_jsx_runtime.jsx)(
     SelectScrollButtonImpl,
     {
       ...props,
@@ -1752,10 +1025,10 @@ var SelectScrollUpButton = React10.forwardRef((props, forwardedRef) => {
 });
 SelectScrollUpButton.displayName = SCROLL_UP_BUTTON_NAME;
 var SCROLL_DOWN_BUTTON_NAME = "SelectScrollDownButton";
-var SelectScrollDownButton = React10.forwardRef((props, forwardedRef) => {
+var SelectScrollDownButton = React2.forwardRef((props, forwardedRef) => {
   const contentContext = useSelectContentContext(SCROLL_DOWN_BUTTON_NAME, props.__scopeSelect);
   const viewportContext = useSelectViewportContext(SCROLL_DOWN_BUTTON_NAME, props.__scopeSelect);
-  const [canScrollDown, setCanScrollDown] = React10.useState(false);
+  const [canScrollDown, setCanScrollDown] = React2.useState(false);
   const composedRefs = useComposedRefs(forwardedRef, viewportContext.onScrollButtonChange);
   useLayoutEffect2(() => {
     if (contentContext.viewport && contentContext.isPositioned) {
@@ -1771,7 +1044,7 @@ var SelectScrollDownButton = React10.forwardRef((props, forwardedRef) => {
       return () => viewport.removeEventListener("scroll", handleScroll2);
     }
   }, [contentContext.viewport, contentContext.isPositioned]);
-  return canScrollDown ? (0, import_jsx_runtime7.jsx)(
+  return canScrollDown ? (0, import_jsx_runtime.jsx)(
     SelectScrollButtonImpl,
     {
       ...props,
@@ -1786,26 +1059,25 @@ var SelectScrollDownButton = React10.forwardRef((props, forwardedRef) => {
   ) : null;
 });
 SelectScrollDownButton.displayName = SCROLL_DOWN_BUTTON_NAME;
-var SelectScrollButtonImpl = React10.forwardRef((props, forwardedRef) => {
+var SelectScrollButtonImpl = React2.forwardRef((props, forwardedRef) => {
   const { __scopeSelect, onAutoScroll, ...scrollIndicatorProps } = props;
   const contentContext = useSelectContentContext("SelectScrollButton", __scopeSelect);
-  const autoScrollTimerRef = React10.useRef(null);
+  const autoScrollTimerRef = React2.useRef(null);
   const getItems = useCollection(__scopeSelect);
-  const clearAutoScrollTimer = React10.useCallback(() => {
+  const clearAutoScrollTimer = React2.useCallback(() => {
     if (autoScrollTimerRef.current !== null) {
       window.clearInterval(autoScrollTimerRef.current);
       autoScrollTimerRef.current = null;
     }
   }, []);
-  React10.useEffect(() => {
+  React2.useEffect(() => {
     return () => clearAutoScrollTimer();
   }, [clearAutoScrollTimer]);
   useLayoutEffect2(() => {
-    var _a;
     const activeItem = getItems().find((item) => item.ref.current === document.activeElement);
-    (_a = activeItem == null ? void 0 : activeItem.ref.current) == null ? void 0 : _a.scrollIntoView({ block: "nearest" });
+    activeItem?.ref.current?.scrollIntoView({ block: "nearest" });
   }, [getItems]);
-  return (0, import_jsx_runtime7.jsx)(
+  return (0, import_jsx_runtime.jsx)(
     Primitive.div,
     {
       "aria-hidden": true,
@@ -1818,8 +1090,7 @@ var SelectScrollButtonImpl = React10.forwardRef((props, forwardedRef) => {
         }
       }),
       onPointerMove: composeEventHandlers(scrollIndicatorProps.onPointerMove, () => {
-        var _a;
-        (_a = contentContext.onItemLeave) == null ? void 0 : _a.call(contentContext);
+        contentContext.onItemLeave?.();
         if (autoScrollTimerRef.current === null) {
           autoScrollTimerRef.current = window.setInterval(onAutoScroll, 50);
         }
@@ -1831,31 +1102,31 @@ var SelectScrollButtonImpl = React10.forwardRef((props, forwardedRef) => {
   );
 });
 var SEPARATOR_NAME = "SelectSeparator";
-var SelectSeparator = React10.forwardRef(
+var SelectSeparator = React2.forwardRef(
   (props, forwardedRef) => {
     const { __scopeSelect, ...separatorProps } = props;
-    return (0, import_jsx_runtime7.jsx)(Primitive.div, { "aria-hidden": true, ...separatorProps, ref: forwardedRef });
+    return (0, import_jsx_runtime.jsx)(Primitive.div, { "aria-hidden": true, ...separatorProps, ref: forwardedRef });
   }
 );
 SelectSeparator.displayName = SEPARATOR_NAME;
-var ARROW_NAME2 = "SelectArrow";
-var SelectArrow = React10.forwardRef(
+var ARROW_NAME = "SelectArrow";
+var SelectArrow = React2.forwardRef(
   (props, forwardedRef) => {
     const { __scopeSelect, ...arrowProps } = props;
     const popperScope = usePopperScope(__scopeSelect);
-    const context = useSelectContext(ARROW_NAME2, __scopeSelect);
-    const contentContext = useSelectContentContext(ARROW_NAME2, __scopeSelect);
-    return context.open && contentContext.position === "popper" ? (0, import_jsx_runtime7.jsx)(Arrow2, { ...popperScope, ...arrowProps, ref: forwardedRef }) : null;
+    const context = useSelectContext(ARROW_NAME, __scopeSelect);
+    const contentContext = useSelectContentContext(ARROW_NAME, __scopeSelect);
+    return context.open && contentContext.position === "popper" ? (0, import_jsx_runtime.jsx)(Arrow, { ...popperScope, ...arrowProps, ref: forwardedRef }) : null;
   }
 );
-SelectArrow.displayName = ARROW_NAME2;
+SelectArrow.displayName = ARROW_NAME;
 var BUBBLE_INPUT_NAME = "SelectBubbleInput";
-var SelectBubbleInput = React10.forwardRef(
+var SelectBubbleInput = React2.forwardRef(
   ({ __scopeSelect, value, ...props }, forwardedRef) => {
-    const ref = React10.useRef(null);
+    const ref = React2.useRef(null);
     const composedRefs = useComposedRefs(forwardedRef, ref);
     const prevValue = usePrevious(value);
-    React10.useEffect(() => {
+    React2.useEffect(() => {
       const select = ref.current;
       if (!select) return;
       const selectProto = window.HTMLSelectElement.prototype;
@@ -1870,7 +1141,7 @@ var SelectBubbleInput = React10.forwardRef(
         select.dispatchEvent(event);
       }
     }, [prevValue, value]);
-    return (0, import_jsx_runtime7.jsx)(
+    return (0, import_jsx_runtime.jsx)(
       Primitive.select,
       {
         ...props,
@@ -1887,9 +1158,9 @@ function shouldShowPlaceholder(value) {
 }
 function useTypeaheadSearch(onSearchChange) {
   const handleSearchChange = useCallbackRef(onSearchChange);
-  const searchRef = React10.useRef("");
-  const timerRef = React10.useRef(0);
-  const handleTypeaheadSearch = React10.useCallback(
+  const searchRef = React2.useRef("");
+  const timerRef = React2.useRef(0);
+  const handleTypeaheadSearch = React2.useCallback(
     (key) => {
       const search = searchRef.current + key;
       handleSearchChange(search);
@@ -1901,11 +1172,11 @@ function useTypeaheadSearch(onSearchChange) {
     },
     [handleSearchChange]
   );
-  const resetTypeahead = React10.useCallback(() => {
+  const resetTypeahead = React2.useCallback(() => {
     searchRef.current = "";
     window.clearTimeout(timerRef.current);
   }, []);
-  React10.useEffect(() => {
+  React2.useEffect(() => {
     return () => window.clearTimeout(timerRef.current);
   }, []);
   return [searchRef, handleTypeaheadSearch, resetTypeahead];
@@ -1923,7 +1194,7 @@ function findNextItem(items, search, currentItem) {
   return nextItem !== currentItem ? nextItem : void 0;
 }
 function wrapArray(array, startIndex) {
-  return array.map((_, index2) => array[(startIndex + index2) % array.length]);
+  return array.map((_, index) => array[(startIndex + index) % array.length]);
 }
 var Root22 = Select;
 var Trigger = SelectTrigger;
@@ -1940,9 +1211,9 @@ var ItemIndicator = SelectItemIndicator;
 var ScrollUpButton = SelectScrollUpButton;
 var ScrollDownButton = SelectScrollDownButton;
 var Separator = SelectSeparator;
-var Arrow22 = SelectArrow;
+var Arrow2 = SelectArrow;
 export {
-  Arrow22 as Arrow,
+  Arrow2 as Arrow,
   Content2 as Content,
   Group,
   Icon,

@@ -55,8 +55,6 @@ export function ResetPasswordForm({
         });
     };
 
-    const valideValue = Object.values(data).every((el) => el);
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -65,13 +63,13 @@ export function ResetPasswordForm({
             return;
         }
 
-        if (data.newPassword.length < 6) {
-            toast.error('Mật khẩu phải có ít nhất 6 ký tự');
+        if (data.newPassword !== data.confirmNewPassword) {
+            toast.error('Mật khẩu mới và xác nhận mật khẩu không khớp');
             return;
         }
 
-        if (data.newPassword !== data.confirmNewPassword) {
-            toast.error('Mật khẩu mới và xác nhận mật khẩu không khớp');
+        if (data.newPassword.length < 6) {
+            toast.error('Mật khẩu phải có ít nhất 6 ký tự');
             return;
         }
 
@@ -158,7 +156,6 @@ export function ResetPasswordForm({
                             onChange={handleChange}
                             value={data.newPassword}
                             className="h-12 pr-10 border-gray-200 focus:ring-0 shadow-none rounded-lg bg-white/20 focus:border-[#3F3FF3]"
-                            required
                         />
                         <Button
                             type="button"
@@ -188,7 +185,6 @@ export function ResetPasswordForm({
                             onChange={handleChange}
                             value={data.confirmNewPassword}
                             className="h-12 pr-10 border-gray-200 focus:ring-0 shadow-none rounded-lg bg-white/20 focus:border-[#3F3FF3]"
-                            required
                         />
                         <Button
                             type="button"
@@ -219,7 +215,6 @@ export function ResetPasswordForm({
                     playOnce={false}
                 >
                     <Button
-                        disabled={!valideValue}
                         type="submit"
                         className="w-full h-12 text-sm font-medium text-white hover:opacity-90 rounded-lg shadow-none cursor-pointer"
                         style={{ backgroundColor: '#000' }}

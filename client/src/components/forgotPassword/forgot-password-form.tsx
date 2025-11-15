@@ -34,10 +34,55 @@ export function ForgotPasswordForm({
         });
     };
 
-    const valideValue = Object.values(data).every((el) => el);
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+
+        const validTLDs = [
+            'com',
+            'net',
+            'org',
+            'io',
+            'co',
+            'ai',
+            'vn',
+            'com.vn',
+            'edu.vn',
+            'gov.vn',
+        ];
+
+        if (!emailRegex.test(email)) {
+            return false;
+        }
+
+        const domain = email.split('@')[1];
+        const tld = domain.split('.').slice(1).join('.');
+
+        if (!validTLDs.includes(tld)) {
+            return false;
+        }
+
+        if (
+            email.includes('..') ||
+            email.startsWith('.') ||
+            email.endsWith('.') ||
+            email.split('@')[0].endsWith('.')
+        ) {
+            return false;
+        }
+
+        return true;
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!data.email) {
+            toast.error('Vui lòng nhập email');
+            return;
+        } else if (!validateEmail(data.email)) {
+            toast.error('Vui lòng nhập địa chỉ email hợp lệ');
+            return;
+        }
 
         try {
             setLoading(true);
@@ -92,7 +137,6 @@ export function ForgotPasswordForm({
                         onChange={handleChange}
                         value={data.email}
                         className="h-12 border-gray-200 focus:ring-0 shadow-none rounded-lg bg-white/20 focus:border-[#3F3FF3]"
-                        required
                     />
                 </div>
 
@@ -105,7 +149,6 @@ export function ForgotPasswordForm({
                     playOnce={false}
                 >
                     <Button
-                        disabled={!valideValue}
                         type="submit"
                         className="w-full h-12 text-sm font-medium text-white hover:opacity-90 rounded-lg shadow-none cursor-pointer"
                         style={{ backgroundColor: '#000' }}

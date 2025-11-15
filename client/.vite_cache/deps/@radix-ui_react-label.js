@@ -1,18 +1,19 @@
 "use client";
 import {
   Primitive
-} from "./chunk-3N5LEFOU.js";
-import "./chunk-XDTNHN7B.js";
-import "./chunk-NA6NXLYZ.js";
+} from "./chunk-4KVVEHBE.js";
+import "./chunk-TZUS373Z.js";
+import "./chunk-3RKDWLCG.js";
+import "./chunk-EKFKCRXB.js";
 import {
   require_jsx_runtime
-} from "./chunk-OAOR5NGZ.js";
+} from "./chunk-J3XBGEQK.js";
 import {
   require_react
-} from "./chunk-7KC2DZ2O.js";
+} from "./chunk-ULSRCYB6.js";
 import {
   __toESM
-} from "./chunk-DC5AMYBS.js";
+} from "./chunk-G3PMV62Z.js";
 
 // node_modules/@radix-ui/react-label/dist/index.mjs
 var React = __toESM(require_react(), 1);
@@ -25,10 +26,9 @@ var Label = React.forwardRef((props, forwardedRef) => {
       ...props,
       ref: forwardedRef,
       onMouseDown: (event) => {
-        var _a;
         const target = event.target;
         if (target.closest("button, input, select, textarea")) return;
-        (_a = props.onMouseDown) == null ? void 0 : _a.call(props, event);
+        props.onMouseDown?.(event);
         if (!event.defaultPrevented && event.detail > 1) event.preventDefault();
       }
     }

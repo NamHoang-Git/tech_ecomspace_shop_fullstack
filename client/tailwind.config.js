@@ -17,16 +17,12 @@ export default {
 				'highlight-300': '#9e2ca8',
 				'highlight-200': '#952268',
 				'highlight-100': '#c06c84',
-				'primary-200': '#f7a10b',
-				'primary-100': '#fdf6e3',
-				'secondary-200': '#d0011b',
-				'secondary-100': '#C66B6B',
-				'base-100': '#f8f5f0',
-				'red-lighter': '#FFEBEE',
-				'red-light': '#FFCDD2',
-				'red-normal': '#EF4444',
-				'red-dark': '#DC2626',
-				'red-darker': '#B91C1C',
+				'primary-200': '#ffd700',
+				'primary-100': '#F1C40F',
+				'primary-50': '#ffe680',
+				'primary-orange': '#e67e22',
+				'primary-red': '#e74c3c',
+				'base-100': '#1C1C1C',
 				price: {
 					DEFAULT: '#E60023',
 					light: '#FF4D6D',
@@ -48,6 +44,9 @@ export default {
 					dark: '#991B1B'
 				},
 				background: 'hsl(var(--background))',
+				baseColor: 'hsl(var(--base-color))',
+				highlight: 'hsl(var(--highlight))',
+				highlight_2: 'hsl(var(--highlight-2))',
 				foreground: 'hsl(var(--foreground))',
 				card: {
 					DEFAULT: 'hsl(var(--card))',
@@ -133,5 +132,15 @@ export default {
 			}
 		}
 	},
-	plugins: [tailwindcssAnimate],
+	plugins: [tailwindcssAnimate, function ({ addBase, theme }) {
+		addBase({
+			':root': {
+				'--primary-50': theme('colors.primary-50'),
+				'--primary-100': theme('colors.primary-100'),
+				'--primary-200': theme('colors.primary-200'),
+				'--primary-orange': theme('colors.primary-orange'),
+				'--primary-red': theme('colors.primary-red'),
+			},
+		});
+	},],
 }

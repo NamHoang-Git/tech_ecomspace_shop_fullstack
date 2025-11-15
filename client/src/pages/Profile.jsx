@@ -1,27 +1,52 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import UserProfileAvatarEdit from '../components/UserProfileAvatarEdit';
-import ChangePassword from '../components/ChangePassword';
-import Axios from '../utils/Axios';
-import SummaryApi from '../common/SummaryApi';
-import AxiosToastError from '../utils/AxiosToastError';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+    CardFooter,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
+import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import fetchUserDetails from '../utils/fetchUserDetails';
-import { setUserDetails } from '../store/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
 import defaultAvatar from '../assets/defaultAvatar.png';
-import { FaEdit, FaLock, FaUser, FaEnvelope, FaPhone } from 'react-icons/fa';
+import Axios from '@/utils/Axios';
+import SummaryApi from '@/common/SummaryApi';
+import fetchUserDetails from '@/utils/fetchUserDetails';
+import { setUserDetails, updatedAvatar } from '@/store/userSlice';
+import AxiosToastError from '@/utils/AxiosToastError';
+import Loading from '@/components/Loading';
+import { Eye, EyeOff } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import GlareHover from '@/components/GlareHover';
 
 const Profile = () => {
-    const user = useSelector((state) => state.user);
-    const [openProfileAvatarEdit, setOpenProfileAvatarEdit] = useState(false);
+    const user = useSelector((state) => state?.user);
     const [userData, setUserData] = useState({
-        name: user.name,
-        email: user.email,
-        mobile: user.mobile,
+        name: user?.name || '',
+        email: user?.email || '',
+        mobile: user?.mobile || '',
+    });
+
+    const [passwordData, setPasswordData] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
     });
 
     const [loading, setLoading] = useState(false);
-    const [showChangePassword, setShowChangePassword] = useState(false);
+
+    const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
+    const [failedAttempts, setFailedAttempts] = useState(0);
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
+
     const [isModified, setIsModified] = useState(false);
     const [mobileError, setMobileError] = useState('');
     const dispatch = useDispatch();
@@ -67,9 +92,72 @@ const Profile = () => {
                 [name]: value,
             };
         });
+
+        setPasswordData((prev) => {
+            return {
+                ...prev,
+                [name]: value,
+            };
+        });
     };
 
-    const handleSubmit = async (e) => {
+    const handleUploadAvatar = async (e) => {
+        const file = e.target.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        // Validate file type
+        const validTypes = [
+            'image/jpeg',
+            'image/jpg',
+            'image/png',
+            'image/webp',
+        ];
+        if (!validTypes.includes(file.type)) {
+            toast.error('Chỉ chấp nhận file ảnh (JPG, PNG, WEBP)');
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.size > maxSize) {
+            toast.error('Kích thước ảnh không được vượt quá 5MB');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('avatar', file);
+
+        try {
+            setLoading(true);
+            const response = await Axios({
+                ...SummaryApi.upload_avatar,
+                data: formData,
+                headers: {
+                    'Content-Type': undefined, // Remove to let browser set multipart/form-data with boundary
+                },
+            });
+
+            const { data: responseData } = response;
+
+            if (responseData.success) {
+                toast.success(
+                    responseData.message || 'Cập nhật avatar thành công'
+                );
+                dispatch(updatedAvatar(responseData.data.avatar));
+            }
+        } catch (error) {
+            AxiosToastError(error);
+        } finally {
+            setLoading(false);
+            // Reset input để có thể upload lại cùng file
+            e.target.value = '';
+        }
+    };
+
+    const handleUpdateProfile = async (e) => {
         e.preventDefault();
 
         // Validate mobile number before submission
@@ -99,221 +187,276 @@ const Profile = () => {
         }
     };
 
+    const handleSubmitChangePassword = async (e) => {
+        e.preventDefault();
+
+        if (!passwordData.currentPassword) {
+            toast.error('Vui lòng nhập mật khẩu hiện tại');
+            return;
+        }
+
+        try {
+            setLoading(true);
+            // First verify the current password
+            const response = await Axios({
+                ...SummaryApi.verify_password,
+                data: {
+                    password: passwordData.currentPassword,
+                },
+            });
+
+            if (response.data.success) {
+                // Show success toast
+                toast.success(
+                    response.data.message || 'Xác thực mật khẩu thành công'
+                );
+
+                // If password is correct, navigate to reset password page
+                close();
+                navigate('/reset-password', {
+                    state: {
+                        email: response.data.email,
+                        userId: response.data.userId,
+                        currentPassword: passwordData.currentPassword,
+                        fromProfile: true,
+                        fromForgotPassword: false,
+                    },
+                    replace: true,
+                });
+            }
+        } catch (error) {
+            const newFailedAttempts = failedAttempts + 1;
+            setFailedAttempts(newFailedAttempts);
+
+            if (newFailedAttempts >= 3) {
+                setShowForgotPassword(true);
+                toast.error(
+                    'Bạn đã nhập sai mật khẩu quá 3 lần. Vui lòng thử lại sau hoặc sử dụng chức năng quên mật khẩu.'
+                );
+            } else {
+                AxiosToastError(error);
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
-        <div className="max-w-5xl mx-auto py-2 md:p-6">
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                {/* Header */}
-                <div
-                    className="px-3 py-4 bg-primary-4 rounded-md shadow-md text-secondary-200
-                shadow-secondary-100 font-bold"
-                >
-                    <h1 className="text-ellipsis line-clamp-1 uppercase">
-                        Tài khoản của tôi
-                    </h1>
-                    <p className="text-xs sm:text-base text-secondary-100">
-                        Quản lý thông tin cá nhân và bảo mật của bạn
-                    </p>
-                </div>
-
-                <div className="px-4 py-6 sm:p-6 md:flex gap-8">
-                    {/* Left Column - Avatar */}
-                    <div className="md:w-1/3 flex flex-col items-center mb-6 md:mb-0">
-                        <div className="relative group">
-                            <div className="w-24 h-24 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 border-inset border-cyan-500 shadow-lg">
-                                <img
-                                    src={user.avatar || defaultAvatar}
-                                    alt={user.name}
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                            <button
-                                onClick={() => setOpenProfileAvatarEdit(true)}
-                                className="absolute bottom-1 right-1 sm:bottom-2 sm:right-2 bg-primary-2 text-secondary-200 p-[6px] rounded-lg
-                            transition-all duration-200 transform hover:scale-110 shadow-lg"
-                                title="Change Avatar"
-                            >
-                                <FaEdit />
-                            </button>
-                        </div>
-
-                        <h2 className="mt-4 sm:text-xl text-lg font-semibold text-gray-800">
-                            {user.name}
-                        </h2>
-                        <p className="text-secondary-200 font-bold sm:text-base text-sm">
-                            {user.role}
-                        </p>
-
-                        <button
-                            onClick={() => setShowChangePassword(true)}
-                            className="mt-4 flex items-center gap-2 px-4 py-[6px] bg-white border-2 border-secondary-200
-                            text-secondary-200 rounded-lg sm:text-base text-sm hover:bg-secondary-200 hover:text-white transition-colors w-full justify-center"
-                        >
-                            <FaLock />
-                            <p className="font-semibold mt-[5px]">
-                                Đổi mật khẩu
-                            </p>
-                        </button>
-                    </div>
-
-                    {/* Right Column - Form */}
-                    <div className="md:w-2/3 sm:text-lg text-sm">
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="bg-gray-50 px-2 py-4 sm:p-6 rounded-lg">
-                                <h3 className="sm:text-lg text-base font-semibold text-secondary-200 mb-4 flex items-center">
-                                    <FaUser
-                                        className="mr-2 mb-[4px]"
-                                        size={18}
-                                    />{' '}
-                                    Thông tin cá nhân
-                                </h3>
-
-                                <div className="space-y-4 sm:text-base text-sm text-secondary-200">
-                                    <div>
-                                        <label className="block font-bold mb-1">
-                                            Họ và tên
-                                        </label>
-                                        <div className="relative">
-                                            <input
-                                                type="text"
-                                                placeholder="Nhập họ và tên"
-                                                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary-100 focus:border-secondary-100"
-                                                value={userData.name}
-                                                name="name"
-                                                onChange={handleOnChange}
-                                                required
-                                                spellCheck={false}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className="block font-bold mb-1">
-                                            Địa chỉ email
-                                        </label>
-                                        <div className="relative opacity-80">
-                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <FaEnvelope className="text-secondary-100" />
-                                            </div>
-                                            <input
-                                                type="email"
-                                                className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2
-                                                focus:ring-secondary-100 focus:border-secondary-100 cursor-not-allowed"
-                                                value={userData.email}
-                                                name="email"
-                                                onChange={handleOnChange}
-                                                required
-                                                disabled
-                                                spellCheck={false}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className="block font-bold mb-1">
-                                            Số điện thoại
-                                        </label>
-                                        <div className="relative">
-                                            <div className="relative">
-                                                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                    <FaPhone className="text-secondary-100" />
-                                                </div>
-                                                <input
-                                                    type="tel"
-                                                    placeholder="Nhập số điện thoại"
-                                                    className={`w-full pl-10 px-4 py-2 border ${
-                                                        mobileError
-                                                            ? 'border-red-500'
-                                                            : 'border-gray-300'
-                                                    } rounded-lg focus:ring-2 focus:ring-secondary-100 focus:border-secondary-100`}
-                                                    value={userData.mobile}
-                                                    name="mobile"
-                                                    onChange={(e) => {
-                                                        handleOnChange(e);
-                                                        // Clear error when user starts typing
-                                                        if (mobileError) {
-                                                            validateMobile(
-                                                                e.target.value
-                                                            );
-                                                        }
-                                                    }}
-                                                    onBlur={(e) =>
-                                                        validateMobile(
-                                                            e.target.value
-                                                        )
+        <div className="container mx-auto grid gap-2 z-10">
+            <Tabs defaultValue="account" className="space-y-2">
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="account">Tài Khoản</TabsTrigger>
+                    <TabsTrigger value="password">Đổi Mật Khẩu</TabsTrigger>
+                </TabsList>
+                <TabsContent value="account">
+                    <Card className="space-y-4 py-6">
+                        <form onSubmit={handleUpdateProfile}>
+                            <CardHeader className="pb-6">
+                                <CardTitle className="text-lg text-highlight font-bold uppercase">
+                                    Tài khoản
+                                </CardTitle>
+                                <CardDescription>
+                                    Quản lý thông tin tài khoản
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="space-y-4">
+                                    <Label>Avatar Hiện Tại</Label>
+                                    <div className="grid justify-items-center justify-start gap-2.5">
+                                        <div className="flex items-center space-x-4">
+                                            <Avatar className="h-20 w-20">
+                                                <AvatarImage
+                                                    src={
+                                                        user?.avatar ||
+                                                        defaultAvatar
                                                     }
-                                                    required
-                                                    spellCheck={false}
+                                                    alt={user?.name || 'User'}
                                                 />
-                                            </div>
-                                            {mobileError && (
-                                                <p className="absolute left-0 mt-1 text-sm text-red-600">
-                                                    {mobileError}
-                                                </p>
-                                            )}
+                                                <AvatarFallback>
+                                                    {(user?.name || 'U')
+                                                        .split(' ')
+                                                        .map((n) => n[0])
+                                                        .join('')}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                        </div>
+                                        <div>
+                                            <Label
+                                                htmlFor="uploadProfile"
+                                                className="text-sm border border-primary rounded-lg px-2 py-1 cursor-pointer hover:opacity-80"
+                                            >
+                                                {loading
+                                                    ? 'Đang tải lên...'
+                                                    : 'Chọn ảnh'}
+                                            </Label>
+                                            <Input
+                                                onChange={handleUploadAvatar}
+                                                type="file"
+                                                accept="image/*"
+                                                id="uploadProfile"
+                                                className="hidden"
+                                                disabled={loading}
+                                            />
                                         </div>
                                     </div>
                                 </div>
-
-                                <div className="mt-6 flex justify-end">
-                                    <button
-                                        type="submit"
-                                        disabled={
-                                            !isModified ||
-                                            loading ||
-                                            mobileError
-                                        }
-                                        className={`px-6 py-2 ${
-                                            !mobileError && isModified
-                                                ? 'bg-primary-3 hover:opacity-80'
-                                                : 'bg-gray-300 cursor-not-allowed'
-                                        } text-secondary-200 font-bold rounded-lg focus:outline-none
-                                    focus:ring-2 focus:ring-offset-2 focus:ring-secondary-100 disabled:opacity-50 flex items-center`}
-                                    >
-                                        {loading ? (
-                                            <>
-                                                <svg
-                                                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <circle
-                                                        className="opacity-25"
-                                                        cx="12"
-                                                        cy="12"
-                                                        r="10"
-                                                        stroke="currentColor"
-                                                        strokeWidth="4"
-                                                    ></circle>
-                                                    <path
-                                                        className="opacity-75"
-                                                        fill="currentColor"
-                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                                    ></path>
-                                                </svg>
-                                                Lưu thay đổi...
-                                            </>
-                                        ) : (
-                                            'Lưu thay đổi'
-                                        )}
-                                    </button>
+                                <div className="space-y-2">
+                                    <Label htmlFor="full-name">Họ và Tên</Label>
+                                    <Input
+                                        type="text"
+                                        placeholder="Nhập họ và tên"
+                                        value={userData.name}
+                                        name="name"
+                                        onChange={handleOnChange}
+                                        required
+                                        spellCheck={false}
+                                    />
                                 </div>
-                            </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="email">Email</Label>
+                                    <Input
+                                        type="email"
+                                        value={userData.email}
+                                        name="email"
+                                        onChange={handleOnChange}
+                                        required
+                                        disabled
+                                        spellCheck={false}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="phone">Số Điện Thoại</Label>
+                                    <Input
+                                        type="tel"
+                                        placeholder="Nhập số điện thoại"
+                                        value={userData.mobile}
+                                        name="mobile"
+                                        onChange={(e) => {
+                                            handleOnChange(e);
+                                            // Clear error when user starts typing
+                                            if (mobileError) {
+                                                validateMobile(e.target.value);
+                                            }
+                                        }}
+                                        onBlur={(e) =>
+                                            validateMobile(e.target.value)
+                                        }
+                                        required
+                                        spellCheck={false}
+                                        className={cn(
+                                            mobileError
+                                                ? 'border-red-500 focus-visible:ring-red-500'
+                                                : ''
+                                        )}
+                                    />
+                                    {mobileError && (
+                                        <p className="text-sm text-red-500 mt-1">
+                                            {mobileError}
+                                        </p>
+                                    )}
+                                </div>
+                            </CardContent>
+                            <CardFooter className="pt-6">
+                                <GlareHover
+                                    background="transparent"
+                                    glareOpacity={0.3}
+                                    glareAngle={-30}
+                                    glareSize={300}
+                                    transitionDuration={800}
+                                    playOnce={false}
+                                    className={`${
+                                        !mobileError && !isModified
+                                            ? 'cursor-not-allowed'
+                                            : 'cursor-pointer'
+                                    }`}
+                                >
+                                    <Button
+                                        disabled={!mobileError && !isModified}
+                                        type="submit"
+                                        className="bg-foreground"
+                                    >
+                                        {loading ? <Loading /> : 'Lưu Thay Đổi'}
+                                    </Button>
+                                </GlareHover>
+                            </CardFooter>
                         </form>
-                    </div>
-                </div>
-            </div>
-
-            {/* Modals */}
-            {openProfileAvatarEdit && (
-                <UserProfileAvatarEdit
-                    close={() => setOpenProfileAvatarEdit(false)}
-                />
-            )}
-
-            {showChangePassword && (
-                <ChangePassword close={() => setShowChangePassword(false)} />
-            )}
+                    </Card>
+                </TabsContent>
+                <TabsContent value="password">
+                    <Card className="space-y-4 py-6">
+                        <form onSubmit={handleSubmitChangePassword}>
+                            <CardHeader className="pb-6">
+                                <CardTitle className="text-lg text-highlight font-bold uppercase">
+                                    Xác minh danh tính
+                                </CardTitle>
+                                <CardDescription>
+                                    Vì lý do bảo mật, vui lòng nhập mật khẩu
+                                    hiện tại của bạn để tiếp tục.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="space-y-2">
+                                    <Label htmlFor="currentPassword">
+                                        Mật Khẩu Hiện Tại
+                                    </Label>
+                                    <div className="relative">
+                                        <Input
+                                            type={
+                                                showPassword
+                                                    ? 'text'
+                                                    : 'password'
+                                            }
+                                            name="currentPassword"
+                                            value={passwordData.currentPassword}
+                                            onChange={handleOnChange}
+                                            placeholder="Nhập mật khẩu hiện tại"
+                                            required
+                                            className="text-sm h-12"
+                                        />
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent cursor-pointer"
+                                            onClick={() =>
+                                                setShowPassword(!showPassword)
+                                            }
+                                        >
+                                            {showPassword ? (
+                                                <EyeOff className="h-4 w-4" />
+                                            ) : (
+                                                <Eye className="h-4 w-4" />
+                                            )}
+                                        </Button>
+                                    </div>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="pt-6">
+                                <GlareHover
+                                    background="transparent"
+                                    glareOpacity={0.3}
+                                    glareAngle={-30}
+                                    glareSize={300}
+                                    transitionDuration={800}
+                                    playOnce={false}
+                                    className={`${
+                                        !mobileError && !isModified
+                                            ? 'cursor-not-allowed'
+                                            : 'cursor-pointer'
+                                    }`}
+                                >
+                                    <Button
+                                        type="submit"
+                                        className="bg-foreground"
+                                    >
+                                        {loading ? <Loading /> : 'Tiếp Tục'}
+                                    </Button>
+                                </GlareHover>
+                            </CardFooter>
+                        </form>
+                    </Card>
+                </TabsContent>
+            </Tabs>
         </div>
     );
 };

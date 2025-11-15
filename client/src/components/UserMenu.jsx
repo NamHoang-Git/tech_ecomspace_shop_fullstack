@@ -11,6 +11,9 @@ import AxiosToastError from './../utils/AxiosToastError';
 import { BiLinkExternal, BiRefresh } from 'react-icons/bi';
 // import isAdmin from '../utils/isAdmin';
 import GradientText from './GradientText';
+import isAdmin from '@/utils/isAdmin';
+import { RiExternalLinkFill } from 'react-icons/ri';
+import defaultAvatar from '@/assets/defaultAvatar.png';
 
 const UserMenu = ({ close }) => {
     const user = useSelector((state) => state.user);
@@ -100,76 +103,79 @@ const UserMenu = ({ close }) => {
     return (
         <div
             ref={menuRef}
-            className="p-6 rounded-2xl bg-neutral-600/95 backdrop-blur-lg border border-white/20 shadow-xl"
+            className="bg-background text-muted-foreground rounded-lg shadow-lg overflow-hidden w-full"
         >
-            <div className="text-lime-200 font-medium">Tài khoản</div>
-
-            <div className="text-sm flex items-start gap-2 px-4 lg:px-2 py-2 font-semibold">
-                <div className="w-full grid gap-1">
-                    <div className="mt-1 flex items-center gap-1">
-                        <GradientText
-                            colors={[
-                                '#FFD700',
-                                '#FFFFFF',
-                                '#FFD700',
-                                '#FFFACD',
-                                '#FF6347',
-                            ]}
-                            animationSpeed={3}
-                            showBorder={false}
-                            className="custom-class"
+            <div className="p-4 py-2">
+                <div className="flex items-center gap-3">
+                    <Link
+                        to={'/dashboard/profile'}
+                        className="relative w-16 hover:opacity-85"
+                    >
+                        <img
+                            src={user?.avatar || defaultAvatar}
+                            alt={user?.name}
+                            className="w-full p-0.5 rounded-full object-cover border-2 border-red-600"
+                        />
+                        {user.role === 'ADMIN' && (
+                            <span
+                                className="absolute -bottom-1 -right-1 bg-rose-600 text-white text-xs font-medium
+                                        px-2.5 py-0.5 rounded-full"
+                            >
+                                Quản trị
+                            </span>
+                        )}
+                    </Link>
+                    <div className="min-w-0">
+                        <Link
+                            to={'/dashboard/profile'}
+                            className="flex items-center gap-1 text-sm font-bold truncate
+                                    text-foreground hover:opacity-80"
+                            title="Tài khoản"
                         >
-                            <div className="flex items-center gap-1">
-                                Điểm thưởng:{' '}
-                                {user.rewardsPoint?.toLocaleString() || 0} điểm
-                            </div>
-                        </GradientText>
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                fetchUserPoints();
-                            }}
-                            className={`transition-colors text-yellow-600 ${
+                            {user?.name}
+                            <RiExternalLinkFill className="mb-2" />
+                        </Link>
+                        <p className="text-xs truncate">{user?.email}</p>
+                    </div>
+                </div>
+                <div className="mt-3 flex items-center justify-between">
+                    <GradientText
+                        colors={[
+                            '#FFD700',
+                            '#FFB300',
+                            '#FF8C00',
+                            '#FF4500',
+                            '#B22222',
+                        ]}
+                        animationSpeed={3}
+                        showBorder={false}
+                        className="custom-class"
+                    >
+                        <span className="text-xs">Điểm tích lũy:</span>
+                        {isLoadingPoints ? (
+                            <BiRefresh className="animate-spin" />
+                        ) : (
+                            <span className="text-xs font-bold px-2">
+                                {user?.rewardsPoint?.toLocaleString() || 0}
+                            </span>
+                        )}
+                    </GradientText>
+                    <button
+                        onClick={fetchUserPoints}
+                        disabled={isLoadingPoints}
+                        className="text-orange-600 hover:text-orange-400 disabled:opacity-50"
+                    >
+                        <BiRefresh
+                            className={`inline-block ${
                                 isLoadingPoints ? 'animate-spin' : ''
                             }`}
-                            disabled={isLoadingPoints}
-                            title="Làm mới điểm"
-                        >
-                            <BiRefresh size={20} className="mb-1" />
-                        </button>
-                    </div>
+                        />
+                    </button>
                 </div>
             </div>
-            {/* <div className="text-sm flex items-start gap-2 px-4 lg:px-2 py-2 font-semibold">
-                <div className="w-full grid gap-1">
-                    <div className="text-gray-600 mt-1 flex items-center gap-1">
-                        <div className="flex items-center gap-1">
-                            <span className="font-medium text-yellow-500">
-                                Điểm thưởng:
-                            </span>
-                            <span className="font-bold text-yellow-500">
-                                {user.rewardsPoint?.toLocaleString() || 0} điểm
-                            </span>
-                        </div>
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                fetchUserPoints();
-                            }}
-                            className={`text-yellow-500 hover:text-yellow-500 transition-colors ${
-                                isLoadingPoints ? 'animate-spin' : ''
-                            }`}
-                            disabled={isLoadingPoints}
-                            title="Làm mới điểm"
-                        >
-                            <BiRefresh size={20} className="mb-1" />
-                        </button>
-                    </div>
-                </div>
-            </div> */}
             <Divider />
             <div className="lg:text-sm text-xs grid gap-2 font-semibold">
-                {/* {isAdmin(user.role) && (
+                {isAdmin(user.role) && (
                     <Link
                         onClick={handleClose}
                         to={'/dashboard/category'}
@@ -247,20 +253,7 @@ const UserMenu = ({ close }) => {
                             Mã giảm giá
                         </span>
                     </Link>
-                )} */}
-                <Link
-                    onClick={handleClose}
-                    to={'/dashboard/profile'}
-                    className={`flex items-center text-bl gap-4 px-4 py-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] ${
-                        isActive('/dashboard/profile')
-                            ? 'bg-white/20 shadow-md'
-                            : ''
-                    }`}
-                >
-                    <span className="text-white font-medium text-sm">
-                        Thông tin tài khoản
-                    </span>
-                </Link>
+                )}
 
                 <Link
                     onClick={handleClose}
@@ -291,14 +284,15 @@ const UserMenu = ({ close }) => {
                 </Link>
 
                 <Divider />
-                <button
-                    onClick={handleLogout}
-                    className="flex items-center text-bl gap-4 px-4 py-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
-                >
-                    <span className="text-white font-medium text-sm">
+                <div className="pb-2">
+                    <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center justify-center px-4 py-2 text-sm font-medium
+                    text-foreground hover:bg-secondary rounded-md hover:scale-[1.02] transition-all duration-300 ease-out"
+                    >
                         Đăng xuất
-                    </span>
-                </button>
+                    </button>
+                </div>
             </div>
         </div>
     );

@@ -25,11 +25,23 @@ import SearchPage from './pages/SearchPage';
 import Header from './components/Header';
 import { Footer } from './components/footer';
 import ProductListPage from './pages/ProductListPage';
+import LiquidEther from './components/LiquidEther';
 
 function App() {
     const dispatch = useDispatch();
     const location = useLocation();
     const hiddenCartLinkPaths = ['/checkout', '/cart'];
+    const hideLayout = [
+        '/login',
+        '/register',
+        '/registration-success',
+        '/forgot-password',
+        '/verification-otp',
+        '/reset-password',
+    ].some((path) => location.pathname.startsWith(path));
+    const dashBoardLayout = ['/admin', '/dashboard'].some((path) =>
+        location.pathname.startsWith(path)
+    );
 
     useEffect(() => {
         (async () => {
@@ -58,49 +70,60 @@ function App() {
     }, [dispatch]);
 
     return (
-        // <GlobalProvider>
-        //     <Routes>
-        //         <Route element={<MainLayout />}>
-        //             <Route path="/" element={<Home />} />
-        //             <Route path="/search" element={<SearchPage />} />
-        //         </Route>
-
-        //         <Route element={<AuthLayout />}>
-        //             <Route path="/login" element={<Login />} />
-        //             <Route path="/register" element={<Register />} />
-        //             <Route
-        //                 path="/forgot-password"
-        //                 element={<ForgotPassword />}
-        //             />
-        //             <Route
-        //                 path="/verification-otp"
-        //                 element={<OtpVerification />}
-        //             />
-        //             <Route path="/reset-password" element={<ResetPassword />} />
-
-        //             <Route path="/dashboard/profile" element={<Profile />} />
-        //             <Route
-        //                 path="/dashboard/category"
-        //                 element={<CategoryPage />}
-        //             />
-        //         </Route>
-        //     </Routes>
-
-        //     <Toaster />
-        //     {!hiddenCartLinkPaths.includes(location.pathname) && (
-        //         <CartMobileLink />
-        //     )}
-        // </GlobalProvider>
         <GlobalProvider>
-            <Header />
-            <main className="min-h-[80vh]">
-                <Outlet />
-            </main>
-            <Footer />
-            <Toaster />
-            {!hiddenCartLinkPaths.includes(location.pathname) && (
-                <CartMobileLink />
+            {!hideLayout && !dashBoardLayout && (
+                <>
+                    <Header />
+                    <main className="min-h-[80vh]">
+                        <div className="fixed inset-0 z-0 pointer-events-none">
+                            <LiquidEther
+                                isViscous={false}
+                                iterationsViscous={8}
+                                iterationsPoisson={8}
+                                resolution={0.3}
+                                autoDemo={true}
+                                autoSpeed={0.2}
+                                autoRampDuration={0.8}
+                                style={{ width: '100%', height: '100%' }}
+                            />
+                        </div>
+                        <div className="relative">
+                            <Outlet />
+                        </div>
+                    </main>
+                    <Footer />
+                    {!hiddenCartLinkPaths.includes(location.pathname) && (
+                        <CartMobileLink />
+                    )}
+                </>
             )}
+
+            {hideLayout && (
+                <main className="min-h-screen">
+                    <div className="fixed inset-0 z-0 pointer-events-none">
+                        <LiquidEther
+                            isViscous={false}
+                            iterationsViscous={8}
+                            iterationsPoisson={8}
+                            resolution={0.3}
+                            autoDemo={true}
+                            autoSpeed={0.2}
+                            autoRampDuration={0.8}
+                            style={{ width: '100%', height: '100%' }}
+                        />
+                    </div>
+                    <div className="relative">
+                        <Outlet />
+                    </div>
+                </main>
+            )}
+
+            {dashBoardLayout && (
+                <main className="min-h-screen">
+                    <Outlet />
+                </main>
+            )}
+            <Toaster />
         </GlobalProvider>
     );
 }

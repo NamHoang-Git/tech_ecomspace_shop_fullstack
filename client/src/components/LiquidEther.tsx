@@ -2,8 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
 export interface LiquidEtherProps {
-    mouseForce?: number;
-    cursorSize?: number;
     isViscous?: boolean;
     viscous?: number;
     iterationsViscous?: number;
@@ -17,18 +15,13 @@ export interface LiquidEtherProps {
     className?: string;
     autoDemo?: boolean;
     autoSpeed?: number;
-    autoIntensity?: number;
-    takeoverDuration?: number;
-    autoResumeDelay?: number;
     autoRampDuration?: number;
 }
 
 interface SimOptions {
     iterations_poisson: number;
     iterations_viscous: number;
-    mouse_force: number;
     resolution: number;
-    cursor_size: number;
     viscous: number;
     isBounce: boolean;
     dt: number;
@@ -41,9 +34,7 @@ interface LiquidEtherWebGL {
     autoDriver?: {
         enabled: boolean;
         speed: number;
-        resumeDelay: number;
         rampDurationMs: number;
-        mouse?: { autoIntensity: number; takeoverDuration: number };
         forceStop: () => void;
     };
     resize: () => void;
@@ -55,8 +46,6 @@ interface LiquidEtherWebGL {
 const defaultColors = ['#5227FF', '#FF9FFC', '#B19EEF'];
 
 export default function LiquidEther({
-    mouseForce = 20,
-    cursorSize = 100,
     isViscous = false,
     viscous = 30,
     iterationsViscous = 32,
@@ -70,9 +59,6 @@ export default function LiquidEther({
     className = '',
     autoDemo = true,
     autoSpeed = 0.5,
-    autoIntensity = 2.2,
-    takeoverDuration = 0.25,
-    autoResumeDelay = 1000,
     autoRampDuration = 0.6,
 }: LiquidEtherProps): React.ReactElement {
     const mountRef = useRef<HTMLDivElement | null>(null);
@@ -113,7 +99,6 @@ export default function LiquidEther({
         }
 
         const paletteTex = makePaletteTexture(colors);
-        // Hard-code transparent background vector (alpha 0)
         const bgVec4 = new THREE.Vector4(0, 0, 0, 0);
 
         class CommonClass {
@@ -121,8 +106,6 @@ export default function LiquidEther({
             height = 0;
             aspect = 1;
             pixelRatio = 1;
-            isMobile = false;
-            breakpoint = 768;
             fboWidth: number | null = null;
             fboHeight: number | null = null;
             time = 0;
@@ -135,10 +118,10 @@ export default function LiquidEther({
                 this.pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
                 this.resize();
                 this.renderer = new THREE.WebGLRenderer({
-                    antialias: true,
+                    antialias: false,
                     alpha: true,
+                    powerPreference: 'high-performance',
                 });
-                // Always transparent
                 this.renderer.autoClear = false;
                 this.renderer.setClearColor(new THREE.Color(0x000000), 0);
                 this.renderer.setPixelRatio(this.pixelRatio);
@@ -167,147 +150,11 @@ export default function LiquidEther({
         }
         const Common = new CommonClass();
 
-        class MouseClass {
-            mouseMoved = false;
-            coords = new THREE.Vector2();
-            coords_old = new THREE.Vector2();
-            diff = new THREE.Vector2();
-            timer: number | null = null;
-            container: HTMLElement | null = null;
-            isHoverInside = false;
-            hasUserControl = false;
-            isAutoActive = false;
-            autoIntensity = 2.0;
-            takeoverActive = false;
-            takeoverStartTime = 0;
-            takeoverDuration = 0.25;
-            takeoverFrom = new THREE.Vector2();
-            takeoverTo = new THREE.Vector2();
-            onInteract: (() => void) | null = null;
-            private _onMouseMove = this.onDocumentMouseMove.bind(this);
-            private _onTouchStart = this.onDocumentTouchStart.bind(this);
-            private _onTouchMove = this.onDocumentTouchMove.bind(this);
-            private _onMouseEnter = this.onMouseEnter.bind(this);
-            private _onMouseLeave = this.onMouseLeave.bind(this);
-            private _onTouchEnd = this.onTouchEnd.bind(this);
-            init(container: HTMLElement) {
-                this.container = container;
-                container.addEventListener('mousemove', this._onMouseMove);
-                container.addEventListener('touchstart', this._onTouchStart, {
-                    passive: true,
-                });
-                container.addEventListener('touchmove', this._onTouchMove, {
-                    passive: true,
-                });
-                container.addEventListener('mouseenter', this._onMouseEnter);
-                container.addEventListener('mouseleave', this._onMouseLeave);
-                container.addEventListener('touchend', this._onTouchEnd);
-            }
-            dispose() {
-                const c = this.container;
-                if (!c) return;
-                c.removeEventListener('mousemove', this._onMouseMove);
-                c.removeEventListener('touchstart', this._onTouchStart);
-                c.removeEventListener('touchmove', this._onTouchMove);
-                c.removeEventListener('mouseenter', this._onMouseEnter);
-                c.removeEventListener('mouseleave', this._onMouseLeave);
-                c.removeEventListener('touchend', this._onTouchEnd);
-            }
-            setCoords(x: number, y: number) {
-                if (!this.container) return;
-                if (this.timer) window.clearTimeout(this.timer);
-                const rect = this.container.getBoundingClientRect();
-                const nx = (x - rect.left) / rect.width;
-                const ny = (y - rect.top) / rect.height;
-                this.coords.set(nx * 2 - 1, -(ny * 2 - 1));
-                this.mouseMoved = true;
-                this.timer = window.setTimeout(() => {
-                    this.mouseMoved = false;
-                }, 100);
-            }
-            setNormalized(nx: number, ny: number) {
-                this.coords.set(nx, ny);
-                this.mouseMoved = true;
-            }
-            onDocumentMouseMove(event: MouseEvent) {
-                if (this.onInteract) this.onInteract();
-                if (
-                    this.isAutoActive &&
-                    !this.hasUserControl &&
-                    !this.takeoverActive
-                ) {
-                    if (!this.container) return;
-                    const rect = this.container.getBoundingClientRect();
-                    const nx = (event.clientX - rect.left) / rect.width;
-                    const ny = (event.clientY - rect.top) / rect.height;
-                    this.takeoverFrom.copy(this.coords);
-                    this.takeoverTo.set(nx * 2 - 1, -(ny * 2 - 1));
-                    this.takeoverStartTime = performance.now();
-                    this.takeoverActive = true;
-                    this.hasUserControl = true;
-                    this.isAutoActive = false;
-                    return;
-                }
-                this.setCoords(event.clientX, event.clientY);
-                this.hasUserControl = true;
-            }
-            onDocumentTouchStart(event: TouchEvent) {
-                if (event.touches.length === 1) {
-                    const t = event.touches[0];
-                    if (this.onInteract) this.onInteract();
-                    this.setCoords(t.pageX, t.pageY);
-                    this.hasUserControl = true;
-                }
-            }
-            onDocumentTouchMove(event: TouchEvent) {
-                if (event.touches.length === 1) {
-                    const t = event.touches[0];
-                    if (this.onInteract) this.onInteract();
-                    this.setCoords(t.pageX, t.pageY);
-                }
-            }
-            onTouchEnd() {
-                this.isHoverInside = false;
-            }
-            onMouseEnter() {
-                this.isHoverInside = true;
-            }
-            onMouseLeave() {
-                this.isHoverInside = false;
-            }
-            update() {
-                if (this.takeoverActive) {
-                    const t =
-                        (performance.now() - this.takeoverStartTime) /
-                        (this.takeoverDuration * 1000);
-                    if (t >= 1) {
-                        this.takeoverActive = false;
-                        this.coords.copy(this.takeoverTo);
-                        this.coords_old.copy(this.coords);
-                        this.diff.set(0, 0);
-                    } else {
-                        const k = t * t * (3 - 2 * t);
-                        this.coords
-                            .copy(this.takeoverFrom)
-                            .lerp(this.takeoverTo, k);
-                    }
-                }
-                this.diff.subVectors(this.coords, this.coords_old);
-                this.coords_old.copy(this.coords);
-                if (this.coords_old.x === 0 && this.coords_old.y === 0)
-                    this.diff.set(0, 0);
-                if (this.isAutoActive && !this.takeoverActive)
-                    this.diff.multiplyScalar(this.autoIntensity);
-            }
-        }
-        const Mouse = new MouseClass();
-
+        // Simplified auto movement class
         class AutoDriver {
-            mouse: MouseClass;
             manager: WebGLManager;
             enabled: boolean;
             speed: number;
-            resumeDelay: number;
             rampDurationMs: number;
             active = false;
             current = new THREE.Vector2(0, 0);
@@ -315,22 +162,19 @@ export default function LiquidEther({
             lastTime = performance.now();
             activationTime = 0;
             margin = 0.2;
+            autoForce = new THREE.Vector2();
             private _tmpDir = new THREE.Vector2();
             constructor(
-                mouse: MouseClass,
                 manager: WebGLManager,
                 opts: {
                     enabled: boolean;
                     speed: number;
-                    resumeDelay: number;
                     rampDuration: number;
                 }
             ) {
-                this.mouse = mouse;
                 this.manager = manager;
                 this.enabled = opts.enabled;
                 this.speed = opts.speed;
-                this.resumeDelay = opts.resumeDelay || 3000;
                 this.rampDurationMs = (opts.rampDuration || 0) * 1000;
                 this.pickNewTarget();
             }
@@ -343,37 +187,33 @@ export default function LiquidEther({
             }
             forceStop() {
                 this.active = false;
-                this.mouse.isAutoActive = false;
             }
             update() {
-                if (!this.enabled) return;
+                if (!this.enabled) {
+                    this.autoForce.set(0, 0);
+                    return;
+                }
                 const now = performance.now();
-                const idle = now - this.manager.lastUserInteraction;
-                if (idle < this.resumeDelay) {
-                    if (this.active) this.forceStop();
-                    return;
-                }
-                if (this.mouse.isHoverInside) {
-                    if (this.active) this.forceStop();
-                    return;
-                }
+
                 if (!this.active) {
                     this.active = true;
-                    this.current.copy(this.mouse.coords);
+                    this.current.set(0, 0);
                     this.lastTime = now;
                     this.activationTime = now;
                 }
-                if (!this.active) return;
-                this.mouse.isAutoActive = true;
+
                 let dtSec = (now - this.lastTime) / 1000;
                 this.lastTime = now;
                 if (dtSec > 0.2) dtSec = 0.016;
+
                 const dir = this._tmpDir.subVectors(this.target, this.current);
                 const dist = dir.length();
+
                 if (dist < 0.01) {
                     this.pickNewTarget();
                     return;
                 }
+
                 dir.normalize();
                 let ramp = 1;
                 if (this.rampDurationMs > 0) {
@@ -383,10 +223,19 @@ export default function LiquidEther({
                     );
                     ramp = t * t * (3 - 2 * t);
                 }
+
                 const step = this.speed * dtSec * ramp;
                 const move = Math.min(step, dist);
+
+                // Calculate force based on movement direction
+                this.autoForce.copy(dir).multiplyScalar(move * 20);
                 this.current.addScaledVector(dir, move);
-                this.mouse.setNormalized(this.current.x, this.current.y);
+            }
+            getForce(): THREE.Vector2 {
+                return this.autoForce;
+            }
+            getPosition(): THREE.Vector2 {
+                return this.current;
             }
         }
 
@@ -671,45 +520,23 @@ export default function LiquidEther({
                         px: { value: simProps.cellScale },
                         force: { value: new THREE.Vector2(0, 0) },
                         center: { value: new THREE.Vector2(0, 0) },
-                        scale: {
-                            value: new THREE.Vector2(
-                                simProps.cursor_size,
-                                simProps.cursor_size
-                            ),
-                        },
+                        scale: { value: new THREE.Vector2(100, 100) },
                     },
                 });
                 this.mouse = new THREE.Mesh(mouseG, mouseM);
                 this.scene!.add(this.mouse);
             }
-            update(...args: any[]) {
-                const props = args[0] || {};
-                const forceX = (Mouse.diff.x / 2) * (props.mouse_force || 0);
-                const forceY = (Mouse.diff.y / 2) * (props.mouse_force || 0);
-                const cellScale = props.cellScale || { x: 1, y: 1 };
-                const cursorSize = props.cursor_size || 0;
-                const cursorSizeX = cursorSize * cellScale.x;
-                const cursorSizeY = cursorSize * cellScale.y;
-                const centerX = Math.min(
-                    Math.max(
-                        Mouse.coords.x,
-                        -1 + cursorSizeX + cellScale.x * 2
-                    ),
-                    1 - cursorSizeX - cellScale.x * 2
-                );
-                const centerY = Math.min(
-                    Math.max(
-                        Mouse.coords.y,
-                        -1 + cursorSizeY + cellScale.y * 2
-                    ),
-                    1 - cursorSizeY - cellScale.y * 2
-                );
+            update(
+                force: THREE.Vector2,
+                position: THREE.Vector2,
+                cellScale: THREE.Vector2
+            ) {
                 const uniforms = (
                     this.mouse.material as THREE.RawShaderMaterial
                 ).uniforms;
-                uniforms.force.value.set(forceX, forceY);
-                uniforms.center.value.set(centerX, centerY);
-                uniforms.scale.value.set(cursorSize, cursorSize);
+                uniforms.force.value.copy(force);
+                uniforms.center.value.copy(position);
+                uniforms.scale.value.set(100, 100);
                 super.update();
             }
         }
@@ -886,9 +713,7 @@ export default function LiquidEther({
                 this.options = {
                     iterations_poisson: 32,
                     iterations_viscous: 32,
-                    mouse_force: 20,
                     resolution: 0.5,
-                    cursor_size: 100,
                     viscous: 30,
                     isBounce: false,
                     dt: 0.014,
@@ -936,7 +761,6 @@ export default function LiquidEther({
                 });
                 this.externalForce = new ExternalForce({
                     cellScale: this.cellScale,
-                    cursor_size: this.options.cursor_size,
                     dst: this.fbos.vel_1,
                 });
                 this.viscous = new Viscous({
@@ -989,19 +813,22 @@ export default function LiquidEther({
                     this.fbos[key]!.setSize(this.fboSize.x, this.fboSize.y);
                 }
             }
-            update() {
+            update(autoForce: THREE.Vector2, autoPosition: THREE.Vector2) {
                 if (this.options.isBounce) this.boundarySpace.set(0, 0);
                 else this.boundarySpace.copy(this.cellScale);
+
                 this.advection.update({
                     dt: this.options.dt,
                     isBounce: this.options.isBounce,
                     BFECC: this.options.BFECC,
                 });
-                this.externalForce.update({
-                    cursor_size: this.options.cursor_size,
-                    mouse_force: this.options.mouse_force,
-                    cellScale: this.cellScale,
-                });
+
+                this.externalForce.update(
+                    autoForce,
+                    autoPosition,
+                    this.cellScale
+                );
+
                 let vel: any = this.fbos.vel_1;
                 if (this.options.isViscous) {
                     vel = this.viscous.update({
@@ -1054,8 +881,8 @@ export default function LiquidEther({
                 Common.renderer.setRenderTarget(null);
                 Common.renderer.render(this.scene, this.camera);
             }
-            update() {
-                this.simulation.update();
+            update(autoForce: THREE.Vector2, autoPosition: THREE.Vector2) {
+                this.simulation.update(autoForce, autoPosition);
                 this.render();
             }
         }
@@ -1064,7 +891,6 @@ export default function LiquidEther({
             props: any;
             output!: Output;
             autoDriver?: AutoDriver;
-            lastUserInteraction = performance.now();
             running = false;
             private _loop = this.loop.bind(this);
             private _resize = this.resize.bind(this);
@@ -1072,19 +898,13 @@ export default function LiquidEther({
             constructor(props: any) {
                 this.props = props;
                 Common.init(props.$wrapper);
-                Mouse.init(props.$wrapper);
-                Mouse.autoIntensity = props.autoIntensity;
-                Mouse.takeoverDuration = props.takeoverDuration;
-                Mouse.onInteract = () => {
-                    this.lastUserInteraction = performance.now();
-                    if (this.autoDriver) this.autoDriver.forceStop();
-                };
-                this.autoDriver = new AutoDriver(Mouse, this as any, {
+
+                this.autoDriver = new AutoDriver(this as any, {
                     enabled: props.autoDemo,
                     speed: props.autoSpeed,
-                    resumeDelay: props.autoResumeDelay,
                     rampDuration: props.autoRampDuration,
                 });
+
                 this.init();
                 window.addEventListener('resize', this._resize);
                 this._onVisibility = () => {
@@ -1111,9 +931,14 @@ export default function LiquidEther({
             }
             render() {
                 if (this.autoDriver) this.autoDriver.update();
-                Mouse.update();
                 Common.update();
-                this.output.update();
+                const force = this.autoDriver
+                    ? this.autoDriver.getForce()
+                    : new THREE.Vector2(0, 0);
+                const position = this.autoDriver
+                    ? this.autoDriver.getPosition()
+                    : new THREE.Vector2(0, 0);
+                this.output.update(force, position);
             }
             loop() {
                 if (!this.running) return;
@@ -1140,7 +965,6 @@ export default function LiquidEther({
                             'visibilitychange',
                             this._onVisibility
                         );
-                    Mouse.dispose();
                     if (Common.renderer) {
                         const canvas = Common.renderer.domElement;
                         if (canvas && canvas.parentNode)
@@ -1161,9 +985,6 @@ export default function LiquidEther({
             $wrapper: container,
             autoDemo,
             autoSpeed,
-            autoIntensity,
-            takeoverDuration,
-            autoResumeDelay,
             autoRampDuration,
         });
         webglRef.current = webgl;
@@ -1174,8 +995,6 @@ export default function LiquidEther({
             if (!sim) return;
             const prevRes = sim.options.resolution;
             Object.assign(sim.options, {
-                mouse_force: mouseForce,
-                cursor_size: cursorSize,
                 isViscous,
                 viscous,
                 iterations_viscous: iterationsViscous,
@@ -1243,21 +1062,16 @@ export default function LiquidEther({
         };
     }, [
         BFECC,
-        cursorSize,
         dt,
         isBounce,
         isViscous,
         iterationsPoisson,
         iterationsViscous,
-        mouseForce,
         resolution,
         viscous,
         colors,
         autoDemo,
         autoSpeed,
-        autoIntensity,
-        takeoverDuration,
-        autoResumeDelay,
         autoRampDuration,
     ]);
 
@@ -1268,8 +1082,6 @@ export default function LiquidEther({
         if (!sim) return;
         const prevRes = sim.options.resolution;
         Object.assign(sim.options, {
-            mouse_force: mouseForce,
-            cursor_size: cursorSize,
             isViscous,
             viscous,
             iterations_viscous: iterationsViscous,
@@ -1282,17 +1094,10 @@ export default function LiquidEther({
         if (webgl.autoDriver) {
             webgl.autoDriver.enabled = autoDemo;
             webgl.autoDriver.speed = autoSpeed;
-            webgl.autoDriver.resumeDelay = autoResumeDelay;
             webgl.autoDriver.rampDurationMs = autoRampDuration * 1000;
-            if (webgl.autoDriver.mouse) {
-                webgl.autoDriver.mouse.autoIntensity = autoIntensity;
-                webgl.autoDriver.mouse.takeoverDuration = takeoverDuration;
-            }
         }
         if (resolution !== prevRes) sim.resize();
     }, [
-        mouseForce,
-        cursorSize,
         isViscous,
         viscous,
         iterationsViscous,
@@ -1303,19 +1108,16 @@ export default function LiquidEther({
         isBounce,
         autoDemo,
         autoSpeed,
-        autoIntensity,
-        takeoverDuration,
-        autoResumeDelay,
         autoRampDuration,
     ]);
 
     return (
         <div
             ref={mountRef}
-            className={`w-full h-full relative overflow-hidden pointer-events-none touch-none ${
+            className={`w-full h-full relative overflow-hidden ${
                 className || ''
             }`}
-            style={style}
+            style={{ pointerEvents: 'none', ...style }}
         />
     );
 }
