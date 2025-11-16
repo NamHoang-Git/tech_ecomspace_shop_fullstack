@@ -16,6 +16,9 @@ import EditAddressDetails from '../components/EditAddressDetails';
 import { useGlobalContext } from '../provider/GlobalProvider';
 import Divider from '../components/Divider';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import GlareHover from '@/components/GlareHover';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const CheckoutPage = () => {
     const dispatch = useDispatch();
@@ -621,7 +624,7 @@ const CheckoutPage = () => {
         .some((item) => item.productId?.discount > 0);
 
     return (
-        <section className="container mx-auto min-h-[80vh] px-2 py-6">
+        <section className="container mx-auto min-h-[80vh] px-2 py-6 text-white">
             <Card
                 className="bg-white/15 mb-4 py-4 px-4 sm:px-0 rounded-lg shadow-md shadow-secondary-100 font-bold
             text-secondary-200 sm:text-lg text-sm uppercase flex border border-lime-300 flex-row"
@@ -706,7 +709,7 @@ const CheckoutPage = () => {
                                                     setOpenEdit(true);
                                                     setEditData(address);
                                                 }}
-                                                className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[3px] text-primary-200"
+                                                className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[3px] text-white liquid-glass"
                                             >
                                                 <MdEdit size={18} />
                                             </button>
@@ -719,7 +722,7 @@ const CheckoutPage = () => {
                                                                 address._id
                                                             )
                                                         }
-                                                        className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[3px] text-secondary-200"
+                                                        className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[3px] text-rose-400 liquid-glass"
                                                     >
                                                         <MdDelete size={18} />
                                                     </button>
@@ -732,7 +735,7 @@ const CheckoutPage = () => {
                                                     setOpenEdit(true);
                                                     setEditData(address);
                                                 }}
-                                                className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[1px] text-primary-200"
+                                                className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[1px] text-white liquid-glass"
                                             >
                                                 <MdEdit size={15} />
                                             </button>
@@ -745,7 +748,7 @@ const CheckoutPage = () => {
                                                                 address._id
                                                             )
                                                         }
-                                                        className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[1px] text-secondary-200"
+                                                        className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[1px] text-rose-400 liquid-glass"
                                                     >
                                                         <MdDelete size={15} />
                                                     </button>
@@ -961,11 +964,11 @@ const CheckoutPage = () => {
                                     <div className="">
                                         <div className="flex gap-2 py-1">
                                             <div className="flex-1 relative">
-                                                <input
+                                                <Input
                                                     type="text"
                                                     placeholder="Nhập mã giảm giá"
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-md sm:text-sm text-xs focus:outline-none focus:ring-2
-                                                    focus:ring-lime-500 focus:border-lime-500 h-10"
+                                                    className="h-10 bg-black/20"
+                                                    spellCheck={false}
                                                     value={voucherCode}
                                                     onChange={(e) =>
                                                         setVoucherCode(
@@ -980,7 +983,7 @@ const CheckoutPage = () => {
                                                             setVoucherCode('');
                                                             setVoucherError('');
                                                         }}
-                                                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-red-600 hover:opacity-80"
                                                     >
                                                         <svg
                                                             className="w-4 h-4"
@@ -1002,13 +1005,13 @@ const CheckoutPage = () => {
                                                 type="button"
                                                 onClick={handleApplyVoucher}
                                                 className="px-3 h-10 bg-lime-600 text-white sm:text-sm text-xs font-medium rounded-md hover:bg-lime-700
-                                            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-lime-500 whitespace-nowrap"
+                                            focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-lime-500/50 whitespace-nowrap"
                                             >
                                                 Áp dụng
                                             </button>
                                         </div>
                                         {voucherError && (
-                                            <p className="text-red-500 text-xs font-semibold px-[2px] pt-2">
+                                            <p className="text-red-400 text-xs font-semibold px-[2px] pt-2">
                                                 {voucherError}
                                             </p>
                                         )}
@@ -1020,12 +1023,12 @@ const CheckoutPage = () => {
                                                 selectedVouchers.freeShipping
                                                     .description
                                             }
-                                            className="p-3 rounded-md border bg-blue-50 border-blue-200 sm:text-sm text-[10px]"
+                                            className="p-3 rounded-md border bg-black/50 border-blue-400 sm:text-sm text-[10px]"
                                         >
                                             <div className="flex justify-between items-start">
                                                 <div className="flex-1 select-none">
                                                     <div className="flex items-center gap-2">
-                                                        <p className="font-bold text-blue-700">
+                                                        <p className="font-bold text-blue-200">
                                                             {
                                                                 selectedVouchers
                                                                     .freeShipping
@@ -1039,7 +1042,7 @@ const CheckoutPage = () => {
                                                             Freeship
                                                         </span>
                                                     </div>
-                                                    <p className="mt-1 text-gray-600 font-semibold">
+                                                    <p className="mt-1  font-semibold">
                                                         {
                                                             selectedVouchers
                                                                 .freeShipping
@@ -1074,7 +1077,7 @@ const CheckoutPage = () => {
                                                             'freeShipping'
                                                         )
                                                     }
-                                                    className="text-red-500 hover:text-red-700"
+                                                    className="text-lime-300 hover:text-lime-500"
                                                 >
                                                     <svg
                                                         xmlns="http://www.w3.org/2000/svg"
@@ -1097,11 +1100,11 @@ const CheckoutPage = () => {
 
                                     {/* Regular Voucher */}
                                     {selectedVouchers.regular && (
-                                        <div className="mb-2 p-3 rounded-md border bg-pink-100 border-pink-300 sm:text-sm text-[10px]">
+                                        <div className="mb-2 p-3 rounded-md border bg-black/50 border-pink-300 sm:text-sm text-[10px]">
                                             <div className="flex justify-between items-start">
                                                 <div className="flex-1">
                                                     <div className="flex items-center gap-2">
-                                                        <p className="font-bold text-pink-700">
+                                                        <p className="font-bold text-rose-300">
                                                             {
                                                                 selectedVouchers
                                                                     .regular
@@ -1109,7 +1112,7 @@ const CheckoutPage = () => {
                                                             }
                                                         </p>
                                                     </div>
-                                                    <p className="mt-1 text-gray-600 font-semibold">
+                                                    <p className="mt-1  font-semibold">
                                                         {
                                                             selectedVouchers
                                                                 .regular.name
@@ -1159,7 +1162,7 @@ const CheckoutPage = () => {
                                                     onClick={() =>
                                                         removeVoucher('regular')
                                                     }
-                                                    className="text-red-500 hover:text-red-700"
+                                                    className="text-lime-300 hover:text-lime-500"
                                                 >
                                                     <svg
                                                         xmlns="http://www.w3.org/2000/svg"
@@ -1251,7 +1254,7 @@ const CheckoutPage = () => {
                                     ) : null}
                                 </div>
                                 {showVouchers && (
-                                    <div className="space-y-4 max-h-96 overflow-y-auto sm:p-2">
+                                    <div className="space-y-4 max-h-96 overflow-y-auto sm:p-2 text-white">
                                         {loadingVouchers ? (
                                             <div className="flex justify-center py-4">
                                                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-500"></div>
@@ -1279,7 +1282,7 @@ const CheckoutPage = () => {
                                                                     v.isFreeShipping
                                                             ).length > 0 && (
                                                                 <div className="flex flex-col">
-                                                                    <p className="font-medium text-blue-700 mb-2">
+                                                                    <p className="font-medium text-blue-200 mb-2">
                                                                         <i className="fas fa-shipping-fast mr-3"></i>
                                                                         Mã miễn
                                                                         phí vận
@@ -1295,7 +1298,7 @@ const CheckoutPage = () => {
                                                                         }
                                                                         )
                                                                     </p>
-                                                                    <div className="space-y-2 pl-2 border-l-[3px] border-blue-200">
+                                                                    <div className="space-y-2 pl-2 border-l-[3px] border-blue-400">
                                                                         {availableVouchers.active
                                                                             .filter(
                                                                                 (
@@ -1311,7 +1314,7 @@ const CheckoutPage = () => {
                                                                                         key={
                                                                                             voucher.id
                                                                                         }
-                                                                                        className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                                                                                        className={`p-3 border rounded-lg cursor-pointer liquid-glass transition-colors ${
                                                                                             (
                                                                                                 voucher.isFreeShipping
                                                                                                     ? selectedVouchers
@@ -1337,22 +1340,22 @@ const CheckoutPage = () => {
                                                                                     >
                                                                                         <div className="grid grid-flow-col grid-cols-[2fr_1fr] justify-between sm:text-sm text-[10px]">
                                                                                             <div className="w-full">
-                                                                                                <div className="font-bold text-blue-700">
+                                                                                                <div className="font-bold text-blue-200">
                                                                                                     {
                                                                                                         voucher.code
                                                                                                     }
                                                                                                 </div>
-                                                                                                <p className="text-gray-600">
+                                                                                                <p className="">
                                                                                                     {
                                                                                                         voucher.name
                                                                                                     }
                                                                                                 </p>
-                                                                                                <div className="text-gray-500">
+                                                                                                <div className="">
                                                                                                     <p className="flex gap-1">
                                                                                                         Đơn
                                                                                                         tối
                                                                                                         thiểu:{' '}
-                                                                                                        <p className="font-medium text-blue-400">
+                                                                                                        <p className="font-medium text-blue-200">
                                                                                                             {DisplayPriceInVND(
                                                                                                                 voucher.minOrder ||
                                                                                                                     voucher.minOrderValue ||
@@ -1387,7 +1390,7 @@ const CheckoutPage = () => {
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div className="text-right">
-                                                                                                <span className="text-blue-600 font-semibold sm:text-sm text-[9px]">
+                                                                                                <span className="text-blue-200 font-semibold sm:text-sm text-[9px]">
                                                                                                     Miễn
                                                                                                     phí
                                                                                                     vận
@@ -1408,7 +1411,7 @@ const CheckoutPage = () => {
                                                                     !v.isFreeShipping
                                                             ).length > 0 && (
                                                                 <div>
-                                                                    <p className="font-medium text-pink-600 mb-2">
+                                                                    <p className="font-medium text-rose-300 mb-2">
                                                                         <i className="fas fa-tag mr-3"></i>
                                                                         Mã giảm
                                                                         giá (
@@ -1423,7 +1426,7 @@ const CheckoutPage = () => {
                                                                         }
                                                                         )
                                                                     </p>
-                                                                    <div className="space-y-2 pl-2 border-l-[3px] border-pink-200">
+                                                                    <div className="space-y-2 pl-2 border-l-[3px] border-pink-400">
                                                                         {availableVouchers.active
                                                                             .filter(
                                                                                 (
@@ -1439,7 +1442,7 @@ const CheckoutPage = () => {
                                                                                         key={
                                                                                             voucher.id
                                                                                         }
-                                                                                        className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                                                                                        className={`p-3 border rounded-lg cursor-pointer liquid-glass transition-colors ${
                                                                                             (
                                                                                                 voucher.isFreeShipping
                                                                                                     ? selectedVouchers
@@ -1465,22 +1468,22 @@ const CheckoutPage = () => {
                                                                                     >
                                                                                         <div className="flex justify-between items-start sm:text-sm text-[10px]">
                                                                                             <div>
-                                                                                                <div className="font-bold text-pink-700">
+                                                                                                <div className="font-bold text-rose-300">
                                                                                                     {
                                                                                                         voucher.code
                                                                                                     }
                                                                                                 </div>
-                                                                                                <p className="text-gray-600">
+                                                                                                <p className="">
                                                                                                     {
                                                                                                         voucher.name
                                                                                                     }
                                                                                                 </p>
-                                                                                                <div className="text-gray-500">
+                                                                                                <div className="">
                                                                                                     <p className="flex gap-1">
                                                                                                         Đơn
                                                                                                         tối
                                                                                                         thiểu:{' '}
-                                                                                                        <p className="font-medium text-pink-500">
+                                                                                                        <p className="font-medium text-rose-300">
                                                                                                             {DisplayPriceInVND(
                                                                                                                 voucher.minOrder ||
                                                                                                                     voucher.minOrderValue ||
@@ -1515,7 +1518,7 @@ const CheckoutPage = () => {
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div className="text-right sm:text-sm text-[9px]">
-                                                                                                <span className="text-pink-600 font-semibold">
+                                                                                                <span className="text-rose-300 font-semibold">
                                                                                                     {voucher.discountType ===
                                                                                                     'percentage'
                                                                                                         ? `Giảm ${voucher.discount}%`
@@ -1524,7 +1527,7 @@ const CheckoutPage = () => {
                                                                                                           )}`}
                                                                                                 </span>
                                                                                                 {voucher.maxDiscount && (
-                                                                                                    <p className="text-pink-400 font-medium">
+                                                                                                    <p className="text-rose-400 font-medium">
                                                                                                         Tối
                                                                                                         đa{' '}
                                                                                                         {DisplayPriceInVND(
@@ -1565,7 +1568,7 @@ const CheckoutPage = () => {
                                                                 v.isFreeShipping
                                                         ).length > 0 && (
                                                             <div>
-                                                                <p className="font-medium text-blue-700 mb-2">
+                                                                <p className="font-medium text-blue-200 mb-2">
                                                                     <i className="fas fa-shipping-fast mr-3"></i>
                                                                     Mã miễn phí
                                                                     vận chuyển (
@@ -1580,7 +1583,7 @@ const CheckoutPage = () => {
                                                                     }
                                                                     )
                                                                 </p>
-                                                                <div className="space-y-2 pl-2 border-l-[3px] border-blue-200">
+                                                                <div className="space-y-2 pl-2 border-l-[3px] border-blue-400">
                                                                     {availableVouchers.upcoming
                                                                         .filter(
                                                                             (
@@ -1597,7 +1600,7 @@ const CheckoutPage = () => {
                                                                                     key={
                                                                                         voucher.id
                                                                                     }
-                                                                                    className="p-3 border border-blue-200 rounded-lg bg-blue-50 opacity-75 cursor-not-allowed"
+                                                                                    className="p-3 border border-blue-400 rounded-lg liquid-glass-header opacity-75 cursor-not-allowed"
                                                                                 >
                                                                                     <div className="sm:text-sm text-[10px]">
                                                                                         <div className="">
@@ -1608,13 +1611,13 @@ const CheckoutPage = () => {
                                                                                                             voucher.code
                                                                                                         }
                                                                                                     </span>
-                                                                                                    <span className="text-[8px] sm:text-xs font-semibold bg-blue-100 text-blue-700 sm:px-2 px-1 sm:py-0.5 rounded">
+                                                                                                    <span className="text-[8px] sm:text-xs font-semibold bg-blue-100 text-blue-600 sm:px-2 px-1 sm:py-0.5 rounded">
                                                                                                         Sắp
                                                                                                         diễn
                                                                                                         ra
                                                                                                     </span>
                                                                                                 </div>
-                                                                                                <div className="text-blue-700 text-right">
+                                                                                                <div className="text-blue-200 text-right">
                                                                                                     <div className="font-semibold sm:text-sm text-[9px]">
                                                                                                         Miễn
                                                                                                         phí
@@ -1623,12 +1626,12 @@ const CheckoutPage = () => {
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
-                                                                                            <p className="text-gray-600">
+                                                                                            <p className="">
                                                                                                 {
                                                                                                     voucher.name
                                                                                                 }
                                                                                             </p>
-                                                                                            <div className=" text-gray-500">
+                                                                                            <div className=" ">
                                                                                                 <p className="flex gap-1">
                                                                                                     Đơn
                                                                                                     tối
@@ -1682,7 +1685,7 @@ const CheckoutPage = () => {
                                                                 !v.isFreeShipping
                                                         ).length > 0 && (
                                                             <div className="">
-                                                                <p className="font-medium text-pink-600 mb-2">
+                                                                <p className="font-medium text-rose-300 mb-2">
                                                                     <i className="fas fa-tag mr-3"></i>
                                                                     Mã giảm giá
                                                                     (
@@ -1697,7 +1700,7 @@ const CheckoutPage = () => {
                                                                     }
                                                                     )
                                                                 </p>
-                                                                <div className="space-y-2 pl-2 border-l-[3px] border-pink-200">
+                                                                <div className="space-y-2 pl-2 border-l-[3px] border-pink-400">
                                                                     {availableVouchers.upcoming
                                                                         .filter(
                                                                             (
@@ -1714,24 +1717,24 @@ const CheckoutPage = () => {
                                                                                     key={
                                                                                         voucher.id
                                                                                     }
-                                                                                    className="p-3 border border-gray-200 rounded-lg bg-gray-50 opacity-75 cursor-not-allowed"
+                                                                                    className="p-3 border border-gray-200 rounded-lg liquid-glass-header opacity-75 cursor-not-allowed"
                                                                                 >
                                                                                     <div className="sm:text-sm text-[10px]">
                                                                                         <div className="grid grid-flow-col grid-cols-[2fr_1fr] justify-between">
                                                                                             <div className="flex sm:items-center items-start sm:flex-row flex-col-reverse sm:gap-2 gap-0">
-                                                                                                <span className="font-bold text-pink-700">
+                                                                                                <span className="font-bold text-rose-300">
                                                                                                     {
                                                                                                         voucher.code
                                                                                                     }
                                                                                                 </span>
-                                                                                                <span className="text-[8px] sm:text-xs font-semibold bg-pink-100 text-pink-700 sm:px-2 px-1 sm:py-0.5 rounded">
+                                                                                                <span className="text-[8px] sm:text-xs font-semibold bg-pink-100 text-rose-600 sm:px-2 px-1 sm:py-0.5 rounded">
                                                                                                     Sắp
                                                                                                     diễn
                                                                                                     ra
                                                                                                 </span>
                                                                                             </div>
-                                                                                            <div className="text-pink-700 sm:text-sm text-[9px] flex flex-col items-end w-full">
-                                                                                                <div className="text-pink-600 font-semibold">
+                                                                                            <div className="text-rose-300 sm:text-sm text-[9px] flex flex-col items-end w-full">
+                                                                                                <div className="text-rose-300 font-semibold">
                                                                                                     {voucher.discountType ===
                                                                                                     'percentage'
                                                                                                         ? `Giảm ${voucher.discount}%`
@@ -1740,7 +1743,7 @@ const CheckoutPage = () => {
                                                                                                           )}`}
                                                                                                 </div>
                                                                                                 {voucher.maxDiscount && (
-                                                                                                    <p className="text-pink-400 font-medium">
+                                                                                                    <p className="text-rose-400 font-medium">
                                                                                                         Tối
                                                                                                         đa{' '}
                                                                                                         {DisplayPriceInVND(
@@ -1750,17 +1753,17 @@ const CheckoutPage = () => {
                                                                                                 )}
                                                                                             </div>
                                                                                         </div>
-                                                                                        <p className="text-gray-600">
+                                                                                        <p className="">
                                                                                             {
                                                                                                 voucher.name
                                                                                             }
                                                                                         </p>
-                                                                                        <div className="text-gray-500">
+                                                                                        <div className="">
                                                                                             <p className="flex gap-1">
                                                                                                 Đơn
                                                                                                 tối
                                                                                                 thiểu:{' '}
-                                                                                                <p className="font-medium text-pink-500">
+                                                                                                <p className="font-medium text-rose-300">
                                                                                                     {DisplayPriceInVND(
                                                                                                         voucher.minOrder ||
                                                                                                             voucher.minOrderValue ||
@@ -1812,7 +1815,7 @@ const CheckoutPage = () => {
                                             0 &&
                                             availableVouchers.upcoming
                                                 ?.length === 0 && (
-                                                <p className="text-sm text-gray-500 text-center py-4">
+                                                <p className="text-sm  text-center py-4">
                                                     Không có mã giảm giá khả
                                                     dụng
                                                 </p>
@@ -1891,7 +1894,7 @@ const CheckoutPage = () => {
                                                 </div>
                                                 <div className="flex items-center sm:justify-normal justify-between py-1 gap-3">
                                                     <div className="flex items-center gap-1">
-                                                        <input
+                                                        <Input
                                                             type="text"
                                                             inputMode="numeric"
                                                             pattern="[0-9]*"
@@ -1957,7 +1960,7 @@ const CheckoutPage = () => {
                                                                     )
                                                                 );
                                                             }}
-                                                            className="sm:w-24 w-20 px-2 py-1 border border-gray-300 rounded text-right text-secondary-200 font-medium"
+                                                            className="sm:w-24 w-20 font-medium text-right bg-black/15"
                                                             aria-label="Số điểm sử dụng"
                                                             placeholder="0"
                                                         />
@@ -1983,7 +1986,7 @@ const CheckoutPage = () => {
                                                         className={`px-2 py-1 font-semibold text-xs rounded ${
                                                             pointsToUse ===
                                                             maxPointsToUse
-                                                                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                                                                ? 'bg-gray-200 text-gray-800 opacity-50 cursor-not-allowed'
                                                                 : 'bg-lime-50 text-lime-600 hover:bg-lime-200'
                                                         }`}
                                                     >
@@ -2027,7 +2030,7 @@ const CheckoutPage = () => {
                             </div>
                             {selectedVouchers && voucherDiscount > 0 && (
                                 <div className="flex justify-between sm:text-sm text-xs">
-                                    <p className="text-gray-600">Giảm giá:</p>
+                                    <p className="">Giảm giá:</p>
                                     <p className="text-green-600 font-semibold">
                                         -{DisplayPriceInVND(voucherDiscount)}
                                     </p>
@@ -2053,7 +2056,7 @@ const CheckoutPage = () => {
                             )}
                             <div
                                 className="font-semibold flex items-center justify-between gap-4 border-t border-gray-200 pt-2
-                            mt-2 text-rose-500"
+                            mt-2 text-white"
                             >
                                 <p className="font-bold">Tổng cộng:</p>
                                 <p className="text-secondary-200 font-bold sm:text-lg text-base">
@@ -2062,7 +2065,7 @@ const CheckoutPage = () => {
                             </div>
                         </div>
 
-                        <div className="w-full flex flex-col gap-4 sm:text-sm text-xs">
+                        <div className="w-full flex flex-col gap-3 sm:text-sm text-xs mb-3">
                             {usePoints && pointsToUse > 0 && (
                                 <div className="liquid-glass p-3 rounded-md border border-blue-100">
                                     <p className="text-white flex">
@@ -2083,20 +2086,41 @@ const CheckoutPage = () => {
                                     </p>
                                 </div>
                             )}
-                            <button
-                                className="py-2 px-4 bg-primary-2 hover:opacity-80 rounded shadow-md
-                            text-secondary-200 font-semibold"
-                                onClick={handleOnlinePayment}
+                            <GlareHover
+                                glareColor="#ffffff"
+                                glareOpacity={0.3}
+                                glareAngle={-30}
+                                glareSize={300}
+                                transitionDuration={800}
+                                playOnce={false}
                             >
-                                {loading ? <Loading /> : 'Thanh toán online'}
-                            </button>
-                            <button
-                                className="py-2 px-4 border-[3px] border-red-darker font-semibold text-red-darker hover:bg-red-darker
-                            hover:text-white rounded transition-all"
-                                onClick={handleCashOnDelivery}
+                                <Button
+                                    className="py-2 px-4 rounded shadow-md font-semibold text-white hover:bg-transparent w-full"
+                                    onClick={handleOnlinePayment}
+                                >
+                                    {loading ? (
+                                        <Loading />
+                                    ) : (
+                                        'Thanh toán online'
+                                    )}
+                                </Button>
+                            </GlareHover>
+
+                            <GlareHover
+                                glareColor="#ffffff"
+                                glareOpacity={0.3}
+                                glareAngle={-30}
+                                glareSize={300}
+                                transitionDuration={800}
+                                playOnce={false}
                             >
-                                Thanh toán khi nhận hàng
-                            </button>
+                                <Button
+                                    className="py-2 px-4 font-semibold text-white hover:bg-transparent rounded transition-all w-full"
+                                    onClick={handleCashOnDelivery}
+                                >
+                                    Thanh toán khi nhận hàng
+                                </Button>
+                            </GlareHover>
                         </div>
                     </div>
                 </div>
@@ -2110,43 +2134,66 @@ const CheckoutPage = () => {
             )}
             {showConfirmModal.show && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-                        <h3 className="sm:text-lg text-base font-semibold mb-4">
+                    <div className="p-6 rounded-lg shadow-lg max-w-md w-full liquid-glass">
+                        <h3 className="sm:text-lg text-base font-semibold mb-4 text-lime-300">
                             Xác nhận đặt hàng
                         </h3>
-                        <p className="text-gray-600 mb-6 sm:text-base text-sm">
+                        <p className=" mb-6 text-sm">
                             Bạn có chắc chắn muốn đặt hàng với phương thức{' '}
                             {showConfirmModal.type === 'cash'
                                 ? 'thanh toán khi nhận hàng'
                                 : 'thanh toán online'}{' '}
                             không?
                         </p>
-                        <div className="flex justify-end gap-4 sm:text-base text-sm">
-                            <button
-                                className="py-2 px-6 bg-white text-secondary-200 border-[3px] hover:bg-secondary-200
-                            hover:text-white border-secondary-200 rounded-md font-bold cursor-pointer"
-                                onClick={() =>
-                                    setShowConfirmModal({
-                                        show: false,
-                                        type: '',
-                                    })
-                                }
-                            >
-                                Hủy
-                            </button>
-                            <button
-                                className="py-2 px-4 bg-primary-2 hover:opacity-80 rounded-md text-secondary-200 font-bold cursor-pointer
-                            border-[3px] border-inset border-secondary-200"
-                                onClick={
-                                    {
-                                        cash: confirmCashOnDelivery,
-                                        online: executeOnlinePayment,
-                                    }[showConfirmModal.type] || (() => {})
-                                }
-                                disabled={loading}
-                            >
-                                {loading ? <Loading /> : 'Xác nhận'}
-                            </button>
+                        <div className="flex justify-end gap-4 text-sm">
+                            <div>
+                                <GlareHover
+                                    background="transparent"
+                                    glareOpacity={0.3}
+                                    glareAngle={-30}
+                                    glareSize={300}
+                                    transitionDuration={800}
+                                    playOnce={false}
+                                    className="flex-1"
+                                >
+                                    <Button
+                                        className="bg-white/40 hover:bg-white/50 text-white"
+                                        onClick={
+                                            {
+                                                cash: confirmCashOnDelivery,
+                                                online: executeOnlinePayment,
+                                            }[showConfirmModal.type] ||
+                                            (() => {})
+                                        }
+                                        disabled={loading}
+                                    >
+                                        {loading ? <Loading /> : 'Xác nhận'}
+                                    </Button>
+                                </GlareHover>
+                            </div>
+
+                            <div>
+                                <GlareHover
+                                    glareOpacity={0.3}
+                                    glareAngle={-30}
+                                    glareSize={300}
+                                    transitionDuration={800}
+                                    playOnce={false}
+                                    className="flex-1"
+                                >
+                                    <Button
+                                        className="hover:bg-transparent text-white"
+                                        onClick={() =>
+                                            setShowConfirmModal({
+                                                show: false,
+                                                type: '',
+                                            })
+                                        }
+                                    >
+                                        Hủy
+                                    </Button>
+                                </GlareHover>
+                            </div>
                         </div>
                     </div>
                 </div>

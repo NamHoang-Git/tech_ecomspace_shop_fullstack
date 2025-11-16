@@ -40,20 +40,20 @@ const Cancel = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 sm:py-12 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen sm:py-12 py-8 px-4 sm:px-6 lg:px-8">
             <motion.div
-                className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden"
+                className="max-w-3xl mx-auto rounded-xl shadow-lg overflow-hidden"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
             >
                 {/* Header */}
-                <div className="bg-red-500 py-6 px-6 text-center">
+                <div className="bg-red-500/50 py-6 px-6 text-center">
                     <motion.div
                         className="inline-flex items-center justify-center sm:w-20 sm:h-20 w-16 h-16 bg-white rounded-full mb-4"
                         variants={itemVariants}
                     >
-                        <FaTimesCircle className="text-red-500 sm:text-5xl text-4xl" />
+                        <FaTimesCircle className="text-rose-400 sm:text-5xl text-4xl" />
                     </motion.div>
                     <motion.h1
                         className="text-xl sm:text-3xl font-bold text-white mb-2"
@@ -70,8 +70,11 @@ const Cancel = () => {
                 </div>
 
                 {/* Content */}
-                <motion.div className="p-6 md:p-8 space-y-6" variants={itemVariants}>
-                    <div className="bg-red-50 border-l-4 border-red-500 p-4">
+                <motion.div
+                    className="p-6 md:p-8 space-y-6 liquid-glass"
+                    variants={itemVariants}
+                >
+                    <div className="bg-red-100/90 rounded-e-lg border-l-4 border-red-500 p-4">
                         <p className="text-gray-700 sm:text-base text-xs">
                             Đơn hàng của bạn đã bị hủy. Nếu đây là sự nhầm lẫn,
                             vui lòng thử lại hoặc liên hệ với bộ phận hỗ trợ của
@@ -106,10 +109,10 @@ const Cancel = () => {
                     </div>
 
                     <div className="pt-6 border-t border-gray-200 mt-8">
-                        <h3 className="sm:text-lg text-sm font-medium text-gray-900 mb-2">
+                        <h3 className="sm:text-lg text-sm font-medium mb-2">
                             Cần hỗ trợ ?
                         </h3>
-                        <div className="space-y-2 sm:text-sm text-xs text-gray-600">
+                        <div className="space-y-2 sm:text-sm text-xs">
                             <p>
                                 Nếu bạn cần hỗ trợ hoặc có bất kỳ câu hỏi nào,
                                 vui lòng liên hệ với bộ phận chăm sóc khách hàng

@@ -33,7 +33,7 @@ const RegistrationSuccessForm: FC = () => {
     }
 
     return (
-        <div className="flex items-center justify-center text-sm text-foreground font-bold">
+        <div className="flex items-center justify-center text-sm text-white font-bold">
             <div className="max-w-xl w-full space-y-8 sm:p-8 py-8 px-6">
                 <div className="text-center">
                     <div className="flex justify-center">

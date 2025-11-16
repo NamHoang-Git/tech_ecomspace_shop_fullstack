@@ -63,20 +63,20 @@ const SuccessPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 sm:py-12 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-svh sm:py-12 py-8 px-4 sm:px-6 lg:px-8">
             <motion.div
-                className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden"
+                className="max-w-3xl mx-auto rounded-xl shadow-lg overflow-hidden"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
             >
                 {/* Header */}
-                <div className="bg-green-500 py-6 px-6 text-center">
+                <div className="bg-green-500/50 py-6 px-6 text-center">
                     <motion.div
                         className="inline-flex items-center justify-center sm:w-20 sm:h-20 w-16 h-16 bg-white rounded-full mb-4"
                         variants={itemVariants}
                     >
-                        <FaCheckCircle className="text-green-500 sm:text-5xl text-4xl" />
+                        <FaCheckCircle className="text-lime-600 sm:text-5xl text-4xl" />
                     </motion.div>
                     <motion.h1
                         className="text-xl sm:text-3xl font-bold text-white mb-2"
@@ -88,16 +88,16 @@ const SuccessPage = () => {
                         className="text-green-100 sm:text-lg text-base"
                         variants={itemVariants}
                     >
-                        Cảm ơn quý khách đã mua sắm tại cửa hàng chúng tôi
+                        Cảm ơn quý khách đã mua sắm tại TechSpace
                     </motion.p>
                 </div>
 
                 {/* Order Info */}
                 <motion.div
-                    className="p-6 md:p-8 space-y-6"
+                    className="p-6 md:p-8 space-y-6 liquid-glass"
                     variants={itemVariants}
                 >
-                    <div className="bg-green-50 border-l-4 border-green-500 p-4">
+                    <div className="bg-green-100/90 rounded-e-lg border-l-4 border-green-500 p-4">
                         <p className="text-gray-700 sm:text-base text-xs">
                             Đơn hàng của bạn đã được xác nhận và đang được xử
                             lý.
@@ -131,10 +131,10 @@ const SuccessPage = () => {
                     </div>
 
                     <div className="pt-6 border-t border-gray-200 mt-8">
-                        <h3 className="sm:text-lg text-sm font-medium text-gray-900 mb-2">
+                        <h3 className="sm:text-lg text-sm font-medium mb-2">
                             Cần hỗ trợ ?
                         </h3>
-                        <div className="space-y-2 sm:text-sm text-xs text-gray-600">
+                        <div className="space-y-2 sm:text-sm text-xs">
                             <p>
                                 Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ
                                 với bộ phận chăm sóc khách hàng của chúng tôi.
