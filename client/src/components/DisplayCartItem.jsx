@@ -10,6 +10,7 @@ import AddToCartButton from './AddToCartButton';
 import imageEmpty from '../assets/empty_cart.webp';
 import Divider from './Divider';
 import { valideURLConvert } from '../utils/valideURLConvert';
+import GlareHover from './GlareHover';
 
 const DisplayCartItem = ({ close }) => {
     const { notDiscountTotalPrice, totalPrice, totalQty } = useGlobalContext();
@@ -39,20 +40,20 @@ const DisplayCartItem = ({ close }) => {
         >
             <div
                 onClick={(e) => e.stopPropagation()}
-                className="bg-white w-full max-w-lg min-h-screen max-h-screen ml-auto p-3"
+                className="liquid-glass w-full max-w-lg min-h-screen max-h-screen ml-auto p-3 text-white"
             >
                 <div className="flex items-center py-3 gap-3 justify-between">
-                    <h2 className="font-bold text-secondary-200 text-lg">
+                    <h2 className="font-bold text-lime-300 text-lg">
                         Giỏ hàng
                     </h2>
                     <Link
                         to={'/cart'}
                         onClick={close}
-                        className="flex items-center gap-1 text-secondary-200 font-bold"
+                        className="flex items-center gap-1 text-lime-300 font-bold"
                     >
                         Xem tất cả
                         <span>
-                            <FaCaretRight size={16} />
+                            <FaCaretRight className="mb-[2px]" />
                         </span>
                     </Link>
                 </div>
@@ -64,7 +65,7 @@ const DisplayCartItem = ({ close }) => {
                     className={`${
                         cartItem[0]
                             ? 'bg-base-100 max-h-[calc(100vh-150px)]'
-                            : 'bg-primary-100 justify-center flex-1'
+                            : 'justify-center flex-1'
                     } min-h-[75vh] lg:min-h-[80vh] h-full pt-4 flex flex-col
                 gap-4 rounded-lg`}
                 >
@@ -73,7 +74,7 @@ const DisplayCartItem = ({ close }) => {
                         <>
                             <div
                                 className="flex items-center justify-between px-4 py-2 bg-primary-4 text-sm font-bold shadow-md
-                            text-highlight-100 rounded-full italic"
+                            rounded-full italic text-rose-400"
                             >
                                 <p>Tổng số tiền tiết kiệm được</p>
                                 <p>
@@ -82,8 +83,9 @@ const DisplayCartItem = ({ close }) => {
                                     )}
                                 </p>
                             </div>
+                            <Divider />
                             <div
-                                className="bg-primary-100 shadow-md rounded-lg p-4 grid gap-5 overflow-auto
+                                className="shadow-md rounded-lg p-4 grid gap-5 overflow-auto
                             "
                             >
                                 {cartItem[0] &&
@@ -126,7 +128,7 @@ const DisplayCartItem = ({ close }) => {
                                                     <p className="text-secondary-100">
                                                         {item?.productId?.unit}
                                                     </p>
-                                                    <p className="font-semibold">
+                                                    <p className="font-semibold text-rose-500">
                                                         {DisplayPriceInVND(
                                                             pricewithDiscount(
                                                                 item?.productId
@@ -146,7 +148,7 @@ const DisplayCartItem = ({ close }) => {
                                         );
                                     })}
                             </div>
-                            <div className="bg-primary-100 px-4 py-2 rounded-lg shadow-md mb-[6px]">
+                            <div className="liquid-glass px-5 py-4 rounded-lg shadow-md mb-[6px] mx-4">
                                 <h3 className="font-semibold">
                                     Chi tiết hóa đơn
                                 </h3>
@@ -185,40 +187,49 @@ const DisplayCartItem = ({ close }) => {
                             </div>
                         </>
                     ) : (
-                        <div className="bg-primary-100 h-full flex flex-col justify-center items-center gap-6">
+                        <div className="h-full flex flex-col justify-center items-center gap-6">
                             <img
                                 src={imageEmpty}
                                 className="w-full h-full object-scale-down p-2 rounded-md opacity-60"
                             />
-                            <Link
-                                onClick={close}
-                                to={'/'}
-                                className="bg-primary-3 hover:opacity-80 text-secondary-200 px-6 py-2
-                            rounded-lg font-bold shadow-md shadow-secondary-100 my-4"
+
+                            <GlareHover
+                                background="#000"
+                                glareColor="#ffffff"
+                                glareOpacity={0.8}
+                                glareAngle={-30}
+                                glareSize={300}
+                                transitionDuration={800}
+                                playOnce={false}
                             >
-                                Mua sắm ngay!
-                            </Link>
+                                <Link
+                                    onClick={close}
+                                    to={'/'}
+                                    className="bg-primary-3 hover:opacity-80 text-lime-300 px-6 py-4
+                                rounded-lg font-bold shadow-md shadow-secondary-100"
+                                >
+                                    Mua sắm ngay!
+                                </Link>
+                            </GlareHover>
                         </div>
                     )}
                 </div>
 
                 {cartItem[0] && (
-                    <div className="p-2">
-                        <div
-                            className="bg-primary text-secondary-200 px-6 py-3 font-bold text-base
+                    <div
+                        className="liquid-glass text-lime-300 px-6 py-3 mt-4 font-bold text-base
                         rounded flex items-center gap-4 justify-between shadow-md shadow-secondary-100"
+                    >
+                        <div>{DisplayPriceInVND(totalPrice)}</div>
+                        <button
+                            onClick={redirectToCheckoutPage}
+                            className="flex items-center gap-1 hover:opacity-80"
                         >
-                            <div>{DisplayPriceInVND(totalPrice)}</div>
-                            <button
-                                onClick={redirectToCheckoutPage}
-                                className="flex items-center gap-1"
-                            >
-                                Thanh toán
-                                <span>
-                                    <FaCaretRight />
-                                </span>
-                            </button>
-                        </div>
+                            Thanh toán
+                            <span>
+                                <FaCaretRight />
+                            </span>
+                        </button>
                     </div>
                 )}
             </div>

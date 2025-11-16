@@ -20,13 +20,13 @@ const DisplayTableCart = ({ data, column }) => {
     return (
         <div className="overflow-x-auto">
             <table className="w-full border-collapse">
-                <thead className="bg-primary-100 text-secondary-200">
+                <thead className="liquid-glass text-secondary-200">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <th
                                     key={header.id}
-                                    className={`border px-1 py-2 sm:p-2 border-b-4 border-b-secondary-100 text-center sm:text-base text-[10px] ${
+                                    className={`px-1 py-2 sm:p-2 border-b-4 border-b-lime-300 text-center sm:text-base text-[10px] ${
                                         header.column.columnDef.meta
                                             ?.className || ''
                                     }`}
@@ -44,11 +44,11 @@ const DisplayTableCart = ({ data, column }) => {
                 </thead>
                 <tbody>
                     {table.getRowModel().rows.map((row) => (
-                        <tr key={row.id} className="hover:bg-base-100">
+                        <tr key={row.id} className="hover:bg-base-100/30 liquid-glass-header">
                             {row.getVisibleCells().map((cell) => (
                                 <td
                                     key={cell.id}
-                                    className={`border px-1 py-2 sm:p-2 sm:text-base text-[10px] ${
+                                    className={`px-1 py-2 sm:p-2 text-sm ${
                                         cell.column.columnDef.meta?.className ||
                                         ''
                                     }`}

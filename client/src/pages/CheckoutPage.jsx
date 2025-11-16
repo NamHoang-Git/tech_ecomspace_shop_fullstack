@@ -15,6 +15,7 @@ import AxiosToastError from '../utils/AxiosToastError';
 import EditAddressDetails from '../components/EditAddressDetails';
 import { useGlobalContext } from '../provider/GlobalProvider';
 import Divider from '../components/Divider';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 
 const CheckoutPage = () => {
     const dispatch = useDispatch();
@@ -440,6 +441,11 @@ const CheckoutPage = () => {
     };
 
     const handleCashOnDelivery = async () => {
+        if (!addressList[selectAddress]) {
+            toast.error('Vui lòng chọn địa chỉ.');
+            return;
+        }
+
         if (usePoints && pointsToUse > 0 && pointsToUse > userPoints) {
             toast.error('Số điểm sử dụng vượt quá số điểm hiện có');
             return;
@@ -517,16 +523,25 @@ const CheckoutPage = () => {
     };
 
     const handleOnlinePayment = async () => {
+        if (!addressList[selectAddress]) {
+            toast.error('Vui lòng chọn địa chỉ.');
+            return;
+        }
+
+        if (usePoints && pointsToUse > 0 && pointsToUse > userPoints) {
+            toast.error('Số điểm sử dụng vượt quá số điểm hiện có');
+            return;
+        }
+
+        setShowConfirmModal({ show: true, type: 'online' });
+    };
+
+    const executeOnlinePayment = async () => {
         try {
             const maxPointsAllowed = Math.floor(filteredTotalPrice / 2 / 100);
             const actualPointsToUse = usePoints
                 ? Math.min(pointsToUse, maxPointsAllowed, userPoints)
                 : 0;
-
-            if (usePoints && pointsToUse > 0 && pointsToUse > userPoints) {
-                toast.error('Số điểm sử dụng vượt quá số điểm hiện có');
-                return;
-            }
 
             setLoading(true);
             // Format product data to ensure it's serializable
@@ -605,23 +620,25 @@ const CheckoutPage = () => {
         .filter((item) => selectedItems.includes(item._id))
         .some((item) => item.productId?.discount > 0);
 
-    const hasValidAddress =
-        addressList.length > 0 && addressList[selectAddress];
-
     return (
-        <section className="container mx-auto bg-base-100 min-h-[80vh] px-2 py-6">
-            <div
-                className="px-4 pt-4 pb-3 lg:p-3 mb-3 bg-primary-4 rounded-md shadow-md shadow-secondary-100
-                font-bold text-secondary-200 sm:text-lg text-[13px] uppercase"
+        <section className="container mx-auto min-h-[80vh] px-2 py-6">
+            <Card
+                className="bg-white/15 mb-4 py-4 px-4 sm:px-0 rounded-lg shadow-md shadow-secondary-100 font-bold
+            text-secondary-200 sm:text-lg text-sm uppercase flex border border-lime-300 flex-row"
             >
-                Thanh toán
-            </div>
-            <div className="h-full flex flex-col lg:flex-row w-full gap-5 bg-white shadow rounded-lg sm:p-5 p-2">
+                <CardHeader>
+                    <CardTitle className="text-lg text-lime-300 font-bold uppercase p-0">
+                        Thanh toán
+                    </CardTitle>
+                </CardHeader>
+            </Card>
+            <div className="h-full flex flex-col lg:flex-row w-full gap-5 liquid-glass shadow rounded-lg sm:p-5 p-2">
                 <div className="w-full flex flex-col gap-3">
-                    <h3 className="sm:text-lg text-sm font-bold shadow-md px-2 py-3">
+                    <h3 className="sm:text-lg text-sm font-bold">
                         Chọn địa chỉ giao hàng
                     </h3>
-                    <div className="bg-white grid gap-4 overflow-auto max-h-[calc(100vh/2)]">
+                    <Divider />
+                    <div className="rounded-md grid gap-4 overflow-auto max-h-[calc(100vh/2)]">
                         {sortedAddressList.map((address, index) => (
                             <label
                                 key={index}
@@ -629,7 +646,7 @@ const CheckoutPage = () => {
                                 className={!address.status ? 'hidden' : ''}
                             >
                                 <div
-                                    className="border border-secondary-100 rounded-md px-2 sm:px-4 py-3 hover:bg-base-100
+                                    className="liquid-glass border border-secondary-100 rounded-md px-2 sm:px-4 py-3 hover:bg-base-100/50
                                 shadow-md cursor-pointer"
                                 >
                                     <div className="flex justify-between sm:items-start items-end gap-4">
@@ -678,7 +695,7 @@ const CheckoutPage = () => {
                                                 </p>
                                             </div>
                                             {address.isDefault && (
-                                                <span className="text-secondary-200 text-[10px] sm:text-lg font-bold">
+                                                <span className="text-rose-500 text-[10px] sm:text-lg font-bold">
                                                     (*)
                                                 </span>
                                             )}
@@ -742,24 +759,23 @@ const CheckoutPage = () => {
                     </div>
                     <div
                         onClick={() => setOpenAddress(true)}
-                        className="sm:h-14 h-12 bg-base-100 border-[3px] border-dashed border-gray-300 text-gray-400
-                    flex justify-center items-center cursor-pointer hover:bg-primary-100 hover:text-gray-500
-                    transition-all sm:text-base text-xs"
+                        className="mt-2 sm:h-14 h-12 bg-base-100 border-[3px] border-dashed border-lime-300 text-white
+                    flex justify-center items-center cursor-pointer transition-all sm:text-base text-xs hover:opacity-80"
                     >
                         Thêm địa chỉ
                     </div>
                 </div>
-                <div className="w-full  bg-white flex flex-col gap-3 shadow-md px-2 pt-2 pb-4">
-                    <h3 className="sm:text-lg text-sm font-bold shadow-md px-2 py-3">
+                <div className="w-full liquid-glass flex flex-col gap-3 shadow-md px-2 pt-2 pb-4 rounded-lg">
+                    <h3 className="sm:text-lg text-sm font-bold px-2 py-3">
                         Đơn hàng
                     </h3>
-                    <div className="bg-white sm:px-4 px-1 grid gap-3">
+                    <div className="liquid-glass rounded-lg sm:px-4 px-1 grid gap-3">
                         <div>
-                            <h3 className="font-semibold sm:text-lg text-sm text-red-darker py-2">
+                            <h3 className="font-semibold sm:text-lg text-sm text-lime-300 py-2">
                                 Danh sách sản phẩm
                             </h3>
                             {filteredItems.length === 0 ? (
-                                <p className="text-gray-500">Giỏ hàng trống</p>
+                                <p className="text-white">Giỏ hàng trống</p>
                             ) : (
                                 filteredItems.map((item) => {
                                     const product = item.productId || {};
@@ -840,13 +856,13 @@ const CheckoutPage = () => {
                                     return (
                                         <div
                                             key={item._id}
-                                            className="flex gap-4 items-center mb-4 shadow-lg p-2"
+                                            className="flex gap-4 items-center mb-4 shadow-lg p-2 glass-border rounded-md"
                                         >
                                             <div className="sm:w-16 sm:h-16 w-12 h-12 flex-shrink-0">
                                                 <img
                                                     src={image}
                                                     alt={name}
-                                                    className="w-full h-full object-cover rounded border border-inset border-primary-200"
+                                                    className="w-full h-full object-cover rounded border border-inset border-rose-400"
                                                     onError={(e) => {
                                                         if (
                                                             e.target.src !==
@@ -863,16 +879,16 @@ const CheckoutPage = () => {
                                                 <p className="font-medium sm:text-base text-xs">
                                                     {name}
                                                 </p>
-                                                <p className="sm:text-sm text-xs text-gray-600">
+                                                <p className="sm:text-sm text-xs">
                                                     Số lượng: {quantity}
                                                 </p>
-                                                <p className="sm:text-sm text-xs flex items-center gap-2">
+                                                <p className="sm:text-sm text-xs flex items-center gap-2 text-white">
                                                     Giá:{' '}
                                                     {DisplayPriceInVND(
                                                         finalPrice
                                                     )}
                                                     {discount > 0 && (
-                                                        <span className="line-through text-gray-400">
+                                                        <span className="line-through text-white/60">
                                                             {DisplayPriceInVND(
                                                                 price * quantity
                                                             )}
@@ -894,7 +910,7 @@ const CheckoutPage = () => {
                                     <p>Tổng sản phẩm</p>
                                     <p className="flex sm:flex-row flex-col items-center sm:gap-2 gap-[1px]">
                                         {hasDiscount > 0 && (
-                                            <span className="line-through text-neutral-400">
+                                            <span className="line-through text-white/60">
                                                 {DisplayPriceInVND(
                                                     filteredNotDiscountTotalPrice
                                                 )}
@@ -949,7 +965,7 @@ const CheckoutPage = () => {
                                                     type="text"
                                                     placeholder="Nhập mã giảm giá"
                                                     className="w-full px-3 py-2 border border-gray-300 rounded-md sm:text-sm text-xs focus:outline-none focus:ring-2
-                                                    focus:ring-blue-500 focus:border-blue-500 h-8"
+                                                    focus:ring-lime-500 focus:border-lime-500 h-10"
                                                     value={voucherCode}
                                                     onChange={(e) =>
                                                         setVoucherCode(
@@ -985,8 +1001,8 @@ const CheckoutPage = () => {
                                             <button
                                                 type="button"
                                                 onClick={handleApplyVoucher}
-                                                className="px-3 h-8 bg-blue-500 text-white sm:text-sm text-xs font-medium rounded-md hover:bg-blue-600
-                                            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 whitespace-nowrap"
+                                                className="px-3 h-10 bg-lime-600 text-white sm:text-sm text-xs font-medium rounded-md hover:bg-lime-700
+                                            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-lime-500 whitespace-nowrap"
                                             >
                                                 Áp dụng
                                             </button>
@@ -1246,7 +1262,7 @@ const CheckoutPage = () => {
                                                 {availableVouchers.active
                                                     ?.length > 0 && (
                                                     <div>
-                                                        <p className="font-bold text-green-700 mb-2">
+                                                        <p className="font-bold text-lime-300 mb-2">
                                                             Mã khả dụng (
                                                             {
                                                                 availableVouchers
@@ -1827,19 +1843,19 @@ const CheckoutPage = () => {
                                                 />
                                                 <label
                                                     htmlFor="usePoints"
-                                                    className="sm:text-sm font-medium text-gray-700 px-2 cursor-pointer hover:opacity-80"
+                                                    className="sm:text-sm font-medium px-2 cursor-pointer hover:opacity-80"
                                                 >
                                                     Sử dụng điểm thưởng
                                                 </label>
                                             </div>
-                                            <div className="sm:text-sm text-xs text-gray-600 flex flex-col sm:items-end gap-1 select-none">
+                                            <div className="sm:text-sm text-xs flex flex-col sm:items-end gap-1 select-none">
                                                 <p className="flex gap-1">
                                                     Có sẵn:{' '}
-                                                    <p className="font-bold text-green-700">
+                                                    <p className="font-bold text-lime-300">
                                                         {userPoints.toLocaleString()}
                                                     </p>
                                                     điểm (
-                                                    <p className="font-bold text-green-700">
+                                                    <p className="font-bold text-lime-300">
                                                         ~{' '}
                                                         {DisplayPriceInVND(
                                                             userPoints *
@@ -1848,7 +1864,7 @@ const CheckoutPage = () => {
                                                     </p>
                                                     )
                                                 </p>
-                                                <p className="text-xs italic text-gray-500">
+                                                <p className="text-xs italic">
                                                     Bạn chỉ được dùng tối đa 50%
                                                     giá trị đơn hàng
                                                 </p>
@@ -1947,7 +1963,7 @@ const CheckoutPage = () => {
                                                         />
                                                         <span className="flex gap-1">
                                                             điểm (tối đa:{' '}
-                                                            <p className="font-semibold">
+                                                            <p className="font-semibold text-lime-300">
                                                                 {maxPointsToUse.toLocaleString()}
                                                             </p>
                                                             )
@@ -1964,19 +1980,19 @@ const CheckoutPage = () => {
                                                             pointsToUse ===
                                                             maxPointsToUse
                                                         }
-                                                        className={`px-2 py-1 font-semibold rounded ${
+                                                        className={`px-2 py-1 font-semibold text-xs rounded ${
                                                             pointsToUse ===
                                                             maxPointsToUse
                                                                 ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                                                                : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
+                                                                : 'bg-lime-50 text-lime-600 hover:bg-lime-200'
                                                         }`}
                                                     >
                                                         Dùng tối đa
                                                     </button>
                                                 </div>
-                                                <div className="mt-[6px] font-semibold text-gray-500 flex gap-1">
+                                                <div className="mt-[6px] font-semibold flex gap-1">
                                                     Giảm:{' '}
-                                                    <p className="text-secondary-200">
+                                                    <p className="text-lime-300">
                                                         {DisplayPriceInVND(
                                                             pointsToUse *
                                                                 pointsValue
@@ -1989,12 +2005,12 @@ const CheckoutPage = () => {
                                 )}
                             </div>
                             <Divider />
-                            <div className="flex justify-between sm:text-sm text-xs text-gray-600">
+                            <div className="flex justify-between sm:text-sm text-xs">
                                 <p>Tạm tính:</p>
                                 <p>{DisplayPriceInVND(filteredTotalPrice)}</p>
                             </div>
 
-                            <div className="flex justify-between sm:text-sm text-xs text-gray-600">
+                            <div className="flex justify-between sm:text-sm text-xs">
                                 <p>Phí vận chuyển:</p>
                                 {selectedVouchers?.freeShipping ? (
                                     <div className="flex items-center">
@@ -2019,15 +2035,15 @@ const CheckoutPage = () => {
                             )}
 
                             {usePoints && pointsToUse > 0 && (
-                                <div className="flex justify-between sm:text-sm text-xs">
-                                    <p className="text-gray-600 flex">
+                                <div className="flex justify-between sm:text-sm text-xs text-lime-300">
+                                    <p className="flex">
                                         Điểm tích lũy (
                                         <p className="font-semibold text-secondary-200 pr-1">
                                             {pointsToUse}
                                         </p>
                                         điểm):
                                     </p>
-                                    <p className="text-blue-600 font-semibold">
+                                    <p className="font-semibold">
                                         -
                                         {DisplayPriceInVND(
                                             pointsToUse * pointsValue
@@ -2035,7 +2051,10 @@ const CheckoutPage = () => {
                                     </p>
                                 </div>
                             )}
-                            <div className="font-semibold flex items-center justify-between gap-4 border-t border-gray-200 pt-2 mt-2">
+                            <div
+                                className="font-semibold flex items-center justify-between gap-4 border-t border-gray-200 pt-2
+                            mt-2 text-rose-500"
+                            >
                                 <p className="font-bold">Tổng cộng:</p>
                                 <p className="text-secondary-200 font-bold sm:text-lg text-base">
                                     {DisplayPriceInVND(finalTotal)}
@@ -2045,15 +2064,15 @@ const CheckoutPage = () => {
 
                         <div className="w-full flex flex-col gap-4 sm:text-sm text-xs">
                             {usePoints && pointsToUse > 0 && (
-                                <div className="bg-blue-50 p-3 rounded-md border border-blue-100">
-                                    <p className="text-blue-700 flex">
+                                <div className="liquid-glass p-3 rounded-md border border-blue-100">
+                                    <p className="text-white flex">
                                         Sử dụng{' '}
                                         <span className="font-bold px-1">
                                             {pointsToUse.toLocaleString()}
                                         </span>
                                         điểm cho đơn hàng này.
                                     </p>
-                                    <p className="text-green-700 mt-1 flex gap-1">
+                                    <p className="text-lime-300 mt-1 flex gap-1">
                                         Điểm còn lại:
                                         <p className="font-bold">
                                             {(
@@ -2065,43 +2084,16 @@ const CheckoutPage = () => {
                                 </div>
                             )}
                             <button
-                                className={`py-2 px-4 bg-primary-2 hover:opacity-80 rounded shadow-md
-                            text-secondary-200 font-semibold ${
-                                loading ||
-                                filteredItems.length === 0 ||
-                                !hasValidAddress
-                                    ? 'opacity-80 cursor-not-allowed'
-                                    : 'cursor-pointer'
-                            }`}
-                                onClick={() =>
-                                    setShowConfirmModal({
-                                        show: true,
-                                        type: 'online',
-                                    })
-                                }
-                                disabled={
-                                    loading ||
-                                    filteredItems.length === 0 ||
-                                    !hasValidAddress
-                                }
+                                className="py-2 px-4 bg-primary-2 hover:opacity-80 rounded shadow-md
+                            text-secondary-200 font-semibold"
+                                onClick={handleOnlinePayment}
                             >
                                 {loading ? <Loading /> : 'Thanh toán online'}
                             </button>
                             <button
-                                className={`py-2 px-4 border-[3px] border-red-darker font-semibold text-red-darker hover:bg-red-darker
-                            hover:text-white rounded transition-all ${
-                                loading ||
-                                filteredItems.length === 0 ||
-                                !hasValidAddress
-                                    ? 'opacity-80 cursor-not-allowed'
-                                    : 'cursor-pointer'
-                            }`}
+                                className="py-2 px-4 border-[3px] border-red-darker font-semibold text-red-darker hover:bg-red-darker
+                            hover:text-white rounded transition-all"
                                 onClick={handleCashOnDelivery}
-                                disabled={
-                                    loading ||
-                                    filteredItems.length === 0 ||
-                                    !hasValidAddress
-                                }
                             >
                                 Thanh toán khi nhận hàng
                             </button>
@@ -2148,7 +2140,7 @@ const CheckoutPage = () => {
                                 onClick={
                                     {
                                         cash: confirmCashOnDelivery,
-                                        online: handleOnlinePayment,
+                                        online: executeOnlinePayment,
                                     }[showConfirmModal.type] || (() => {})
                                 }
                                 disabled={loading}

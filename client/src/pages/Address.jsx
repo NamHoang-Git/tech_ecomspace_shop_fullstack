@@ -95,7 +95,7 @@ const Address = () => {
 
             {/* Danh sách địa chỉ hiện hoạt */}
             <div
-                className="bg-white p-2 grid gap-4 overflow-auto max-h-[calc(100vh/1.5)]"
+                className="p-2 grid gap-4 overflow-auto max-h-[calc(100vh/1.5)]"
             >
                 {activeAddresses.length === 0 ? (
                     <p className="text-gray-500">

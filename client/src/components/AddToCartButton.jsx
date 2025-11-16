@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useGlobalContext } from '../provider/GlobalProvider';
 import Axios from '../utils/Axios';
 import SummaryApi from '../common/SummaryApi';
@@ -10,10 +10,12 @@ import Loading from './Loading';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Star, ShoppingCart } from 'lucide-react';
+import { updateCartItemQuantity, removeFromCart } from '../store/cartProduct';
 
 const AddToCartButton = ({ data }) => {
     const { fetchCartItem, updateCartItem, deleteCartItem } =
         useGlobalContext();
+    const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
     const cartItem = useSelector((state) => state.cartItem.cart);
     const [isAvailableCart, setIsAvailableCart] = useState(false);
@@ -99,12 +101,18 @@ const AddToCartButton = ({ data }) => {
             return;
         }
 
-        const response = await updateCartItem(cartItemDetails._id, qty + 1);
+        // Optimistic update - update local state immediately
+        const newQty = qty + 1;
+        dispatch(updateCartItemQuantity({ itemId: cartItemDetails._id, newQuantity: newQty }));
+        setQty(newQty);
 
-        if (response.success) {
-            if (fetchCartItem) {
-                await fetchCartItem();
-            }
+        // Then sync with server
+        const response = await updateCartItem(cartItemDetails._id, newQty);
+
+        if (!response.success) {
+            // Rollback on error
+            dispatch(updateCartItemQuantity({ itemId: cartItemDetails._id, newQuantity: qty }));
+            setQty(qty);
         }
     };
 
@@ -117,17 +125,32 @@ const AddToCartButton = ({ data }) => {
         }
 
         if (qty === 1) {
-            await deleteCartItem(cartItemDetails._id);
-            if (fetchCartItem) {
+            // Optimistic delete - remove from local state immediately
+            dispatch(removeFromCart(cartItemDetails._id));
+            setIsAvailableCart(false);
+            setQty(0);
+            setCartItemsDetails(null);
+
+            // Then sync with server
+            const response = await deleteCartItem(cartItemDetails._id);
+
+            if (!response.success) {
+                // Rollback on error - need to refetch the cart to restore state
                 await fetchCartItem();
             }
         } else {
-            const response = await updateCartItem(cartItemDetails._id, qty - 1);
+            // Optimistic update - update local state immediately
+            const newQty = qty - 1;
+            dispatch(updateCartItemQuantity({ itemId: cartItemDetails._id, newQuantity: newQty }));
+            setQty(newQty);
 
-            if (response.success) {
-                if (fetchCartItem) {
-                    await fetchCartItem();
-                }
+            // Then sync with server
+            const response = await updateCartItem(cartItemDetails._id, newQty);
+
+            if (!response.success) {
+                // Rollback on error
+                dispatch(updateCartItemQuantity({ itemId: cartItemDetails._id, newQuantity: qty }));
+                setQty(qty);
             }
         }
     };

@@ -20,6 +20,9 @@ import { useGlobalContext } from '../provider/GlobalProvider';
 import ConfirmBox from '../components/ConfirmBox';
 import Loading from '../components/Loading';
 import { valideURLConvert } from '../utils/valideURLConvert';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import GlareHover from '@/components/GlareHover';
+import { Button } from '@/components/ui/button';
 
 const CartPage = () => {
     const { cart } = useSelector((state) => state.cartItem);
@@ -152,8 +155,19 @@ const CartPage = () => {
 
     const goToCheckout = () => {
         setLoading(true);
-        if (selectedItems.length === 0) return;
-        navigate('/checkout', { state: { selectedItems } });
+        try {
+            if (selectedItems.length === 0) {
+                toast.error('Vui lòng chọn sản phẩm.');
+                return;
+            }
+            navigate('/checkout', { state: { selectedItems } });
+        } catch (error) {
+            toast.error(
+                'Lỗi khi chuyển đến trang thanh toán: ' + error.message
+            );
+        } finally {
+            setLoading(false);
+        }
     };
 
     const columns = [
@@ -216,7 +230,7 @@ const CartPage = () => {
                     <AddToCartButton data={row.original.productId} />
                 </div>
             ),
-            meta: { className: 'sm:max-w-24' },
+            meta: { className: 'sm:max-w-24 lg:max-w-16' },
         },
         {
             header: 'Giá',
@@ -224,13 +238,13 @@ const CartPage = () => {
             cell: ({ row }) => (
                 <div className="lg:flex items-end gap-2 justify-center">
                     {row.original.productId?.discount > 0 && (
-                        <p className="text-[10px] sm:text-base text-gray-500 line-through">
+                        <p className="text-[10px] sm:text-base line-through">
                             {DisplayPriceInVND(
                                 row.original.productId?.price || 0
                             )}
                         </p>
                     )}
-                    <p className="text-[11px] sm:text-base font-bold text-secondary-200">
+                    <p className="text-[11px] sm:text-base font-bold text-rose-400">
                         {DisplayPriceInVND(
                             pricewithDiscount(
                                 row.original.productId?.price || 0,
@@ -248,8 +262,8 @@ const CartPage = () => {
             cell: ({ row }) => (
                 <button
                     onClick={() => handleRemoveItem(row.original._id)}
-                    className="bg-white px-[6px] py-[2px] rounded-md text-secondary-200 hover:opacity-80
-                shadow-md border-2 border-inset border-secondary-200 hover:bg-secondary-200 hover:text-white"
+                    className="bg-rose-600 px-[6px] py-[2px] rounded-md text-secondary-200 hover:opacity-80
+                shadow-md"
                 >
                     <IoClose size={16} />
                 </button>
@@ -259,10 +273,10 @@ const CartPage = () => {
     ];
 
     return (
-        <section className="container mx-auto min-h-[80vh] px-2 py-6">
-            <div
-                className="p-3 sm:p-4 mb-3 bg-primary-4 rounded-md shadow-md shadow-secondary-100
-                font-bold text-secondary-200 sm:text-lg text-sm uppercase flex items-center gap-2"
+        <section className="container mx-auto min-h-[80vh] px-4 py-6 text-white">
+            <Card
+                className="bg-white/15 mb-4 py-4 px-4 sm:px-0 rounded-lg shadow-md shadow-secondary-100 font-bold
+            text-secondary-200 sm:text-lg text-sm uppercase flex border border-lime-300 flex-row"
             >
                 <span
                     onClick={() => navigate('/')}
@@ -270,8 +284,12 @@ const CartPage = () => {
                 >
                     <FaRegArrowAltCircleLeft size={25} />
                 </span>
-                <p className="leading-3 mt-1">Giỏ hàng</p>
-            </div>
+                <CardHeader>
+                    <CardTitle className="text-lg text-lime-300 font-bold uppercase p-0">
+                        Giỏ hàng
+                    </CardTitle>
+                </CardHeader>
+            </Card>
 
             {cart.length === 0 ? (
                 <div className="flex flex-col gap-4 items-center">
@@ -286,12 +304,12 @@ const CartPage = () => {
                     </button>
                 </div>
             ) : (
-                <div className="bg-white shadow rounded-lg px-2 py-3 sm:p-4">
+                <div className="liquid-glass shadow rounded-lg px-2 py-3 sm:p-4">
                     <DisplayTableCart data={cart} column={columns} />
 
                     <div
-                        className="flex justify-between items-center mt-6 px-4 py-3 bg-primary-100 shadow-md
-                    rounded-lg sm:text-base text-xs"
+                        className="flex justify-between items-center mt-6 px-4 py-3 liquid-glass shadow-md
+                    text-sm rounded-lg"
                     >
                         <div>
                             <p className="font-bold">
@@ -299,17 +317,17 @@ const CartPage = () => {
                                 chọn):
                             </p>
                             {hasDiscount > 0 && (
-                                <p className="text-gray-500 line-through">
+                                <p className="line-through">
                                     {DisplayPriceInVND(originalTotalPrice)}
                                 </p>
                             )}
                         </div>
-                        <p className="text-sm sm:text-xl font-bold text-secondary-200">
+                        <p className="text-sm sm:text-xl font-bold text-rose-600">
                             {DisplayPriceInVND(totalPrice)}
                         </p>
                     </div>
 
-                    <div className="mt-5 flex justify-between gap-4 sm:text-base text-xs">
+                    <div className="mt-5 flex justify-between gap-4 text-xs">
                         <div className="flex items-center gap-6">
                             <div className="flex items-center gap-2">
                                 <input
@@ -327,7 +345,7 @@ const CartPage = () => {
                                     onClick={() =>
                                         setOpenConfirmBoxDelete(true)
                                     }
-                                    className="text-secondary-200 hover:text-secondary-100 font-bold"
+                                    className="text-rose-600 hover:text-secondary-100 font-bold"
                                 >
                                     Xóa
                                 </button>
@@ -336,23 +354,28 @@ const CartPage = () => {
                         <div className="flex gap-4">
                             <button
                                 className="px-4 py-2 border-2 border-inset border-secondary-100 text-secondary-100
-                            bg-white hover:bg-secondary-100 hover:text-white rounded-lg font-semibold shadow-lg
-                            sm:block hidden"
+                            rounded-lg font-semibold shadow-lg sm:block hidden bg-white/10"
                                 onClick={() => navigate('/')}
                             >
                                 Tiếp tục mua sắm
                             </button>
-                            <button
-                                onClick={goToCheckout}
-                                disabled={selectedItems.length === 0}
-                                className={`px-4 py-2 rounded-lg font-bold ${
-                                    selectedItems.length === 0
-                                        ? 'bg-gray-400 cursor-not-allowed'
-                                        : 'bg-primary-3 hover:opacity-80 text-secondary-200 rounded-lg font-bold shadow-lg'
-                                }`}
+                            <GlareHover
+                                background="#000"
+                                glareColor="#ffffff"
+                                glareOpacity={0.8}
+                                glareAngle={-30}
+                                glareSize={300}
+                                transitionDuration={800}
+                                playOnce={false}
                             >
-                                {loading ? <Loading /> : 'Đặt hàng'}
-                            </button>
+                                <Button
+                                    onClick={goToCheckout}
+                                    // disabled={selectedItems.length === 0}
+                                    className="px-4 py-2 rounded-lg font-bold text-white hover:bg-transparent"
+                                >
+                                    {loading ? <Loading /> : 'Đặt hàng'}
+                                </Button>
+                            </GlareHover>
                         </div>
                     </div>
                 </div>
@@ -365,7 +388,7 @@ const CartPage = () => {
                     close={() => setOpenConfirmBoxDelete(false)}
                     title="Xóa sản phẩm"
                     message="Bạn có chắc chắn muốn xóa sản phẩm này?"
-                    confirmText="Xóa"
+                    confirmText="Xác nhận"
                     cancelText="Hủy"
                 />
             )}

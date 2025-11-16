@@ -256,7 +256,7 @@ const EditAddressDetails = ({ close, data }) => {
         flex items-center justify-center px-3"
         >
             <div
-                className="bg-white px-4 py-6 w-full max-w-xl mx-auto rounded-md shadow-md
+                className="liquid-glass px-4 py-6 w-full max-w-xl mx-auto rounded-md shadow-md
             flex flex-col gap-4"
             >
                 <div className="flex justify-between items-center gap-4">

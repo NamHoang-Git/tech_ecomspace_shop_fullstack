@@ -285,7 +285,7 @@ const AddAddress = ({ close }) => {
         flex items-center justify-center px-3"
         >
             <div
-                className="bg-white px-4 py-6 w-full max-w-xl mx-auto rounded-md shadow-md
+                className="liquid-glass px-4 py-6 w-full max-w-xl mx-auto rounded-md shadow-md
                 flex flex-col gap-4"
             >
                 <div className="flex justify-between items-center gap-4">
@@ -359,7 +359,7 @@ const AddAddress = ({ close }) => {
                             isClearable
                             className={`${
                                 formErrors.city ? 'border-red-500' : ''
-                            } w-full`}
+                            } w-full bg-red-500`}
                             classNamePrefix="select"
                             styles={{
                                 control: (provided, state) => ({
@@ -413,7 +413,7 @@ const AddAddress = ({ close }) => {
                             isDisabled={!selectedProvince}
                             className={`${
                                 formErrors.district ? 'border-red-500' : ''
-                            } w-full`}
+                            } w-full bg-black`}
                             classNamePrefix="select"
                             styles={{
                                 control: (provided, state) => ({

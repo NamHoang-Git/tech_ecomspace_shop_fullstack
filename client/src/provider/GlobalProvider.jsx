@@ -58,7 +58,6 @@ const GlobalProvider = ({ children }) => {
             const { data: responseData } = response;
 
             if (responseData.success) {
-                await fetchCartItem();
                 return responseData;
             }
         } catch (error) {
@@ -79,10 +78,11 @@ const GlobalProvider = ({ children }) => {
 
             if (responseData.success) {
                 toast.success(responseData.message);
-                await fetchCartItem();
+                return responseData;
             }
         } catch (error) {
             AxiosToastError(error);
+            return error;
         }
     };
 
