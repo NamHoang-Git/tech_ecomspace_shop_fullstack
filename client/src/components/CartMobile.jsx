@@ -15,14 +15,14 @@ const CartMobileLink = () => {
             {cartItem[0] && (
                 <Link to={'/cart'} className="sticky bottom-4 p-2 z-10">
                     <div
-                        className="flex items-center justify-between gap-3 md:hidden text-secondary-200 text-sm
-                    bg-primary px-4 py-3 rounded shadow-lg shadow-secondary-100 font-bold"
+                        className="flex items-center justify-between gap-3 md:hidden text-white text-sm
+                    px-4 py-3 rounded shadow-lg shadow-secondary-100 font-bold liquid-glass"
                     >
                         <div className="flex items-center gap-3">
-                            <div className="p-2 bg-primary rounded shadow-md shadow-slate-600">
+                            <div className="p-2 glass-border rounded shadow-md shadow-slate-600">
                                 <FaCartShopping size={16} />
                             </div>
-                            <div className="sm:text-sm text-xs">
+                            <div className="sm:text-sm text-xs text-lime-300">
                                 <p>{totalQty} sản phẩm</p>
                                 <p>{DisplayPriceInVND(totalPrice)}</p>
                             </div>

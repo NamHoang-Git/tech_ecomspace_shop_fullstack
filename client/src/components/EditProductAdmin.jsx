@@ -82,7 +82,7 @@ const EditProductAdmin = ({ close, data: propsData, fetchProduct }) => {
             const uploadPromises = files.map((file) => uploadImage(file));
             const responses = await Promise.all(uploadPromises);
             const newImageUrls = responses.map(
-                (response) => response.data.data.url
+                (response) => response.data.data.data.url
             );
 
             setData((prev) => ({

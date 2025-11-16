@@ -44,6 +44,7 @@ export function TopNav() {
                                         <AvatarImage
                                             src={user.avatar || defaultAvatar}
                                             alt={user.name || 'User'}
+                                            className="object-cover"
                                         />
                                     ) : null}
                                     <AvatarFallback>

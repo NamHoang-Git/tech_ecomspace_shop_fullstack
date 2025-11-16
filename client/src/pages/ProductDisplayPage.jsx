@@ -78,11 +78,11 @@ const ProductDisplayPage = () => {
     }, [params]);
 
     const handleScrollLeft = () => {
-        imageContainer.current.scrollLeft -= 200;
+        imageContainer.current.scrollLeft -= 300;
     };
 
     const handleScrollRight = () => {
-        imageContainer.current.scrollLeft += 200;
+        imageContainer.current.scrollLeft += 300;
     };
 
     const fetchCart = async () => {

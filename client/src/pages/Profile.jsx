@@ -25,6 +25,7 @@ import Loading from '@/components/Loading';
 import { Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import GlareHover from '@/components/GlareHover';
+import ViewImage from '@/components/ViewImage';
 
 const Profile = () => {
     const user = useSelector((state) => state?.user);
@@ -41,6 +42,9 @@ const Profile = () => {
     });
 
     const [loading, setLoading] = useState(false);
+    const [selectedAvatar, setSelectedAvatar] = useState(null);
+    const [avatarPreview, setAvatarPreview] = useState(null);
+    const [imageURL, setImageURL] = useState('');
 
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
@@ -101,7 +105,7 @@ const Profile = () => {
         });
     };
 
-    const handleUploadAvatar = async (e) => {
+    const handleAvatarSelect = (e) => {
         const file = e.target.files[0];
 
         if (!file) {
@@ -127,8 +131,23 @@ const Profile = () => {
             return;
         }
 
+        // Create preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            setAvatarPreview(e.target.result);
+        };
+        reader.readAsDataURL(file);
+
+        setSelectedAvatar(file);
+    };
+
+    const handleUploadAvatar = async () => {
+        if (!selectedAvatar) {
+            return;
+        }
+
         const formData = new FormData();
-        formData.append('avatar', file);
+        formData.append('avatar', selectedAvatar);
 
         try {
             setLoading(true);
@@ -147,13 +166,24 @@ const Profile = () => {
                     responseData.message || 'Cập nhật avatar thành công'
                 );
                 dispatch(updatedAvatar(responseData.data.avatar));
+                // Reset states
+                setSelectedAvatar(null);
+                setAvatarPreview(null);
             }
         } catch (error) {
             AxiosToastError(error);
         } finally {
             setLoading(false);
-            // Reset input để có thể upload lại cùng file
-            e.target.value = '';
+        }
+    };
+
+    const handleCancelAvatarChange = () => {
+        setSelectedAvatar(null);
+        setAvatarPreview(null);
+        // Reset input
+        const input = document.getElementById('uploadProfile');
+        if (input) {
+            input.value = '';
         }
     };
 
@@ -263,22 +293,44 @@ const Profile = () => {
                                 <div className="space-y-4">
                                     <Label>Avatar Hiện Tại</Label>
                                     <div className="grid justify-items-center justify-start gap-2.5">
-                                        <div className="flex items-center space-x-4">
-                                            <Avatar className="h-20 w-20">
-                                                <AvatarImage
-                                                    src={
-                                                        user?.avatar ||
-                                                        defaultAvatar
-                                                    }
-                                                    alt={user?.name || 'User'}
-                                                />
-                                                <AvatarFallback>
-                                                    {(user?.name || 'U')
-                                                        .split(' ')
-                                                        .map((n) => n[0])
-                                                        .join('')}
-                                                </AvatarFallback>
-                                            </Avatar>
+                                        <div className="flex items-center space-x-4 relative">
+                                            <div
+                                                className="cursor-pointer"
+                                                onClick={() =>
+                                                    setImageURL(
+                                                        avatarPreview ||
+                                                            user?.avatar ||
+                                                            defaultAvatar
+                                                    )
+                                                }
+                                            >
+                                                <Avatar className="h-20 w-20 hover:opacity-80 transition-opacity">
+                                                    <AvatarImage
+                                                        src={
+                                                            avatarPreview ||
+                                                            user?.avatar ||
+                                                            defaultAvatar
+                                                        }
+                                                        alt={
+                                                            user?.name || 'User'
+                                                        }
+                                                        className="object-cover"
+                                                    />
+                                                    <AvatarFallback>
+                                                        {(user?.name || 'U')
+                                                            .split(' ')
+                                                            .map((n) => n[0])
+                                                            .join('')}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                            </div>
+                                            {avatarPreview && (
+                                                <div className="absolute top-0 right-0 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                                    <span className="text-white text-xs">
+                                                        *
+                                                    </span>
+                                                </div>
+                                            )}
                                         </div>
                                         <div>
                                             <Label
@@ -287,10 +339,12 @@ const Profile = () => {
                                             >
                                                 {loading
                                                     ? 'Đang tải lên...'
+                                                    : selectedAvatar
+                                                    ? 'Đổi ảnh'
                                                     : 'Chọn ảnh'}
                                             </Label>
                                             <Input
-                                                onChange={handleUploadAvatar}
+                                                onChange={handleAvatarSelect}
                                                 type="file"
                                                 accept="image/*"
                                                 id="uploadProfile"
@@ -298,6 +352,32 @@ const Profile = () => {
                                                 disabled={loading}
                                             />
                                         </div>
+                                        {selectedAvatar && (
+                                            <div className="flex gap-2 mt-2">
+                                                <Button
+                                                    onClick={handleUploadAvatar}
+                                                    disabled={loading}
+                                                    size="sm"
+                                                    className="bg-green-600 hover:bg-green-700"
+                                                >
+                                                    {loading ? (
+                                                        <Loading />
+                                                    ) : (
+                                                        'Xác nhận thay đổi'
+                                                    )}
+                                                </Button>
+                                                <Button
+                                                    onClick={
+                                                        handleCancelAvatarChange
+                                                    }
+                                                    disabled={loading}
+                                                    variant="outline"
+                                                    size="sm"
+                                                >
+                                                    Hủy
+                                                </Button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                                 <div className="space-y-2">
@@ -457,6 +537,10 @@ const Profile = () => {
                     </Card>
                 </TabsContent>
             </Tabs>
+
+            {imageURL && (
+                <ViewImage url={imageURL} close={() => setImageURL('')} />
+            )}
         </div>
     );
 };
