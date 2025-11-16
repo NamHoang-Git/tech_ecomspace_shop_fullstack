@@ -103,7 +103,7 @@ const UserMenu = ({ close }) => {
     return (
         <div
             ref={menuRef}
-            className="bg-background text-muted-foreground rounded-lg shadow-lg overflow-hidden w-full"
+            className="bg-black text-muted-foreground rounded-lg shadow-lg overflow-hidden w-full"
         >
             <div className="p-4 py-2">
                 <div className="flex items-center gap-3">
@@ -125,11 +125,11 @@ const UserMenu = ({ close }) => {
                             </span>
                         )}
                     </Link>
-                    <div className="min-w-0">
+                    <div className="min-w-0 text-white">
                         <Link
                             to={'/dashboard/profile'}
                             className="flex items-center gap-1 text-sm font-bold truncate
-                                    text-foreground hover:opacity-80"
+                                    hover:opacity-80"
                             title="Tài khoản"
                         >
                             {user?.name}
@@ -255,40 +255,43 @@ const UserMenu = ({ close }) => {
                     </Link>
                 )}
 
-                <Link
-                    onClick={handleClose}
-                    to={'/dashboard/address'}
-                    className={`flex items-center text-bl gap-4 px-4 py-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] ${
-                        isActive('/dashboard/address')
-                            ? 'bg-white/20 shadow-md'
-                            : ''
-                    }`}
-                >
-                    <span className="text-white font-medium text-sm">
-                        Địa chỉ
-                    </span>
-                </Link>
+                {user.role !== 'ADMIN' && (
+                    <Link
+                        onClick={handleClose}
+                        to={'/dashboard/address'}
+                        className={`flex items-center text-bl gap-4 px-4 py-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] ${
+                            isActive('/dashboard/address')
+                                ? 'bg-white/20 shadow-md'
+                                : ''
+                        }`}
+                    >
+                        <span className="text-white font-medium text-sm">
+                            Địa chỉ
+                        </span>
+                    </Link>
+                )}
 
-                <Link
-                    onClick={handleClose}
-                    to={'/dashboard/my-orders'}
-                    className={`flex items-center text-bl gap-4 px-4 py-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] ${
-                        isActive('/dashboard/my-orders')
-                            ? 'bg-white/20 shadow-md'
-                            : ''
-                    }`}
-                >
-                    <span className="text-white font-medium text-sm">
-                        Lịch sử mua hàng
-                    </span>
-                </Link>
+                {user.role !== 'ADMIN' && (
+                    <Link
+                        onClick={handleClose}
+                        to={'/dashboard/my-orders'}
+                        className={`flex items-center text-bl gap-4 px-4 py-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] ${
+                            isActive('/dashboard/my-orders')
+                                ? 'bg-white/20 shadow-md'
+                                : ''
+                        }`}
+                    >
+                        <span className="text-white font-medium text-sm">
+                            Lịch sử mua hàng
+                        </span>
+                    </Link>
+                )}
 
                 <Divider />
                 <div className="pb-2">
                     <button
                         onClick={handleLogout}
-                        className="w-full flex items-center justify-center px-4 py-2 text-sm font-medium
-                    text-foreground hover:bg-secondary rounded-md hover:scale-[1.02] transition-all duration-300 ease-out"
+                        className="text-white w-full text-sm text-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
                     >
                         Đăng xuất
                     </button>

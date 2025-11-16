@@ -38,6 +38,7 @@ function App() {
         '/forgot-password',
         '/verification-otp',
         '/reset-password',
+        '/verify-email'
     ].some((path) => location.pathname.startsWith(path));
     const dashBoardLayout = ['/admin', '/dashboard'].some((path) =>
         location.pathname.startsWith(path)

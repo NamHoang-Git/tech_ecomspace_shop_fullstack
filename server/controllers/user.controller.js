@@ -75,7 +75,7 @@ export async function registerUserController(req, res) {
 
         const verifyEmail = await sendEmail({
             sendTo: email,
-            subject: "Xác nhận email từ EcomSpace",
+            subject: "Xác nhận email từ TechSpace",
             html: verifyEmailTemplate({
                 name,
                 url: VerifyEmailUrl
@@ -351,7 +351,7 @@ export async function forgotPasswordController(req, res) {
 
         await sendEmail({
             sendTo: email,
-            subject: "Quên mật khẩu từ EcomSpace",
+            subject: "Quên mật khẩu từ TechSpace",
             html: forgotPasswordTemplate({
                 name: user.name,
                 otp: otp

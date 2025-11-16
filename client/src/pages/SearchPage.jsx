@@ -322,7 +322,7 @@ const SearchPage = () => {
                             })
                         }
                     >
-                        <SelectTrigger className="w-32 text-sm border-gray-200 focus:ring-0 shadow-none rounded-lg bg-white/20 focus:border-[#3F3FF3]">
+                        <SelectTrigger className="w-40 text-sm border-gray-200 focus:ring-0 shadow-none rounded-lg bg-white/20 focus:border-[#3F3FF3]">
                             <SelectValue placeholder="Danh mục" />
                         </SelectTrigger>
 
@@ -373,27 +373,6 @@ const SearchPage = () => {
 
     return (
         <div className="relative min-h-screen">
-            {/* Background effect - position absolute */}
-            <div className="fixed inset-0 z-0 pointer-events-none">
-                <LiquidEther
-                    colors={['#5227FF', '#FF9FFC', '#B19EEF']}
-                    mouseForce={20}
-                    cursorSize={100}
-                    isViscous={false}
-                    viscous={30}
-                    iterationsViscous={32}
-                    iterationsPoisson={32}
-                    resolution={0.5}
-                    isBounce={false}
-                    autoDemo={true}
-                    autoSpeed={0.5}
-                    autoIntensity={2.2}
-                    takeoverDuration={0.25}
-                    autoResumeDelay={3000}
-                    autoRampDuration={0.6}
-                    style={{ width: '100%', height: '100%' }}
-                />
-            </div>
             <div className="relative z-10 container mx-auto xl:px-0 px-4">
                 <div className="block md:hidden mx-auto max-w-xl">
                     <Search />
@@ -412,7 +391,7 @@ const SearchPage = () => {
                     >
                         <Button
                             onClick={() => setShowFilters(!showFilters)}
-                            className="flex items-center gap-2 px-4 text-lime-300 py-2 w-full"
+                            className="flex items-center gap-2 px-4 text-lime-300 py-2 w-full hover:bg-transparent"
                         >
                             <FaFilter className="mb-[3px]" />
                             <span className="font-bold uppercase">Lọc</span>

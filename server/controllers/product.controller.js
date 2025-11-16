@@ -349,13 +349,28 @@ export const deleteProductDetails = async (request, response) => {
     }
 };
 
+// Escape regex special characters
+function escapeRegex(text) {
+    return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Check invalid special characters that break regex
+function containsSpecialRegexChar(text) {
+    return /[.*+?^${}()|[\]\\]/.test(text);
+}
+
 // Search Product
 export const searchProduct = async (request, response) => {
     try {
-        const { search, page = 1, limit = 12, minPrice, maxPrice, sort = 'newest', category } = request.body;
+        let { search, page = 1, limit = 12, minPrice, maxPrice, sort = 'newest', category } = request.body;
+
         const skip = (page - 1) * limit;
 
-        if (!search || search.trim() === '') {
+        // 🔥 Trim chuỗi để loại bỏ khoảng trắng đầu/cuối
+        search = search?.trim();
+
+        // ⛔ Không có nội dung tìm kiếm
+        if (!search) {
             return response.status(400).json({
                 message: 'Vui lòng nhập từ khóa tìm kiếm',
                 error: true,
@@ -363,11 +378,23 @@ export const searchProduct = async (request, response) => {
             });
         }
 
+        // ⛔ Không cho nhập ký tự regex đặc biệt
+        if (containsSpecialRegexChar(search)) {
+            return response.status(400).json({
+                message: 'Từ khóa không hợp lệ',
+                error: true,
+                success: false,
+            });
+        }
+
+        // 🔥 Escape từ khóa để regex không bị crash
+        const safeSearch = escapeRegex(search);
+
         // Build the query
         const query = {
             $or: [
-                { name: { $regex: search, $options: 'i' } },
-                { description: { $regex: search, $options: 'i' } },
+                { name: { $regex: safeSearch, $options: 'i' } },
+                { description: { $regex: safeSearch, $options: 'i' } },
             ],
         };
 
@@ -399,6 +426,7 @@ export const searchProduct = async (request, response) => {
                 sortOptions = { createdAt: -1 };
         }
 
+        // Execute search + count
         const [products, total] = await Promise.all([
             ProductModel.find(query)
                 .sort(sortOptions)
@@ -419,6 +447,7 @@ export const searchProduct = async (request, response) => {
             success: true,
             error: false,
         });
+
     } catch (error) {
         return response.status(500).json({
             message: error.message || 'Lỗi server',
@@ -427,6 +456,7 @@ export const searchProduct = async (request, response) => {
         });
     }
 };
+
 
 // Get initial products for homepage
 export const getInitialProducts = async (req, res) => {

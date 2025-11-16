@@ -21,9 +21,9 @@ const forgotPasswordTemplate = ({ name, otp }) => {
                 <p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này hoặc liên hệ với bộ phận hỗ trợ nếu bạn nghi ngờ có hoạt động đáng ngờ.</p>
 
                 <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e9ecef; font-size: 12px; color: #6c757d;">
-                    <p>Trân trọng,<br/>Đội ngũ EcomSpace</p>
-                    <p>📧 support@ecomspace.vn<br/>
-                    🌐 https://ecommerce-shop-full-stack-pvey.vercel.app/</p>
+                    <p>Trân trọng,<br/>Đội ngũ Tech EcomSpace</p>
+                    <p>📧 support@techspace.vn<br/>
+                    🌐 https://tech-ecomspace-shop-fullstack-4xd5.vercel.app/</p>
                 </div>
             </div>
         </div>

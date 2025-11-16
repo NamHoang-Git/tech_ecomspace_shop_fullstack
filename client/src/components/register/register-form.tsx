@@ -59,8 +59,6 @@ export function RegisterForm({
         });
     };
 
-    const valideValue = Object.values(data).every((el) => el);
-
     const validateEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
 
@@ -103,12 +101,31 @@ export function RegisterForm({
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!validateEmail(data.email)) {
+        if (!data.name && !data.email && !data.password) {
+            toast.error('Vui lòng nhập đầy đủ thông tin.');
+            return;
+        }
+
+        if (!data.email) {
+            toast.error('Vui lòng nhập đầy đủ thông tin.');
+            return;
+        } else if (!validateEmail(data.email)) {
             toast.error('Vui lòng nhập địa chỉ email hợp lệ');
             return;
         }
 
-        if (data.password !== data.confirmPassword) {
+        if (!data.password) {
+            toast.error('Vui lòng nhập đầy đủ thông tin.');
+            return;
+        } else if (data.password.length < 6) {
+            toast.error('Mật khẩu phải có ít nhất 6 ký tự');
+            return;
+        }
+
+        if (!data.confirmPassword) {
+            toast.error('Vui lòng nhập đầy đủ thông tin.');
+            return;
+        } else if (data.password !== data.confirmPassword) {
             toast.error('Mật khẩu và mật khẩu xác nhận phải giống nhau');
             return;
         }
@@ -163,7 +180,6 @@ export function RegisterForm({
                         onChange={handleChange}
                         value={data.name}
                         className="h-12 border-gray-200 focus:ring-0 shadow-none rounded-lg bg-white/20 focus:border-[#3F3FF3]"
-                        required
                     />
                 </div>
                 <div className="grid gap-2">
@@ -177,7 +193,6 @@ export function RegisterForm({
                         onChange={handleChange}
                         value={data.email}
                         className="h-12 border-gray-200 focus:ring-0 shadow-none rounded-lg bg-white/20 focus:border-[#3F3FF3]"
-                        required
                     />
                 </div>
                 <div className="grid gap-2">
@@ -191,7 +206,6 @@ export function RegisterForm({
                             onChange={handleChange}
                             value={data.password}
                             className="h-12 pr-10 border-gray-200 focus:ring-0 shadow-none rounded-lg bg-white/20 focus:border-[#3F3FF3]"
-                            required
                         />
                         <Button
                             type="button"
@@ -219,7 +233,6 @@ export function RegisterForm({
                             onChange={handleChange}
                             value={data.confirmPassword}
                             className="h-12 pr-10 border-gray-200 focus:ring-0 shadow-none rounded-lg bg-white/20 focus:border-[#3F3FF3]"
-                            required
                         />
                         <Button
                             type="button"
@@ -248,7 +261,6 @@ export function RegisterForm({
                     playOnce={false}
                 >
                     <Button
-                        disabled={!valideValue}
                         type="submit"
                         className="w-full h-12 text-sm font-medium text-white hover:opacity-90 rounded-lg shadow-none cursor-pointer"
                         style={{ backgroundColor: '#000' }}
@@ -274,19 +286,19 @@ export function RegisterForm({
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 text-black">
+                    <div className="grid grid-cols-2 gap-4 text-highlight">
                         <Button
                             variant="outline"
-                            className="flex items-center gap-2 h-12 border-gray-200 hover:bg-gray-400 hover:text-gray-900 rounded-lg
-                            bg-white/90 shadow-none cursor-pointer"
+                            className="flex items-center gap-2 h-12 border-gray-200 liquid-glass rounded-lg
+                                            shadow-none cursor-pointer"
                         >
                             <FaGoogle className="mb-1" />
                             Google
                         </Button>
                         <Button
                             variant="outline"
-                            className="flex items-center gap-2 h-12 border-gray-200 hover:bg-gray-400 hover:text-gray-900 rounded-lg
-                            bg-white/90 shadow-none cursor-pointer"
+                            className="flex items-center gap-2 h-12 border-gray-200 liquid-glass rounded-lg
+                                            shadow-none cursor-pointer"
                         >
                             <FaFacebookSquare className="mb-1" />
                             Facebook

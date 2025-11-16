@@ -58,27 +58,6 @@ export function Footer() {
                         <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-2">
                             <div>
                                 <h5 className="mb-2 text-xs font-semibold uppercase tracking-widest">
-                                    Navigation
-                                </h5>
-                                <ul className="space-y-2 text-sm text-neutral-300">
-                                    {[
-                                        'Home',
-                                        'Features',
-                                        'Testimonials',
-                                        'Pricing',
-                                        'Blog',
-                                        'Download',
-                                    ].map((item) => (
-                                        <li key={item}>
-                                            {/* <Link href={`#${item.toLowerCase()}`} className="hover:text-lime-300">
-                        {item}
-                      </Link> */}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                            <div>
-                                <h5 className="mb-2 text-xs font-semibold uppercase tracking-widest">
                                     Social media
                                 </h5>
                                 <ul className="space-y-2 text-sm text-neutral-300">

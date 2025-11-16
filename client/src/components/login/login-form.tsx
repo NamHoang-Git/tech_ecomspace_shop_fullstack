@@ -255,16 +255,16 @@ export function LoginForm({
                     <div className="grid grid-cols-2 gap-4 text-highlight">
                         <Button
                             variant="outline"
-                            className="flex items-center gap-2 h-12 border-gray-200 hover:bg-gray-400 hover:text-gray-900 rounded-lg
-                            bg-white/90 shadow-none cursor-pointer"
+                            className="flex items-center gap-2 h-12 border-gray-200 liquid-glass rounded-lg
+                        shadow-none cursor-pointer"
                         >
                             <FaGoogle className="mb-1" />
                             Google
                         </Button>
                         <Button
                             variant="outline"
-                            className="flex items-center gap-2 h-12 border-gray-200 hover:bg-gray-400 hover:text-gray-900 rounded-lg
-                            bg-white/90 shadow-none cursor-pointer"
+                            className="flex items-center gap-2 h-12 border-gray-200 liquid-glass rounded-lg
+                        shadow-none cursor-pointer"
                         >
                             <FaFacebookSquare className="mb-1" />
                             Facebook

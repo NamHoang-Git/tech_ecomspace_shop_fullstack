@@ -20,7 +20,7 @@ export default function RegisterPage() {
                                 <div className="flex justify-center gap-2 md:justify-start mb-2">
                                     <Link
                                         to="/"
-                                        className="flex items-center gap-2 font-bold text-lg text-background"
+                                        className="flex items-center gap-2 font-bold text-lg text-white"
                                     >
                                         {/* <img
                                             src={logo}
@@ -31,7 +31,7 @@ export default function RegisterPage() {
                                         TechSpace
                                     </Link>
                                 </div>
-                                <h1 className="px-4 text-background font-bold text-2xl flex flex-1 items-center justify-center">
+                                <h1 className="px-4 text-white font-bold text-2xl flex flex-1 items-center justify-center">
                                     <TypeAnimation
                                         sequence={[
                                             'Chào mừng đến với TechSpace!',
@@ -50,7 +50,7 @@ export default function RegisterPage() {
                             <div className="lg:hidden flex justify-center gap-2 md:justify-start mb-2">
                                 <Link
                                     to="/"
-                                    className="flex items-center gap-2 font-bold text-lg text-background"
+                                    className="flex items-center gap-2 font-bold text-lg text-white"
                                 >
                                     {/* <img src={logo} alt="Logo" width={30} height={30} /> */}
                                     TechSpace

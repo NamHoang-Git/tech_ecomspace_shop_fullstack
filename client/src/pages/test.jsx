@@ -4,6 +4,7 @@ import { IoSearch } from 'react-icons/io5';
 import { GiReturnArrow } from 'react-icons/gi';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useMobile from '../hooks/useMobile';
+import { IoClose } from 'react-icons/io5';
 
 const Search = () => {
     const navigate = useNavigate();
@@ -13,11 +14,16 @@ const Search = () => {
     const params = useLocation();
     const searchText = params.search.slice(3);
     const [isTyping, setIsTyping] = useState(false);
+    const [inputValue, setInputValue] = useState(searchText);
 
     useEffect(() => {
         const isSearch = location.pathname === '/search';
         setIsSearchPage(isSearch);
     }, [location]);
+
+    useEffect(() => {
+        setInputValue(searchText);
+    }, [searchText]);
 
     const redirectToSearchPage = () => {
         navigate('/search');
@@ -26,12 +32,20 @@ const Search = () => {
 
     const handleOnChange = (e) => {
         const value = e.target.value;
-        const url = `/search?q=${value}`;
+        // Prevent regex error by filtering out problematic characters
+        const sanitizedValue = value.replace(/[*]/g, '');
+        setInputValue(sanitizedValue);
+        const url = `/search?q=${sanitizedValue}`;
         setIsTyping(true);
         navigate(url);
         setTimeout(() => {
             setIsTyping(false);
         }, 200);
+    };
+
+    const handleClearSearch = () => {
+        setInputValue('');
+        navigate('/search');
     };
 
     return (
@@ -90,11 +104,19 @@ const Search = () => {
                                 type="text"
                                 placeholder="Bạn muốn mua gì hôm nay?"
                                 autoFocus={true}
-                                className="w-full h-full bg-transparent text-white outline-none"
-                                defaultValue={searchText}
+                                className="w-full h-full bg-transparent text-white outline-none pr-10"
+                                value={inputValue}
                                 onChange={handleOnChange}
                                 spellCheck={false}
                             />
+                            {inputValue && !isTyping && (
+                                <button
+                                    onClick={handleClearSearch}
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                                >
+                                    <IoClose size={16} />
+                                </button>
+                            )}
                             {isTyping && (
                                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-purple-600"></div>

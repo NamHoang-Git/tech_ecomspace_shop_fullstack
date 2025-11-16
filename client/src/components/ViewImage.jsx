@@ -58,18 +58,18 @@ const ViewImage = ({ url, close }) => {
             className="fixed inset-0 bg-neutral-800 bg-opacity-75 z-50 p-4 flex items-center justify-center transition-opacity duration-300"
         >
             <div
-                className={`relative bg-neutral-200 rounded-lg overflow-hidden transition-all duration-300 ${
+                className={`relative liquid-glass rounded-lg overflow-hidden transition-all duration-300 ${
                     isZoomed ? 'w-[95vw] h-[95vh]' : 'max-w-4xl max-h-[90vh]'
                 }`}
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="absolute top-2 right-2 flex gap-2 z-10">
+                <div className="absolute top-2 right-2 flex gap-2 z-10 text-lime-300">
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
                             toggleZoom();
                         }}
-                        className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors"
+                        className="p-2 bg-black/80 rounded-full shadow-md hover:opacity-80 transition-colors"
                         aria-label={isZoomed ? 'Zoom out' : 'Zoom in'}
                         title={isZoomed ? 'Zoom out' : 'Zoom in'}
                     >
@@ -84,7 +84,7 @@ const ViewImage = ({ url, close }) => {
                             e.stopPropagation();
                             close();
                         }}
-                        className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors"
+                        className="p-2 bg-black/80 rounded-full shadow-md hover:opacity-80 transition-colors"
                         aria-label="Close image viewer"
                         title="Close (Esc)"
                     >
@@ -138,7 +138,7 @@ const ViewImage = ({ url, close }) => {
                 </div>
 
                 {!isLoading && !hasError && (
-                    <div className="absolute bottom-2 left-0 right-0 text-center text-sm text-gray-600">
+                    <div className="absolute bottom-4 left-0 right-0 font-bold text-center text-sm text-rose-600">
                         {imageSize.width} × {imageSize.height}px
                     </div>
                 )}

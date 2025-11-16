@@ -11,20 +11,6 @@ const Home = () => {
 
     return (
         <div className="relative min-h-screen">
-            {/* Background effect - position absolute */}
-            <div className="fixed inset-0 z-0 pointer-events-none">
-                <LiquidEther
-                    isViscous={false}
-                    iterationsViscous={8}
-                    iterationsPoisson={8}
-                    resolution={0.3}
-                    autoDemo={true}
-                    autoSpeed={0.2}
-                    autoRampDuration={0.8}
-                    style={{ width: '100%', height: '100%' }}
-                />
-            </div>
-
             {/* Content - position relative để nổi lên trên background */}
             <div className="relative z-10">
                 <CategoryPanel />

@@ -36,7 +36,11 @@ export default function Header() {
             label: 'Trang chủ',
         },
         {
-            href: firstCategory ? `/${valideURLConvert(firstCategory.name)}-${firstCategory._id}` : '/products',
+            href: firstCategory
+                ? `/${valideURLConvert(firstCategory.name)}-${
+                      firstCategory._id
+                  }`
+                : '/products',
             icon: <FaBoxOpen size={14} className="" />,
             label: 'Sản phẩm',
         },
@@ -223,33 +227,37 @@ export default function Header() {
                                     Đăng nhập
                                 </button>
                             )}
-                            <button
-                                onClick={
-                                    user?._id
-                                        ? () => setOpenCartSection(true)
-                                        : redirectToLoginPage
-                                }
-                                className={`${
-                                    cartItem[0] ? ' py-1.5' : ' py-3'
-                                } flex items-center gap-2 bg-lime-400 text-gray-700 font-medium rounded-lg px-3.5
+                            {user.role !== 'ADMIN' && (
+                                <button
+                                    onClick={
+                                        user?._id
+                                            ? () => setOpenCartSection(true)
+                                            : redirectToLoginPage
+                                    }
+                                    className={`${
+                                        cartItem[0] ? ' py-1.5' : ' py-3'
+                                    } flex items-center gap-2 bg-lime-400 text-gray-700 font-medium rounded-lg px-3.5
                                 hover:bg-lime-300 hover:shadow-md hover:scale-[1.02] transition-all`}
-                            >
-                                <div className="animate-bounce">
-                                    <FaCartPlus size={20} />
-                                </div>
-                                <div className="font-bold text-sm">
-                                    {cartItem[0] ? (
-                                        <div className="ml-1 flex flex-col items-center justify-center">
-                                            <p>{totalQty} sản phẩm</p>
-                                            <p>
-                                                {DisplayPriceInVND(totalPrice)}
-                                            </p>
-                                        </div>
-                                    ) : (
-                                        <p>Giỏ hàng</p>
-                                    )}
-                                </div>
-                            </button>
+                                >
+                                    <div className="animate-bounce">
+                                        <FaCartPlus size={20} />
+                                    </div>
+                                    <div className="font-bold text-sm">
+                                        {cartItem[0] ? (
+                                            <div className="ml-1 flex flex-col items-center justify-center">
+                                                <p>{totalQty} sản phẩm</p>
+                                                <p>
+                                                    {DisplayPriceInVND(
+                                                        totalPrice
+                                                    )}
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            <p>Giỏ hàng</p>
+                                        )}
+                                    </div>
+                                </button>
+                            )}
                         </div>
                         {/* Mobile Nav */}
                         <div className="md:hidden">
