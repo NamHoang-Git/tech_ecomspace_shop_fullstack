@@ -1,133 +1,605 @@
 import React, { useEffect, useState } from 'react';
-import { TypeAnimation } from 'react-type-animation';
-import { IoSearch } from 'react-icons/io5';
-import { GiReturnArrow } from 'react-icons/gi';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import useMobile from '../hooks/useMobile';
+import { useForm } from 'react-hook-form';
+import { useGlobalContext } from '../provider/GlobalProvider';
+import Axios from '../utils/Axios';
+import SummaryApi from '../common/SummaryApi';
+import toast from 'react-hot-toast';
+import AxiosToastError from '../utils/AxiosToastError';
 import { IoClose } from 'react-icons/io5';
+import vietnamProvinces from '../data/vietnam-provinces.json';
+import Select from 'react-select';
+import { Input } from './ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
 
-const Search = () => {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const [isSearchPage, setIsSearchPage] = useState(false);
-    const [isMobile] = useMobile();
-    const params = useLocation();
-    const searchText = params.search.slice(3);
-    const [isTyping, setIsTyping] = useState(false);
-    const [inputValue, setInputValue] = useState(searchText);
+const AddAddress = ({ close }) => {
+    const { register, handleSubmit, reset, setValue, watch } = useForm({
+        defaultValues: {
+            isDefault: true, // Set default value to true
+        },
+    });
+    const { fetchAddress } = useGlobalContext();
+    const [provinces, setProvinces] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [wards, setWards] = useState([]);
+    const [selectedProvince, setSelectedProvince] = useState(null);
+    const [selectedDistrict, setSelectedDistrict] = useState(null);
+    const [formErrors, setFormErrors] = useState({
+        addressline: '',
+        city: '',
+        district: '',
+        ward: '',
+        mobile: '',
+    });
 
-    useEffect(() => {
-        const isSearch = location.pathname === '/search';
-        setIsSearchPage(isSearch);
-    }, [location]);
+    const validateField = (name, value) => {
+        const newErrors = { ...formErrors };
+        let isValid = true;
+        let mobileRegex;
 
-    useEffect(() => {
-        setInputValue(searchText);
-    }, [searchText]);
+        switch (name) {
+            case 'mobile':
+                mobileRegex = /^(0[1-9]|0[1-9][0-9]{8})$/;
+                if (!value) {
+                    newErrors.mobile = 'Vui lòng nhập số điện thoại';
+                    isValid = false;
+                } else if (!mobileRegex.test(value)) {
+                    newErrors.mobile = 'Số điện thoại không hợp lệ';
+                    isValid = false;
+                } else {
+                    newErrors.mobile = '';
+                }
+                break;
+            case 'addressline':
+                if (!value) {
+                    newErrors.addressline = 'Vui lòng nhập địa chỉ';
+                    isValid = false;
+                } else {
+                    newErrors.addressline = '';
+                }
+                break;
+            case 'city':
+                if (!value) {
+                    newErrors.city = 'Vui lòng chọn Tỉnh/Thành phố';
+                    isValid = false;
+                } else {
+                    newErrors.city = '';
+                }
+                break;
+            case 'district':
+                if (!value) {
+                    newErrors.district = 'Vui lòng chọn Quận/Huyện';
+                    isValid = false;
+                } else {
+                    newErrors.district = '';
+                }
+                break;
+            case 'ward':
+                if (!value) {
+                    newErrors.ward = 'Vui lòng chọn Phường/Xã';
+                    isValid = false;
+                } else {
+                    newErrors.ward = '';
+                }
+                break;
+            default:
+                break;
+        }
 
-    const redirectToSearchPage = () => {
-        navigate('/search');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setFormErrors(newErrors);
+        return isValid;
     };
 
-    const handleOnChange = (e) => {
-        const value = e.target.value;
-        // Prevent regex error by filtering out problematic characters
-        const sanitizedValue = value.replace(/[*]/g, '');
-        setInputValue(sanitizedValue);
-        const url = `/search?q=${sanitizedValue}`;
-        setIsTyping(true);
-        navigate(url);
-        setTimeout(() => {
-            setIsTyping(false);
-        }, 200);
+    const validateForm = (formData) => {
+        const fieldsToValidate = [
+            'addressline',
+            'city',
+            'district',
+            'ward',
+            'mobile',
+        ];
+        let isFormValid = true;
+
+        fieldsToValidate.forEach((field) => {
+            const isValid = validateField(field, formData[field]);
+            if (!isValid) {
+                isFormValid = false;
+            }
+        });
+
+        return isFormValid;
     };
 
-    const handleClearSearch = () => {
-        setInputValue('');
-        navigate('/search');
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setValue(name, value);
+        if (formErrors[name]) {
+            validateField(name, value);
+        }
+    };
+
+    const handleSelectChange = (field, selected) => {
+        setValue(field, selected ? selected.value : '');
+        if (field === 'city') {
+            setSelectedProvince(selected);
+            setDistricts([]);
+            setWards([]);
+            setSelectedDistrict(null);
+            setValue('district', '');
+            setValue('ward', '');
+        } else if (field === 'district') {
+            setSelectedDistrict(selected);
+            setWards([]);
+            setValue('ward', '');
+        }
+        if (formErrors[field]) {
+            validateField(field, selected ? selected.value : '');
+        }
+    };
+
+    const removeAccents = (str) => {
+        return str
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/đ/g, 'd')
+            .replace(/Đ/g, 'D');
+    };
+
+    const removePrefix = (name) => {
+        const prefixes = [
+            'Thành phố ',
+            'Tỉnh ',
+            'Quận ',
+            'Huyện ',
+            'Phường ',
+            'Xã ',
+        ];
+        let cleanedName = name;
+        for (const prefix of prefixes) {
+            if (cleanedName.startsWith(prefix)) {
+                cleanedName = cleanedName.replace(prefix, '');
+                break;
+            }
+        }
+        return cleanedName;
+    };
+
+    const customFilter = (option, searchText) => {
+        if (!searchText) return true;
+        const searchTerm = removeAccents(searchText.toLowerCase());
+        const cleanedLabel = removeAccents(
+            removePrefix(option.label).toLowerCase()
+        );
+        return cleanedLabel.startsWith(searchTerm);
+    };
+
+    // Lay danh sach tinh/thanh pho
+    useEffect(() => {
+        const provincesWithCode = vietnamProvinces.map((province, index) => ({
+            ...province,
+            code: index.toString(),
+        }));
+        setProvinces(provincesWithCode);
+    }, []);
+
+    // Lay danh sach quan/huyen khi chon tinh/thanh pho
+    useEffect(() => {
+        if (selectedProvince) {
+            const provinceIndex = parseInt(selectedProvince.value);
+            const province = vietnamProvinces[provinceIndex];
+            if (province && province.districts) {
+                const districtsWithCode = province.districts.map(
+                    (district, index) => ({
+                        ...district,
+                        code: index.toString(),
+                    })
+                );
+                setDistricts(districtsWithCode);
+                setWards([]);
+                setSelectedDistrict(null);
+                setValue('district', '');
+                setValue('ward', '');
+            } else {
+                setDistricts([]);
+                setWards([]);
+                setSelectedDistrict(null);
+                setValue('district', '');
+                setValue('ward', '');
+            }
+        } else {
+            setDistricts([]);
+            setWards([]);
+            setSelectedDistrict(null);
+            setValue('district', '');
+            setValue('ward', '');
+        }
+    }, [selectedProvince, setValue]);
+
+    // Lay danh sach phuong/xa khi chon quan/huyen
+    useEffect(() => {
+        if (selectedDistrict && selectedProvince) {
+            const provinceIndex = parseInt(selectedProvince.value);
+            const districtIndex = parseInt(selectedDistrict.value);
+            const province = vietnamProvinces[provinceIndex];
+            if (
+                province &&
+                province.districts &&
+                province.districts[districtIndex]
+            ) {
+                const district = province.districts[districtIndex];
+                const wardsWithCode = (district.wards || []).map(
+                    (ward, index) => ({
+                        ...ward,
+                        code: index.toString(),
+                    })
+                );
+                setWards(wardsWithCode);
+            } else {
+                setWards([]);
+            }
+        } else {
+            setWards([]);
+        }
+    }, [selectedDistrict, selectedProvince]);
+
+    const onSubmit = async (data) => {
+        // Validate all fields before submission
+        if (!validateForm(data)) {
+            return;
+        }
+
+        try {
+            const provinceName = selectedProvince ? selectedProvince.label : '';
+            const districtName = selectedDistrict ? selectedDistrict.label : '';
+            const wardName =
+                data.ward !== '' ? wards[parseInt(data.ward)]?.name || '' : '';
+
+            const response = await Axios({
+                ...SummaryApi.add_address,
+                data: {
+                    address_line: data.addressline,
+                    city: provinceName,
+                    district: districtName,
+                    ward: wardName,
+                    country: 'Việt Nam',
+                    mobile: data.mobile,
+                    isDefault: !!data.isDefault,
+                },
+            });
+
+            const { data: responseData } = response;
+
+            if (responseData.success) {
+                toast.success(responseData.message);
+                if (close) {
+                    close();
+                    reset();
+                    fetchAddress();
+                }
+            }
+        } catch (error) {
+            AxiosToastError(error);
+        }
     };
 
     return (
-        <search className="relative z-10 cursor-pointer liquid-glass max-w-2xl container mx-auto rounded-3xl">
-            <div
-                className="md:px-8 px-2 sm:my-0 h-8 sm:h-12 rounded-3xl border-[3px] border-inset overflow-hidden
-                flex items-center text-sm text-gray-300 liquid-glass group focus-within:border-purple-400"
-            >
-                <div>
-                    {isMobile && isSearchPage ? (
-                        <Link
-                            to={'/'}
-                            className="flex justify-center items-center h-full p-1 m-2 group-focus-within:text-purple-400
-                        shadow-sm shadow-purple-400 group-focus-within:shadow-purple-400 rounded-full"
+        <section
+            className="bg-neutral-800 z-50 bg-opacity-60 fixed top-0 left-0 right-0 bottom-0 overflow-auto
+        flex items-center justify-center px-3"
+        >
+            <Card className="w-full max-w-lg overflow-hidden border-foreground">
+                <CardHeader className="pt-4">
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg text-lime-300 font-bold uppercase">
+                            Thêm địa chỉ
+                        </CardTitle>
+                        <Button
+                            onClick={close}
+                            className="bg-transparent hover:bg-transparent text-foreground
+                        hover:text-lime-300 h-12"
                         >
-                            <GiReturnArrow size={14} />
-                        </Link>
-                    ) : (
-                        <button
-                            className="flex justify-center items-center h-full p-4
-                    group-focus-within:text-purple-400 font-bold mb-[2px]"
-                        >
-                            <IoSearch size={18} />
-                        </button>
-                    )}
-                </div>
-                <div className="w-full h-full outline-none">
-                    {!isSearchPage ? (
-                        // Not in Search Page
-                        <div
-                            onClick={redirectToSearchPage}
-                            className="w-full h-full flex items-center font-medium"
-                        >
-                            <TypeAnimation
-                                sequence={[
-                                    'Tìm kiếm "điện thoại"',
-                                    1000,
-                                    'Tìm kiếm "iPad"',
-                                    1000,
-                                    'Tìm kiếm "máy tính xách tay"',
-                                    1000,
-                                    'Tìm kiếm "bàn phím"',
-                                    1000,
-                                    'Tìm kiếm "bộ xử lý"',
-                                    1000,
-                                ]}
-                                wrapper="span"
-                                speed={60}
-                                repeat={Infinity}
-                            />
-                        </div>
-                    ) : (
-                        // Search Page
-                        <div className="relative w-full h-full outline-none">
-                            <input
+                            <IoClose />
+                        </Button>
+                    </div>
+                </CardHeader>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <CardContent className="py-4 space-y-5 text-sm">
+                        <div className="space-y-2">
+                            <Label htmlFor="addressline">
+                                Địa chỉ <span className="text-rose-400">*</span>
+                            </Label>
+                            <Input
                                 type="text"
-                                placeholder="Bạn muốn mua gì hôm nay?"
-                                autoFocus={true}
-                                className="w-full h-full bg-transparent text-white outline-none pr-10"
-                                value={inputValue}
-                                onChange={handleOnChange}
+                                id="addressline"
+                                placeholder="Nhập địa chỉ"
+                                className={`w-full h-11 p-2 border-2 rounded outline-none ${
+                                    formErrors.addressline
+                                        ? 'border-rose-400'
+                                        : 'focus-within:border-secondary-100'
+                                }`}
+                                {...register('addressline', {
+                                    required: true,
+                                    onChange: handleInputChange,
+                                    onBlur: (e) =>
+                                        validateField(
+                                            'addressline',
+                                            e.target.value
+                                        ),
+                                })}
                                 spellCheck={false}
                             />
-                            {inputValue && !isTyping && (
-                                <button
-                                    onClick={handleClearSearch}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
-                                >
-                                    <IoClose size={16} />
-                                </button>
-                            )}
-                            {isTyping && (
-                                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-purple-600"></div>
-                                </div>
+                            {formErrors.addressline && (
+                                <p className="mt-1 text-sm text-rose-400">
+                                    {formErrors.addressline}
+                                </p>
                             )}
                         </div>
-                    )}
-                </div>
-            </div>
-        </search>
+                        <div className="space-y-2">
+                            <Label htmlFor="city">
+                                Tỉnh/Thành phố{' '}
+                                <span className="text-rose-400">*</span>
+                            </Label>
+                            <Select
+                                options={provinces.map((province) => ({
+                                    value: province.code,
+                                    label: province.name,
+                                }))}
+                                value={selectedProvince}
+                                onChange={(selected) =>
+                                    handleSelectChange('city', selected)
+                                }
+                                onBlur={() =>
+                                    validateField(
+                                        'city',
+                                        selectedProvince?.value || ''
+                                    )
+                                }
+                                filterOption={customFilter}
+                                placeholder="Nhập Tỉnh/Thành phố"
+                                isSearchable
+                                isClearable
+                                className={`${
+                                    formErrors.city ? 'border-rose-400' : ''
+                                } w-full`}
+                                classNamePrefix="select"
+                                styles={{
+                                    control: (provided, state) => ({
+                                        ...provided,
+                                        borderColor: formErrors.city
+                                            ? '#ef4444'
+                                            : state.isFocused
+                                            ? '#9ca3af'
+                                            : '#374151',
+                                        '&:hover': {
+                                            borderColor: formErrors.city
+                                                ? '#ef4444'
+                                                : state.isFocused
+                                                ? '#9ca3af'
+                                                : '#e5e7eb',
+                                        },
+                                        backgroundColor: state.isFocused
+                                            ? '#FFE5B4'
+                                            : state.isSelected
+                                            ? '#FFB347'
+                                            : '#000',
+                                        boxShadow: 'none',
+                                        minHeight: '40px',
+                                        background: '#000',
+                                        color: '#fff',
+                                        accentColor: '#fff',
+                                    }),
+                                    option: (provided, state) => ({
+                                        ...provided,
+                                        backgroundColor: state.isFocused
+                                            ? '#ecfccb'
+                                            : state.isSelected
+                                            ? '#bef264'
+                                            : '#000',
+                                        color: state.isFocused
+                                            ? '#000'
+                                            : state.isSelected
+                                            ? '#000'
+                                            : '#fff',
+                                        cursor: 'pointer',
+                                    }),
+                                    singleValue: (provided) => ({
+                                        ...provided,
+                                        color: '#fff',
+                                    }),
+                                }}
+                            />
+                            {formErrors.city && (
+                                <p className="mt-1 text-sm text-rose-400">
+                                    {formErrors.city}
+                                </p>
+                            )}
+                        </div>
+                        <div className="space-y-2">
+                            <label htmlFor="district">
+                                Quận/Huyện{' '}
+                                <span className="text-rose-400">*</span>
+                            </label>
+                            <Select
+                                options={districts.map((district) => ({
+                                    value: district.code,
+                                    label: district.name,
+                                }))}
+                                value={selectedDistrict}
+                                onChange={(selected) =>
+                                    handleSelectChange('district', selected)
+                                }
+                                onBlur={() =>
+                                    validateField(
+                                        'district',
+                                        selectedDistrict?.value || ''
+                                    )
+                                }
+                                filterOption={customFilter}
+                                placeholder="Nhập Quận/Huyện"
+                                isSearchable
+                                isClearable
+                                isDisabled={!selectedProvince}
+                                className={`${
+                                    formErrors.district ? 'border-rose-400' : ''
+                                } w-full bg-black`}
+                                classNamePrefix="select"
+                                styles={{
+                                    control: (provided, state) => ({
+                                        ...provided,
+                                        borderColor: formErrors.district
+                                            ? '#ef4444'
+                                            : state.isFocused
+                                            ? '#9ca3af'
+                                            : '#e5e7eb',
+                                        '&:hover': {
+                                            borderColor: formErrors.district
+                                                ? '#ef4444'
+                                                : state.isFocused
+                                                ? '#9ca3af'
+                                                : '#e5e7eb',
+                                        },
+                                        boxShadow: 'none',
+                                        minHeight: '40px',
+                                    }),
+                                }}
+                            />
+                            {formErrors.district && (
+                                <p className="mt-1 text-sm text-red-600">
+                                    {formErrors.district}
+                                </p>
+                            )}
+                        </div>
+                        <div className="space-y-2">
+                            <label htmlFor="ward">
+                                Phường/Xã{' '}
+                                <span className="text-rose-400">*</span>
+                            </label>
+                            <Select
+                                options={wards.map((ward) => ({
+                                    value: ward.code,
+                                    label: ward.name,
+                                }))}
+                                onChange={(selected) => {
+                                    setValue(
+                                        'ward',
+                                        selected ? selected.value : ''
+                                    );
+                                    if (formErrors.ward) {
+                                        validateField(
+                                            'ward',
+                                            selected ? selected.value : ''
+                                        );
+                                    }
+                                }}
+                                onBlur={() =>
+                                    validateField('ward', watch('ward') || '')
+                                }
+                                filterOption={customFilter}
+                                placeholder="Nhập Phường/Xã"
+                                isSearchable
+                                isClearable
+                                isDisabled={!selectedDistrict}
+                                className={`${
+                                    formErrors.ward ? 'border-rose-400' : ''
+                                } w-full`}
+                                classNamePrefix="select"
+                                styles={{
+                                    control: (provided, state) => ({
+                                        ...provided,
+                                        borderColor: formErrors.ward
+                                            ? '#ef4444'
+                                            : state.isFocused
+                                            ? '#9ca3af'
+                                            : '#e5e7eb',
+                                        '&:hover': {
+                                            borderColor: formErrors.ward
+                                                ? '#ef4444'
+                                                : state.isFocused
+                                                ? '#9ca3af'
+                                                : '#e5e7eb',
+                                        },
+                                        boxShadow: 'none',
+                                        minHeight: '40px',
+                                    }),
+                                }}
+                            />
+                            {formErrors.ward && (
+                                <p className="mt-1 text-sm text-red-600">
+                                    {formErrors.ward}
+                                </p>
+                            )}
+                        </div>
+                        <div className="space-y-2">
+                            <label htmlFor="mobile">
+                                Số điện thoại{' '}
+                                <span className="text-rose-400">*</span>
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type="tel"
+                                    id="mobile"
+                                    placeholder="Nhập số điện thoại"
+                                    className={`w-full p-2 border-2 rounded outline-none ${
+                                        formErrors.mobile
+                                            ? 'border-rose-400'
+                                            : 'focus-within:border-secondary-100'
+                                    }`}
+                                    {...register('mobile', {
+                                        required: 'Vui lòng nhập số điện thoại',
+                                        pattern: {
+                                            value: /^(0[1-9]|0[1-9][0-9]{8})$/,
+                                            message:
+                                                'Số điện thoại không hợp lệ',
+                                        },
+                                        onChange: (e) => {
+                                            const value = e.target.value;
+                                            setValue('mobile', value);
+                                            if (formErrors.mobile) {
+                                                validateField('mobile', value);
+                                            }
+                                        },
+                                        onBlur: (e) =>
+                                            validateField(
+                                                'mobile',
+                                                e.target.value
+                                            ),
+                                    })}
+                                    spellCheck={false}
+                                />
+                                {formErrors.mobile && (
+                                    <p className="mt-1 text-sm text-red-600">
+                                        {formErrors.mobile}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                id="isDefault"
+                                className="h-4 w-4 mb-[3px] cursor-pointer"
+                                {...register('isDefault')}
+                            />
+                            <label
+                                htmlFor="isDefault"
+                                className="font-normal text-slate-600 cursor-pointer"
+                            >
+                                Đặt làm địa chỉ mặc định
+                            </label>
+                        </div>
+                        <button
+                            type="submit"
+                            className="py-2 px-4 mt-2 bg-primary-2 hover:opacity-80 rounded shadow-md
+                    cursor-pointer text-secondary-200 font-semibold"
+                        >
+                            Thêm
+                        </button>
+                    </CardContent>
+                </form>
+            </Card>
+        </section>
     );
 };
 
-export default Search;
+export default AddAddress;

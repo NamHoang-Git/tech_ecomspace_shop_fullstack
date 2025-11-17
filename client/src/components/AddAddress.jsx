@@ -8,6 +8,18 @@ import AxiosToastError from '../utils/AxiosToastError';
 import { IoClose } from 'react-icons/io5';
 import vietnamProvinces from '../data/vietnam-provinces.json';
 import Select from 'react-select';
+import { Input } from './ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from './ui/card';
+import { Button } from './ui/button';
+import Divider from './Divider';
+import GlareHover from './GlareHover';
 
 const AddAddress = ({ close }) => {
     const { register, handleSubmit, reset, setValue, watch } = useForm({
@@ -48,12 +60,55 @@ const AddAddress = ({ close }) => {
                 }
                 break;
             case 'addressline':
-                if (!value) {
+                // Add null/undefined check
+                const trimmed = value ? value.toString().trim() : '';
+
+                // Rỗng
+                if (!trimmed) {
                     newErrors.addressline = 'Vui lòng nhập địa chỉ';
                     isValid = false;
-                } else {
-                    newErrors.addressline = '';
+                    break;
                 }
+
+                // Rest of your validation logic remains the same
+                if (trimmed.length < 5) {
+                    newErrors.addressline = 'Địa chỉ quá ngắn';
+                    isValid = false;
+                    break;
+                }
+
+                // Không được chỉ chứa số
+                if (/^\d+$/.test(trimmed)) {
+                    newErrors.addressline = 'Địa chỉ không thể chỉ chứa số';
+                    isValid = false;
+                    break;
+                }
+
+                // Không được chỉ chứa chữ (abcxyz)
+                if (/^[a-zA-Z]+$/.test(trimmed)) {
+                    newErrors.addressline = 'Địa chỉ không hợp lệ';
+                    isValid = false;
+                    break;
+                }
+
+                // Loại các chuỗi vô nghĩa kiểu aaaa, ...., ----
+                if (/^(.)\1+$/.test(trimmed)) {
+                    newErrors.addressline = 'Địa chỉ không hợp lệ';
+                    isValid = false;
+                    break;
+                }
+
+                // Không cho ký tự đặc biệt quá mức
+                // Update the regex to handle empty string case
+                if (trimmed && /[^\p{L}0-9\s.,/ -]/u.test(trimmed)) {
+                    newErrors.addressline =
+                        'Địa chỉ chứa ký tự không hợp lệ (chỉ cho phép . , / -)';
+                    isValid = false;
+                    break;
+                }
+
+                // Nếu qua hết -> hợp lệ
+                newErrors.addressline = '';
                 break;
             case 'city':
                 if (!value) {
@@ -284,235 +339,321 @@ const AddAddress = ({ close }) => {
             className="bg-neutral-800 z-50 bg-opacity-60 fixed top-0 left-0 right-0 bottom-0 overflow-auto
         flex items-center justify-center px-3"
         >
-            <div
-                className="liquid-glass px-4 py-6 w-full max-w-xl mx-auto rounded-md shadow-md
-                flex flex-col gap-4"
-            >
-                <div className="flex justify-between items-center gap-4">
-                    <h2 className="font-semibold text-lg text-secondary-200">
-                        Thêm Địa Chỉ
-                    </h2>
-                    <button
-                        onClick={close}
-                        className="hover:text-secondary-100 text-secondary-200"
-                    >
-                        <IoClose size={25} />
-                    </button>
-                </div>
-                <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="grid gap-4 sm:text-base text-sm font-medium"
-                >
-                    <div className="grid gap-1">
-                        <label htmlFor="addressline">
-                            Địa chỉ <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="addressline"
-                            autoFocus
-                            className={`w-full p-2 border-2 rounded outline-none ${
-                                formErrors.addressline
-                                    ? 'border-red-500'
-                                    : 'focus-within:border-secondary-100'
-                            }`}
-                            {...register('addressline', {
-                                required: true,
-                                onChange: handleInputChange,
-                                onBlur: (e) =>
-                                    validateField(
-                                        'addressline',
-                                        e.target.value
-                                    ),
-                            })}
-                            spellCheck={false}
-                        />
-                        {formErrors.addressline && (
-                            <p className="mt-1 text-sm text-red-600">
-                                {formErrors.addressline}
-                            </p>
-                        )}
+            <Card className="w-full max-w-lg overflow-hidden border-foreground">
+                <CardHeader className="pt-4">
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg text-lime-300 font-bold uppercase">
+                            Thêm địa chỉ
+                        </CardTitle>
+                        <Button
+                            onClick={close}
+                            className="bg-transparent hover:bg-transparent text-foreground
+                        hover:text-lime-300 h-12"
+                        >
+                            <IoClose />
+                        </Button>
                     </div>
-                    <div className="grid gap-1">
-                        <label htmlFor="city">
-                            Tỉnh/Thành phố{' '}
-                            <span className="text-red-500">*</span>
-                        </label>
-                        <Select
-                            options={provinces.map((province) => ({
-                                value: province.code,
-                                label: province.name,
-                            }))}
-                            value={selectedProvince}
-                            onChange={(selected) =>
-                                handleSelectChange('city', selected)
-                            }
-                            onBlur={() =>
-                                validateField(
-                                    'city',
-                                    selectedProvince?.value || ''
-                                )
-                            }
-                            filterOption={customFilter}
-                            placeholder="Nhập Tỉnh/Thành phố"
-                            isSearchable
-                            isClearable
-                            className={`${
-                                formErrors.city ? 'border-red-500' : ''
-                            } w-full bg-red-500`}
-                            classNamePrefix="select"
-                            styles={{
-                                control: (provided, state) => ({
-                                    ...provided,
-                                    borderColor: formErrors.city
-                                        ? '#ef4444'
-                                        : state.isFocused
-                                        ? '#9ca3af'
-                                        : '#e5e7eb',
-                                    '&:hover': {
+                </CardHeader>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <CardContent className="py-4 space-y-5 text-sm">
+                        <div className="space-y-2">
+                            <Label htmlFor="addressline">
+                                Địa chỉ <span className="text-rose-400">*</span>
+                            </Label>
+                            <Input
+                                type="text"
+                                id="addressline"
+                                placeholder="Nhập địa chỉ"
+                                autoFocus
+                                className={`w-full h-11 p-2 border-2 rounded outline-none ${
+                                    formErrors.addressline
+                                        ? 'border-rose-400'
+                                        : 'focus-within:border-secondary-100'
+                                }`}
+                                {...register('addressline', {
+                                    required: true,
+                                    onChange: handleInputChange,
+                                    onBlur: (e) =>
+                                        validateField(
+                                            'addressline',
+                                            e.target.value
+                                        ),
+                                })}
+                                spellCheck={false}
+                            />
+                            {formErrors.addressline && (
+                                <p className="mt-1 text-sm text-rose-400">
+                                    {formErrors.addressline}
+                                </p>
+                            )}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="city">
+                                Tỉnh/Thành phố{' '}
+                                <span className="text-rose-400">*</span>
+                            </Label>
+                            <Select
+                                options={provinces.map((province) => ({
+                                    value: province.code,
+                                    label: province.name,
+                                }))}
+                                value={selectedProvince}
+                                onChange={(selected) =>
+                                    handleSelectChange('city', selected)
+                                }
+                                onBlur={() =>
+                                    validateField(
+                                        'city',
+                                        selectedProvince?.value || ''
+                                    )
+                                }
+                                filterOption={customFilter}
+                                placeholder="Nhập Tỉnh/Thành phố"
+                                isSearchable
+                                isClearable
+                                className={`${
+                                    formErrors.city ? 'border-rose-400' : ''
+                                } w-full`}
+                                classNamePrefix="select"
+                                styles={{
+                                    control: (provided, state) => ({
+                                        ...provided,
                                         borderColor: formErrors.city
                                             ? '#ef4444'
                                             : state.isFocused
                                             ? '#9ca3af'
-                                            : '#e5e7eb',
-                                    },
-                                    boxShadow: 'none',
-                                    minHeight: '40px',
-                                }),
-                            }}
-                        />
-                        {formErrors.city && (
-                            <p className="mt-1 text-sm text-red-600">
-                                {formErrors.city}
-                            </p>
-                        )}
-                    </div>
-                    <div className="grid gap-1">
-                        <label htmlFor="district">
-                            Quận/Huyện <span className="text-red-500">*</span>
-                        </label>
-                        <Select
-                            options={districts.map((district) => ({
-                                value: district.code,
-                                label: district.name,
-                            }))}
-                            value={selectedDistrict}
-                            onChange={(selected) =>
-                                handleSelectChange('district', selected)
-                            }
-                            onBlur={() =>
-                                validateField(
-                                    'district',
-                                    selectedDistrict?.value || ''
-                                )
-                            }
-                            filterOption={customFilter}
-                            placeholder="Nhập Quận/Huyện"
-                            isSearchable
-                            isClearable
-                            isDisabled={!selectedProvince}
-                            className={`${
-                                formErrors.district ? 'border-red-500' : ''
-                            } w-full bg-black`}
-                            classNamePrefix="select"
-                            styles={{
-                                control: (provided, state) => ({
-                                    ...provided,
-                                    borderColor: formErrors.district
-                                        ? '#ef4444'
-                                        : state.isFocused
-                                        ? '#9ca3af'
-                                        : '#e5e7eb',
-                                    '&:hover': {
+                                            : '#374151',
+                                        '&:hover': {
+                                            borderColor: formErrors.city
+                                                ? '#ef4444'
+                                                : state.isFocused
+                                                ? '#9ca3af'
+                                                : '#e5e7eb',
+                                        },
+                                        backgroundColor: state.isFocused
+                                            ? '#FFE5B4'
+                                            : state.isSelected
+                                            ? '#FFB347'
+                                            : '#000',
+                                        boxShadow: 'none',
+                                        minHeight: '44px',
+                                        background: '#000',
+                                        color: '#fff',
+                                        accentColor: '#fff',
+                                    }),
+                                    option: (provided, state) => ({
+                                        ...provided,
+                                        backgroundColor: state.isFocused
+                                            ? '#ecfccb'
+                                            : state.isSelected
+                                            ? '#bef264'
+                                            : '#000',
+                                        color: state.isFocused
+                                            ? '#000'
+                                            : state.isSelected
+                                            ? '#000'
+                                            : '#fff',
+                                        cursor: 'pointer',
+                                    }),
+                                    singleValue: (provided) => ({
+                                        ...provided,
+                                        color: '#fff',
+                                    }),
+                                }}
+                            />
+                            {formErrors.city && (
+                                <p className="mt-1 text-sm text-rose-400">
+                                    {formErrors.city}
+                                </p>
+                            )}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="district">
+                                Quận/Huyện{' '}
+                                <span className="text-rose-400">*</span>
+                            </Label>
+                            <Select
+                                options={districts.map((district) => ({
+                                    value: district.code,
+                                    label: district.name,
+                                }))}
+                                value={selectedDistrict}
+                                onChange={(selected) =>
+                                    handleSelectChange('district', selected)
+                                }
+                                onBlur={() =>
+                                    validateField(
+                                        'district',
+                                        selectedDistrict?.value || ''
+                                    )
+                                }
+                                filterOption={customFilter}
+                                placeholder="Nhập Quận/Huyện"
+                                isSearchable
+                                isClearable
+                                isDisabled={!selectedProvince}
+                                className={`${
+                                    formErrors.district ? 'border-rose-400' : ''
+                                } w-full`}
+                                classNames={{
+                                    control: (state) =>
+                                        state.isDisabled ? 'opacity-60' : '',
+                                }}
+                                classNamePrefix="select"
+                                styles={{
+                                    control: (provided, state) => ({
+                                        ...provided,
                                         borderColor: formErrors.district
                                             ? '#ef4444'
                                             : state.isFocused
                                             ? '#9ca3af'
-                                            : '#e5e7eb',
-                                    },
-                                    boxShadow: 'none',
-                                    minHeight: '40px',
-                                }),
-                            }}
-                        />
-                        {formErrors.district && (
-                            <p className="mt-1 text-sm text-red-600">
-                                {formErrors.district}
-                            </p>
-                        )}
-                    </div>
-                    <div className="grid gap-1">
-                        <label htmlFor="ward">
-                            Phường/Xã <span className="text-red-500">*</span>
-                        </label>
-                        <Select
-                            options={wards.map((ward) => ({
-                                value: ward.code,
-                                label: ward.name,
-                            }))}
-                            onChange={(selected) => {
-                                setValue(
-                                    'ward',
-                                    selected ? selected.value : ''
-                                );
-                                if (formErrors.ward) {
-                                    validateField(
+                                            : '#374151',
+                                        '&:hover': {
+                                            borderColor: formErrors.district
+                                                ? '#ef4444'
+                                                : state.isFocused
+                                                ? '#9ca3af'
+                                                : '#e5e7eb',
+                                        },
+                                        backgroundColor: state.isFocused
+                                            ? '#FFE5B4'
+                                            : state.isSelected
+                                            ? '#FFB347'
+                                            : '#000',
+                                        boxShadow: 'none',
+                                        minHeight: '44px',
+                                        background: '#000',
+                                        color: '#fff',
+                                        accentColor: '#fff',
+                                    }),
+                                    option: (provided, state) => ({
+                                        ...provided,
+                                        backgroundColor: state.isFocused
+                                            ? '#ecfccb'
+                                            : state.isSelected
+                                            ? '#bef264'
+                                            : '#000',
+                                        color: state.isFocused
+                                            ? '#000'
+                                            : state.isSelected
+                                            ? '#000'
+                                            : '#fff',
+                                        cursor: 'pointer',
+                                    }),
+                                    singleValue: (provided) => ({
+                                        ...provided,
+                                        color: '#fff',
+                                    }),
+                                }}
+                            />
+                            {formErrors.district && (
+                                <p className="mt-1 text-sm text-red-600">
+                                    {formErrors.district}
+                                </p>
+                            )}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="ward">
+                                Phường/Xã{' '}
+                                <span className="text-rose-400">*</span>
+                            </Label>
+                            <Select
+                                options={wards.map((ward) => ({
+                                    value: ward.code,
+                                    label: ward.name,
+                                }))}
+                                onChange={(selected) => {
+                                    setValue(
                                         'ward',
                                         selected ? selected.value : ''
                                     );
+                                    if (formErrors.ward) {
+                                        validateField(
+                                            'ward',
+                                            selected ? selected.value : ''
+                                        );
+                                    }
+                                }}
+                                onBlur={() =>
+                                    validateField('ward', watch('ward') || '')
                                 }
-                            }}
-                            onBlur={() =>
-                                validateField('ward', watch('ward') || '')
-                            }
-                            filterOption={customFilter}
-                            placeholder="Nhập Phường/Xã"
-                            isSearchable
-                            isClearable
-                            isDisabled={!selectedDistrict}
-                            className={`${
-                                formErrors.ward ? 'border-red-500' : ''
-                            } w-full`}
-                            classNamePrefix="select"
-                            styles={{
-                                control: (provided, state) => ({
-                                    ...provided,
-                                    borderColor: formErrors.ward
-                                        ? '#ef4444'
-                                        : state.isFocused
-                                        ? '#9ca3af'
-                                        : '#e5e7eb',
-                                    '&:hover': {
+                                filterOption={customFilter}
+                                placeholder="Nhập Phường/Xã"
+                                isSearchable
+                                isClearable
+                                isDisabled={!selectedDistrict}
+                                className={`${
+                                    formErrors.ward ? 'border-rose-400' : ''
+                                } w-full`}
+                                classNames={{
+                                    control: (state) =>
+                                        state.isDisabled ? 'opacity-60' : '',
+                                }}
+                                classNamePrefix="select"
+                                styles={{
+                                    control: (provided, state) => ({
+                                        ...provided,
                                         borderColor: formErrors.ward
                                             ? '#ef4444'
                                             : state.isFocused
                                             ? '#9ca3af'
-                                            : '#e5e7eb',
-                                    },
-                                    boxShadow: 'none',
-                                    minHeight: '40px',
-                                }),
-                            }}
-                        />
-                        {formErrors.ward && (
-                            <p className="mt-1 text-sm text-red-600">
-                                {formErrors.ward}
-                            </p>
-                        )}
-                    </div>
-                    <div className="grid gap-1">
-                        <label htmlFor="mobile">
-                            Số điện thoại{' '}
-                            <span className="text-red-500">*</span>
-                        </label>
-                        <div className="relative">
-                            <input
+                                            : '#374151',
+                                        '&:hover': {
+                                            borderColor: formErrors.ward
+                                                ? '#ef4444'
+                                                : state.isFocused
+                                                ? '#9ca3af'
+                                                : '#e5e7eb',
+                                        },
+                                        backgroundColor: state.isFocused
+                                            ? '#FFE5B4'
+                                            : state.isSelected
+                                            ? '#FFB347'
+                                            : '#000',
+                                        boxShadow: 'none',
+                                        minHeight: '44px',
+                                        background: '#000',
+                                        color: '#fff',
+                                        accentColor: '#fff',
+                                    }),
+                                    option: (provided, state) => ({
+                                        ...provided,
+                                        backgroundColor: state.isFocused
+                                            ? '#ecfccb'
+                                            : state.isSelected
+                                            ? '#bef264'
+                                            : '#000',
+                                        color: state.isFocused
+                                            ? '#000'
+                                            : state.isSelected
+                                            ? '#000'
+                                            : '#fff',
+                                        cursor: 'pointer',
+                                    }),
+                                    singleValue: (provided) => ({
+                                        ...provided,
+                                        color: '#fff',
+                                    }),
+                                }}
+                            />
+                            {formErrors.ward && (
+                                <p className="mt-1 text-sm text-red-600">
+                                    {formErrors.ward}
+                                </p>
+                            )}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="mobile">
+                                Số điện thoại{' '}
+                                <span className="text-rose-400">*</span>
+                            </Label>
+                            <Input
                                 type="tel"
                                 id="mobile"
                                 placeholder="Nhập số điện thoại"
-                                className={`w-full p-2 border-2 rounded outline-none ${
+                                className={`w-full h-11 p-2 border-2 rounded outline-none ${
                                     formErrors.mobile
-                                        ? 'border-red-500'
+                                        ? 'border-rose-400'
                                         : 'focus-within:border-secondary-100'
                                 }`}
                                 {...register('mobile', {
@@ -534,35 +675,54 @@ const AddAddress = ({ close }) => {
                                 spellCheck={false}
                             />
                             {formErrors.mobile && (
-                                <p className="mt-1 text-sm text-red-600">
+                                <p className="mt-1 text-sm text-rose-400">
                                     {formErrors.mobile}
                                 </p>
                             )}
                         </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <input
-                            type="checkbox"
-                            id="isDefault"
-                            className="h-4 w-4 mb-[3px] cursor-pointer"
-                            {...register('isDefault')}
-                        />
-                        <label
-                            htmlFor="isDefault"
-                            className="font-normal text-slate-600 cursor-pointer"
-                        >
-                            Đặt làm địa chỉ mặc định
-                        </label>
-                    </div>
-                    <button
-                        type="submit"
-                        className="py-2 px-4 mt-2 bg-primary-2 hover:opacity-80 rounded shadow-md
-                    cursor-pointer text-secondary-200 font-semibold"
-                    >
-                        Thêm
-                    </button>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                id="isDefault"
+                                className="h-4 w-4 mb-[3px] cursor-pointer"
+                                {...register('isDefault')}
+                            />
+                            <label
+                                htmlFor="isDefault"
+                                className="font-normal text-lime-300 cursor-pointer"
+                            >
+                                Đặt làm địa chỉ mặc định
+                            </label>
+                        </div>
+
+                        <Divider />
+                        {/* Actions */}
+                        <CardFooter className="px-0 text-sm flex justify-end">
+                            <GlareHover
+                                background="transparent"
+                                glareOpacity={0.3}
+                                glareAngle={-30}
+                                glareSize={300}
+                                transitionDuration={800}
+                                playOnce={false}
+                            >
+                                {/* <Button
+                                    disabled={
+                                        !data.name || !data.image || loading
+                                    }
+                                    type="submit"
+                                    className="bg-foreground"
+                                >
+                                    {loading ? <Loading /> : 'Thêm Mới'}
+                                </Button> */}
+                                <Button type="submit" className="bg-white">
+                                    Thêm
+                                </Button>
+                            </GlareHover>
+                        </CardFooter>
+                    </CardContent>
                 </form>
-            </div>
+            </Card>
         </section>
     );
 };

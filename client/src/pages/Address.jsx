@@ -76,7 +76,26 @@ const Address = () => {
                 },
             });
             if (response.data.success) {
-                toast.success('Address Restored');
+                toast.success('Đã khôi phục địa chỉ');
+                if (fetchAddress) {
+                    fetchAddress();
+                }
+            }
+        } catch (error) {
+            AxiosToastError(error);
+        }
+    };
+
+    const handlePermanentDelete = async (id) => {
+        try {
+            const response = await Axios({
+                ...SummaryApi.permanent_delete_address,
+                data: {
+                    _id: id,
+                },
+            });
+            if (response.data.success) {
+                toast.success('Đã xóa vĩnh viễn địa chỉ');
                 if (fetchAddress) {
                     fetchAddress();
                 }
@@ -147,15 +166,15 @@ const Address = () => {
                                     )}
                                 </div>
                                 {/* PC / Tablet */}
-                                <div className="sm:flex hidden items-center gap-3">
+                                <div className="sm:flex hidden items-center gap-2">
                                     <button
                                         onClick={() => {
                                             setOpenEdit(true);
                                             setEditData(address);
                                         }}
-                                        className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[3px] text-white liquid-glass"
+                                        className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-2 text-white liquid-glass"
                                     >
-                                        <MdEdit size={18} />
+                                        <MdEdit size={20} />
                                     </button>
                                     {!address.isDefault && (
                                         <>
@@ -172,9 +191,9 @@ const Address = () => {
                                                             handleDisableAddress,
                                                     });
                                                 }}
-                                                className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[3px] text-rose-400 liquid-glass"
+                                                className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-2 text-rose-400 liquid-glass"
                                             >
-                                                <MdDelete size={18} />
+                                                <MdDelete size={20} />
                                             </button>
                                         </>
                                     )}
@@ -187,7 +206,7 @@ const Address = () => {
                                             setOpenEdit(true);
                                             setEditData(address);
                                         }}
-                                        className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[1px] text-white liquid-glass"
+                                        className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[2px] text-white liquid-glass"
                                     >
                                         <MdEdit size={15} />
                                     </button>
@@ -203,7 +222,7 @@ const Address = () => {
                                                 onConfirm: handleDisableAddress,
                                             });
                                         }}
-                                        className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[1px] text-rose-400 liquid-glass"
+                                        className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[2px] text-rose-400 liquid-glass"
                                     >
                                         <MdDelete size={15} />
                                     </button>
@@ -217,8 +236,8 @@ const Address = () => {
             {/* Danh sách địa chỉ đã xóa */}
             {deletedAddresses.length > 0 && (
                 <Card className="p-2 grid gap-4 mt-4">
-                    <CardHeader className='p-0'>
-                        <CardTitle className="text-sm text-rose-500 font-bold uppercase flex gap-2">
+                    <CardHeader className="p-0">
+                        <CardTitle className="text-sm text-rose-500 font-bold uppercase flex gap-2 pt-4">
                             <IoMdTrash size={18} />
                             Địa chỉ đã xóa
                         </CardTitle>
@@ -257,8 +276,25 @@ const Address = () => {
                                         });
                                     }}
                                     className="bg-black/50 border border-blue-600 p-2 text-blue-300 font-bold rounded hover:text-white hover:bg-blue-400/50"
+                                    title="Khôi phục địa chỉ"
                                 >
                                     <MdRestore size={22} />
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setConfirmAction({
+                                            isOpen: true,
+                                            type: 'permanentDelete',
+                                            addressId: address._id,
+                                            message:
+                                                'Bạn có chắc chắn muốn xóa vĩnh viễn địa chỉ này? Hành động này không thể hoàn tác!',
+                                            onConfirm: handlePermanentDelete,
+                                        });
+                                    }}
+                                    className="bg-black/50 border border-rose-600 p-2 text-rose-300 font-bold rounded hover:text-white hover:bg-rose-400/50"
+                                    title="Xóa vĩnh viễn"
+                                >
+                                    <IoMdTrash size={22} />
                                 </button>
                             </div>
                         </div>
@@ -299,7 +335,11 @@ const Address = () => {
                     title="Xác nhận"
                     message={confirmAction.message}
                     confirmText={
-                        confirmAction.type === 'delete' ? 'Xóa' : 'Khôi phục'
+                        confirmAction.type === 'delete'
+                            ? 'Xóa'
+                            : confirmAction.type === 'restore'
+                            ? 'Khôi phục'
+                            : 'Xóa vĩnh viễn'
                     }
                     cancelText="Hủy"
                 />

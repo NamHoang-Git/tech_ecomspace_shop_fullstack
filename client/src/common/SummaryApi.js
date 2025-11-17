@@ -169,6 +169,10 @@ const SummaryApi = {
         url: '/api/address/restore-address',
         method: 'post'
     },
+    permanent_delete_address: {
+        url: '/api/address/permanent-delete',
+        method: 'post'
+    },
 
     // Order
     cash_on_delivery_order: {

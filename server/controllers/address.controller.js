@@ -172,3 +172,40 @@ export const restoreAddressController = async (request, response) => {
         });
     }
 };
+
+export const permanentDeleteAddressController = async (request, response) => {
+    try {
+        const userId = request.userId;
+        const { _id } = request.body;
+
+        // First check if address exists and belongs to user
+        const address = await AddressModel.findOne({ _id, userId });
+        if (!address) {
+            return response.status(404).json({
+                message: "Địa chỉ không tìm thấy hoặc không được ủy quyền",
+                error: true,
+                success: false
+            });
+        }
+
+        // Remove from user's address_details array
+        await UserModel.findByIdAndUpdate(userId, {
+            $pull: { address_details: _id }
+        });
+
+        // Permanently delete the address
+        await AddressModel.findByIdAndDelete(_id);
+
+        return response.json({
+            message: "Đã xóa vĩnh viễn địa chỉ",
+            error: false,
+            success: true
+        });
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false
+        });
+    }
+};

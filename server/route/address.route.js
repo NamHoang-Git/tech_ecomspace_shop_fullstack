@@ -6,6 +6,7 @@ import {
     updateAddressController,
     deleteAddresscontroller,
     restoreAddressController,
+    permanentDeleteAddressController,
 } from '../controllers/address.controller.js'
 
 const addressRouter = Router()
@@ -15,5 +16,6 @@ addressRouter.get('/get-address', auth, getAddressController)
 addressRouter.put('/update-address', auth, updateAddressController)
 addressRouter.delete('/delete-address', auth, deleteAddresscontroller)
 addressRouter.post('/restore-address', auth, restoreAddressController)
+addressRouter.post('/permanent-delete', auth, permanentDeleteAddressController);
 
 export default addressRouter
