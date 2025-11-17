@@ -706,15 +706,6 @@ const AddAddress = ({ close }) => {
                                 transitionDuration={800}
                                 playOnce={false}
                             >
-                                {/* <Button
-                                    disabled={
-                                        !data.name || !data.image || loading
-                                    }
-                                    type="submit"
-                                    className="bg-foreground"
-                                >
-                                    {loading ? <Loading /> : 'Thêm Mới'}
-                                </Button> */}
                                 <Button type="submit" className="bg-white">
                                     Thêm
                                 </Button>

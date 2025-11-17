@@ -4,10 +4,22 @@ import { useGlobalContext } from '../provider/GlobalProvider';
 import Axios from '../utils/Axios';
 import SummaryApi from '../common/SummaryApi';
 import toast from 'react-hot-toast';
+import AxiosToastError from '../utils/AxiosToastError';
 import { IoClose } from 'react-icons/io5';
 import vietnamProvinces from '../data/vietnam-provinces.json';
 import Select from 'react-select';
-import AxiosToastError from '../utils/AxiosToastError';
+import { Input } from './ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from './ui/card';
+import { Button } from './ui/button';
+import Divider from './Divider';
+import GlareHover from './GlareHover';
 
 const EditAddressDetails = ({ close, data }) => {
     const { register, handleSubmit, reset, setValue, watch } = useForm({
@@ -30,19 +42,6 @@ const EditAddressDetails = ({ close, data }) => {
     const [selectedProvince, setSelectedProvince] = useState(null);
     const [selectedDistrict, setSelectedDistrict] = useState(null);
     const [mobileError, setMobileError] = useState('');
-    
-    // Check if all required fields are filled
-    const isFormValid = () => {
-        const formValues = watch();
-        return (
-            formValues.address_line &&
-            formValues.city &&
-            formValues.district &&
-            formValues.ward &&
-            formValues.mobile &&
-            !mobileError
-        );
-    };
 
     const validateMobile = (value) => {
         // Vietnamese phone number validation
@@ -255,106 +254,234 @@ const EditAddressDetails = ({ close, data }) => {
             className="bg-neutral-800 z-50 bg-opacity-60 fixed top-0 left-0 right-0 bottom-0 overflow-auto
         flex items-center justify-center px-3"
         >
-            <div
-                className="liquid-glass px-4 py-6 w-full max-w-xl mx-auto rounded-md shadow-md
-            flex flex-col gap-4"
-            >
-                <div className="flex justify-between items-center gap-4">
-                    <h2 className="font-semibold text-lg text-secondary-200">
-                        Chỉnh Sửa
-                    </h2>
-                    <button
-                        onClick={close}
-                        className="hover:text-secondary-100 text-secondary-200"
-                    >
-                        <IoClose size={25} />
-                    </button>
-                </div>
-                <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="grid gap-4 sm:text-base text-sm font-medium"
-                >
-                    <div className="grid gap-1">
-                        <label htmlFor="addressline">Địa chỉ:</label>
-                        <input
-                            type="text"
-                            id="addressline"
-                            className="border-2 bg-base-100 p-2 rounded outline-none
-                        focus-within:border-secondary-100"
-                            {...register('address_line', { required: true })}
-                            spellCheck={false}
-                        />
+            <Card className="w-full max-w-lg overflow-hidden border-foreground">
+                <CardHeader className="pt-4">
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg text-lime-300 font-bold uppercase">
+                            Sửa địa chỉ
+                        </CardTitle>
+                        <Button
+                            onClick={close}
+                            className="bg-transparent hover:bg-transparent text-foreground
+                                        hover:text-lime-300 h-12"
+                        >
+                            <IoClose />
+                        </Button>
                     </div>
-                    <div className="grid gap-1">
-                        <label htmlFor="city">Tỉnh/Thành phố:</label>
-                        <Select
-                            options={provinces.map((province) => ({
-                                value: province.code,
-                                label: province.name,
-                            }))}
-                            value={selectedProvince}
-                            onChange={(selected) => {
-                                setSelectedProvince(selected);
-                                setValue(
-                                    'city',
-                                    selected ? selected.label : ''
-                                );
-                            }}
-                            filterOption={customFilter}
-                            placeholder="Nhập Tỉnh/Thành phố"
-                            isSearchable
-                            isClearable
-                        />
-                    </div>
-                    <div className="grid gap-1">
-                        <label htmlFor="district">Quận/Huyện:</label>
-                        <Select
-                            options={districts.map((district) => ({
-                                value: district.code,
-                                label: district.name,
-                            }))}
-                            value={selectedDistrict}
-                            onChange={(selected) => {
-                                setSelectedDistrict(selected);
-                                setValue(
-                                    'district',
-                                    selected ? selected.label : ''
-                                );
-                            }}
-                            filterOption={customFilter}
-                            placeholder="Nhập Quận/Huyện"
-                            isSearchable
-                            isClearable
-                            isDisabled={!selectedProvince}
-                        />
-                    </div>
-                    <div className="grid gap-1">
-                        <label htmlFor="ward">Phường/Xã:</label>
-                        <Select
-                            options={wards}
-                            value={wards.find((w) => w.code === watch('ward'))}
-                            onChange={(selected) => {
-                                setValue('ward', selected ? selected.code : '');
-                            }}
-                            getOptionLabel={(option) => option.name}
-                            getOptionValue={(option) => option.code}
-                            placeholder="Chọn Phường/Xã"
-                            isSearchable
-                            isClearable
-                            isDisabled={!selectedDistrict}
-                            noOptionsMessage={() => 'Không có dữ liệu'}
-                        />
-                    </div>
-                    <div className="grid gap-1">
-                        <label htmlFor="mobile">Số điện thoại:</label>
-                        <div className="relative">
-                            <input
+                </CardHeader>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <CardContent className="py-4 space-y-5 text-sm">
+                        <div className="space-y-2">
+                            <Label htmlFor="addressline">
+                                Địa chỉ <span className="text-rose-400">*</span>
+                            </Label>
+                            <Input
+                                type="text"
+                                id="addressline"
+                                placeholder="Nhập địa chỉ"
+                                className="w-full h-11 p-2 border-2 rounded outline-none"
+                                {...register('address_line', {
+                                    required: true,
+                                })}
+                                spellCheck={false}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="city">
+                                Tỉnh/Thành phố{' '}
+                                <span className="text-rose-400">*</span>
+                            </Label>
+                            <Select
+                                options={provinces.map((province) => ({
+                                    value: province.code,
+                                    label: province.name,
+                                }))}
+                                value={selectedProvince}
+                                onChange={(selected) => {
+                                    setSelectedProvince(selected);
+                                    setValue(
+                                        'city',
+                                        selected ? selected.label : ''
+                                    );
+                                }}
+                                filterOption={customFilter}
+                                placeholder="Nhập Tỉnh/Thành phố"
+                                isSearchable
+                                isClearable
+                                classNamePrefix="select"
+                                styles={{
+                                    control: (provided, state) => ({
+                                        ...provided,
+                                        backgroundColor: state.isFocused
+                                            ? '#FFE5B4'
+                                            : state.isSelected
+                                            ? '#FFB347'
+                                            : '#000',
+                                        boxShadow: 'none',
+                                        minHeight: '44px',
+                                        background: '#000',
+                                        color: '#fff',
+                                        accentColor: '#fff',
+                                    }),
+                                    option: (provided, state) => ({
+                                        ...provided,
+                                        backgroundColor: state.isFocused
+                                            ? '#ecfccb'
+                                            : state.isSelected
+                                            ? '#bef264'
+                                            : '#000',
+                                        color: state.isFocused
+                                            ? '#000'
+                                            : state.isSelected
+                                            ? '#000'
+                                            : '#fff',
+                                        cursor: 'pointer',
+                                    }),
+                                    singleValue: (provided) => ({
+                                        ...provided,
+                                        color: '#fff',
+                                    }),
+                                }}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="district">
+                                Quận/Huyện{' '}
+                                <span className="text-rose-400">*</span>
+                            </Label>
+                            <Select
+                                options={districts.map((district) => ({
+                                    value: district.code,
+                                    label: district.name,
+                                }))}
+                                value={selectedDistrict}
+                                onChange={(selected) => {
+                                    setSelectedDistrict(selected);
+                                    setValue(
+                                        'district',
+                                        selected ? selected.label : ''
+                                    );
+                                }}
+                                filterOption={customFilter}
+                                placeholder="Nhập Quận/Huyện"
+                                isSearchable
+                                isClearable
+                                isDisabled={!selectedProvince}
+                                classNames={{
+                                    control: (state) =>
+                                        state.isDisabled ? 'opacity-60' : '',
+                                }}
+                                classNamePrefix="select"
+                                styles={{
+                                    control: (provided, state) => ({
+                                        ...provided,
+                                        backgroundColor: state.isFocused
+                                            ? '#FFE5B4'
+                                            : state.isSelected
+                                            ? '#FFB347'
+                                            : '#000',
+                                        boxShadow: 'none',
+                                        minHeight: '44px',
+                                        background: '#000',
+                                        color: '#fff',
+                                        accentColor: '#fff',
+                                    }),
+                                    option: (provided, state) => ({
+                                        ...provided,
+                                        backgroundColor: state.isFocused
+                                            ? '#ecfccb'
+                                            : state.isSelected
+                                            ? '#bef264'
+                                            : '#000',
+                                        color: state.isFocused
+                                            ? '#000'
+                                            : state.isSelected
+                                            ? '#000'
+                                            : '#fff',
+                                        cursor: 'pointer',
+                                    }),
+                                    singleValue: (provided) => ({
+                                        ...provided,
+                                        color: '#fff',
+                                    }),
+                                }}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="ward">
+                                Phường/Xã{' '}
+                                <span className="text-rose-400">*</span>
+                            </Label>
+                            <Select
+                                options={wards}
+                                value={wards.find(
+                                    (w) => w.code === watch('ward')
+                                )}
+                                onChange={(selected) => {
+                                    setValue(
+                                        'ward',
+                                        selected ? selected.code : ''
+                                    );
+                                }}
+                                getOptionLabel={(option) => option.name}
+                                getOptionValue={(option) => option.code}
+                                placeholder="Chọn Phường/Xã"
+                                isSearchable
+                                isClearable
+                                isDisabled={!selectedDistrict}
+                                noOptionsMessage={() => 'Không có dữ liệu'}
+                                classNames={{
+                                    control: (state) =>
+                                        state.isDisabled ? 'opacity-60' : '',
+                                }}
+                                classNamePrefix="select"
+                                styles={{
+                                    control: (provided, state) => ({
+                                        ...provided,
+                                        backgroundColor: state.isFocused
+                                            ? '#FFE5B4'
+                                            : state.isSelected
+                                            ? '#FFB347'
+                                            : '#000',
+                                        boxShadow: 'none',
+                                        minHeight: '44px',
+                                        background: '#000',
+                                        color: '#fff',
+                                        accentColor: '#fff',
+                                    }),
+                                    option: (provided, state) => ({
+                                        ...provided,
+                                        backgroundColor: state.isFocused
+                                            ? '#ecfccb'
+                                            : state.isSelected
+                                            ? '#bef264'
+                                            : '#000',
+                                        color: state.isFocused
+                                            ? '#000'
+                                            : state.isSelected
+                                            ? '#000'
+                                            : '#fff',
+                                        cursor: 'pointer',
+                                    }),
+                                    singleValue: (provided) => ({
+                                        ...provided,
+                                        color: '#fff',
+                                    }),
+                                }}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="mobile">
+                                Số điện thoại{' '}
+                                <span className="text-rose-400">*</span>
+                            </Label>
+                            <Input
                                 type="tel"
                                 id="mobile"
                                 placeholder="Nhập số điện thoại"
-                                className={`w-full p-2 border-2 rounded outline-none ${
+                                className={`w-full h-11 p-2 border-2 rounded outline-none ${
                                     mobileError
-                                        ? 'border-red-500'
+                                        ? 'border-rose-400'
                                         : 'focus-within:border-secondary-100'
                                 }`}
                                 {...register('mobile', {
@@ -377,49 +504,55 @@ const EditAddressDetails = ({ close, data }) => {
                                 )}
                             </div>
                         </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <input
-                            type="checkbox"
-                            id="isDefault"
-                            className="h-4 w-4 mb-[3px] cursor-pointer"
-                            disabled={data.isDefault}
-                            checked={watch('isDefault')}
-                            onChange={(e) =>
-                                setValue('isDefault', e.target.checked)
-                            }
-                        />
-                        <label
-                            htmlFor="isDefault"
-                            className={`font-normal ${
-                                data.isDefault
-                                    ? 'text-gray-400'
-                                    : 'text-slate-600 cursor-pointer'
-                            }`}
-                        >
-                            {data.isDefault
-                                ? 'Địa chỉ mặc định'
-                                : 'Đặt làm địa chỉ mặc định'}
-                        </label>
-                        {data.isDefault && (
-                            <span className="text-primary-200 ml-2">
-                                (Đang là mặc định)
-                            </span>
-                        )}
-                    </div>
-                    <button
-                        type="submit"
-                        disabled={!isFormValid()}
-                        className={`py-2 px-4 mt-2 rounded shadow-md text-secondary-200 font-semibold ${
-                            !isFormValid()
-                                ? 'cursor-not-allowed opacity-60 bg-primary-2'
-                                : 'bg-primary-2 hover:opacity-80 cursor-pointer'
-                        }`}
-                    >
-                        Cập nhật
-                    </button>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                id="isDefault"
+                                className="h-4 w-4 mb-[3px] cursor-pointer"
+                                disabled={data.isDefault}
+                                checked={watch('isDefault')}
+                                onChange={(e) =>
+                                    setValue('isDefault', e.target.checked)
+                                }
+                            />
+                            <label
+                                htmlFor="isDefault"
+                                className={`font-normal ${
+                                    data.isDefault
+                                        ? 'text-gray-400'
+                                        : 'text-lime-300 cursor-pointer'
+                                }`}
+                            >
+                                {data.isDefault
+                                    ? 'Địa chỉ mặc định'
+                                    : 'Đặt làm địa chỉ mặc định'}
+                            </label>
+                            {data.isDefault && (
+                                <span className="text-rose-400 ml-2">
+                                    (Đang là mặc định)
+                                </span>
+                            )}
+                        </div>
+
+                        <Divider />
+                        {/* Actions */}
+                        <CardFooter className="px-0 text-sm flex justify-end">
+                            <GlareHover
+                                background="transparent"
+                                glareOpacity={0.3}
+                                glareAngle={-30}
+                                glareSize={300}
+                                transitionDuration={800}
+                                playOnce={false}
+                            >
+                                <Button type="submit" className="bg-white">
+                                    Cập nhật
+                                </Button>
+                            </GlareHover>
+                        </CardFooter>
+                    </CardContent>
                 </form>
-            </div>
+            </Card>
         </section>
     );
 };

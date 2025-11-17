@@ -139,7 +139,7 @@ const Address = () => {
             {/* Danh sách địa chỉ hiện hoạt */}
             <div className="p-2 grid gap-4 overflow-auto max-h-[calc(100vh/1.5)]">
                 {activeAddresses.length === 0 ? (
-                    <p className="text-gray-500">
+                    <p className="text-white text-center">
                         Chưa có địa chỉ. Hãy thêm địa chỉ mới
                     </p>
                 ) : (
