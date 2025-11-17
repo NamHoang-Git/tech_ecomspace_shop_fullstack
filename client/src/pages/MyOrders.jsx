@@ -63,13 +63,23 @@ const MyOrders = () => {
                 <CardContent className="p-2 grid gap-4">
                     {!orders.length ? (
                         <div className="flex flex-col gap-4 items-center">
-                            <NoData />
-                            <button
-                                onClick={() => navigate('/')}
-                                className="bg-primary-4 text-secondary-200 py-2 px-5 rounded-md transition-colors duration-200 text-sm sm:text-base w-full sm:w-auto text-center font-bold shadow-md"
+                            <NoData message="Chưa có đơn hàng" />
+                            <GlareHover
+                                background="#000"
+                                glareOpacity={0.3}
+                                glareAngle={-30}
+                                glareSize={300}
+                                transitionDuration={800}
+                                playOnce={false}
+                                className="mt-2"
                             >
-                                Mua sắm ngay!
-                            </button>
+                                <Button
+                                    onClick={() => navigate('/')}
+                                    className="text-lime-300 hover:bg-transparent w-full"
+                                >
+                                    Mua sắm ngay!
+                                </Button>
+                            </GlareHover>
                         </div>
                     ) : (
                         orders.map((order, index) => (
@@ -264,12 +274,6 @@ const MyOrders = () => {
                                         playOnce={false}
                                         className="mt-2"
                                     >
-                                        {/* <Button
-                                            onClick={() => setOpenAddress(true)}
-                                            className="bg-transparent text-white hover:bg-transparent"
-                                        >
-                                            Thêm Mới
-                                        </Button> */}
                                         <Button
                                             onClick={() => {
                                                 handleBuyAgain(

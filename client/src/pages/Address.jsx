@@ -110,10 +110,10 @@ const Address = () => {
             <Card className="text-white py-6 flex-row justify-between gap-6 border-gray-600 border-2">
                 <CardHeader>
                     <CardTitle className="text-lg text-lime-300 font-bold uppercase">
-                        Danh mục
+                        Địa chỉ
                     </CardTitle>
                     <CardDescription className="text-white">
-                        Quản lý thông tin danh mục
+                        Quản lý địa chỉ giao hàng
                     </CardDescription>
                 </CardHeader>
 
@@ -139,7 +139,7 @@ const Address = () => {
             {/* Danh sách địa chỉ hiện hoạt */}
             <div className="p-2 grid gap-4 overflow-auto max-h-[calc(100vh/1.5)]">
                 {activeAddresses.length === 0 ? (
-                    <p className="text-white text-center">
+                    <p className="text-rose-400 text-center p-2 liquid-glass rounded-lg">
                         Chưa có địa chỉ. Hãy thêm địa chỉ mới
                     </p>
                 ) : (

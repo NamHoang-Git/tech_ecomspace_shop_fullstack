@@ -1,16 +1,28 @@
 import React, { useState } from 'react';
 import { IoAddSharp, IoClose } from 'react-icons/io5';
-import uploadImage from '../utils/UploadImage.js';
-import Axios from '../utils/Axios.js';
-import SummaryApi from '../common/SummaryApi.js';
-import AxiosToastError from '../utils/AxiosToastError.js';
-import successAlert from '../utils/successAlert.js';
+import Axios from '@/utils/Axios.js';
+import SummaryApi from '@/common/SummaryApi.js';
+import AxiosToastError from '@/utils/AxiosToastError.js';
+import successAlert from '@/utils/successAlert.js';
+import uploadImage from '@/utils/UploadImage.js';
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from './ui/card';
+import { Button } from './ui/button';
+import { Label } from '@radix-ui/react-label';
+import { Input } from './ui/input';
+import Divider from './Divider';
+import GlareHover from './GlareHover';
+import Loading from './Loading';
 
 const EditCategory = ({ close, fetchData, data: CategoryData }) => {
     const [data, setData] = useState({
         _id: CategoryData._id,
         name: CategoryData.name,
-        description: CategoryData.description || '',
         image: CategoryData.image,
     });
 
@@ -27,42 +39,24 @@ const EditCategory = ({ close, fetchData, data: CategoryData }) => {
         });
     };
 
-    const handleUploadFile = async (e) => {
+    const handleUploadCategoryImage = async (e) => {
         const file = e.target.files[0];
-        if (!file) return;
 
-        // Validate file type
-        if (!file.type.startsWith('image/')) {
-            console.error('Please select an image file');
+        if (!file) {
             return;
         }
 
         setLoading(true);
-        try {
-            const response = await uploadImage(file);
-            console.log('Upload response:', response);
+        const response = await uploadImage(file);
+        const { data: ImageResponse } = response;
+        setLoading(false);
 
-            if (response?.response?.data) {
-                console.error('Upload error:', response.response.data);
-                return;
-            }
-
-            if (response?.data?.success) {
-                const imageUrl =
-                    response.data.data?.url || response.data.data?.imageUrl;
-                console.log('Image URL:', imageUrl);
-
-                setData((prev) => ({
-                    ...prev,
-                    image: imageUrl,
-                }));
-            }
-        } catch (error) {
-            console.error('Error uploading image:', error);
-        } finally {
-            setLoading(false);
-            e.target.value = '';
-        }
+        setData((prev) => {
+            return {
+                ...prev,
+                image: ImageResponse.data.data.url,
+            };
+        });
     };
 
     const handleSubmit = async (e) => {
@@ -94,169 +88,140 @@ const EditCategory = ({ close, fetchData, data: CategoryData }) => {
             className="bg-neutral-800 z-50 bg-opacity-60 fixed top-0 left-0 right-0 bottom-0 overflow-auto
         flex items-center justify-center px-2"
         >
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
+            <Card className="w-full max-w-lg overflow-hidden border-foreground">
                 {/* Header */}
-                <div className="border-b border-gray-200 px-6 py-4">
+                <CardHeader className="pt-4">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-secondary-200">
-                            Chỉnh sửa danh mục
-                        </h3>
-                        <button
+                        <CardTitle className="text-lg text-lime-300 font-bold uppercase">
+                            Sửa danh mục
+                        </CardTitle>
+                        <Button
                             onClick={close}
-                            className="text-secondary-200 hover:text-secondary-100 transition-colors"
+                            className="bg-transparent hover:bg-transparent text-foreground
+                        hover:text-lime-300 h-12"
                         >
-                            <IoClose size={22} />
-                        </button>
+                            <IoClose />
+                        </Button>
                     </div>
-                </div>
+                </CardHeader>
 
-                <form
-                    className="px-6 py-4 space-y-5 text-secondary-200 text-sm"
-                    onSubmit={handleSubmit}
-                >
-                    {/* Category Name */}
-                    <div className="space-y-2">
-                        <label
-                            htmlFor="name"
-                            className="block font-semibold text-gray-700"
-                        >
-                            Tên danh mục <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            value={data.name}
-                            onChange={handleOnChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1
-                            focus:ring-secondary-100 focus:border-secondary-100 focus:outline-none transition-all"
-                            placeholder="Nhập tên danh mục"
-                        />
-                    </div>
+                <form onSubmit={handleSubmit}>
+                    <CardContent className="py-4 space-y-5 text-sm">
+                        {/* Category Name */}
+                        <div className="space-y-2">
+                            <Label htmlFor="name">
+                                Tên danh mục{' '}
+                                <span className="text-red-500">*</span>
+                            </Label>
+                            <Input
+                                type="text"
+                                id="name"
+                                name="name"
+                                autoFocus
+                                value={data.name}
+                                onChange={handleOnChange}
+                                className="text-sm h-12"
+                                placeholder="Nhập tên danh mục"
+                                required
+                            />
+                        </div>
 
-                    {/* Description */}
-                    <div className="space-y-2">
-                        <label
-                            htmlFor="description"
-                            className="block font-semibold text-gray-700"
-                        >
-                            Mô tả
-                        </label>
-                        <textarea
-                            id="description"
-                            name="description"
-                            value={data.description}
-                            onChange={handleOnChange}
-                            rows="3"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1
-                            focus:ring-secondary-100 focus:border-secondary-100 focus:outline-none transition-all"
-                            placeholder="Nhập mô tả danh mục"
-                        />
-                    </div>
-
-                    {/* Image Upload */}
-                    <div className="space-y-2">
-                        <label className="block font-semibold text-gray-700">
-                            Hình ảnh <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="file"
-                            id="image-upload"
-                            accept="image/*"
-                            onChange={(e) => handleUploadFile(e, 'image')}
-                            className="hidden"
-                            disabled={loading}
-                        />
-                        <label
-                            htmlFor="image-upload"
-                            className={`block border-2 border-dashed rounded-xl sm:p-6 p-4 text-center cursor-pointer
-                            transition-all duration-200 ${
+                        {/* Image Upload */}
+                        <div className="space-y-2">
+                            <Label htmlFor="image">
+                                Hình ảnh <span className="text-red-500">*</span>
+                            </Label>
+                            <Label
+                                htmlFor="image"
+                                className={`block border-2 border-dashed rounded-xl p-6 text-center cursor-pointer
+                            transition-all duration-200 group ${
                                 data.image
-                                    ? 'border-green-200 bg-green-50'
-                                    : 'border-gray-300 hover:border-rose-400'
-                            } ${
-                                loading ? 'opacity-70 cursor-not-allowed' : ''
+                                    ? 'border-green-300 bg-green-50'
+                                    : 'border-gray-300 hover:border-red-500'
                             }`}
-                        >
-                            {data.image ? (
-                                <div className="relative">
-                                    <img
-                                        src={data.image}
-                                        alt="Preview"
-                                        className="sm:h-40 h-32 mx-auto object-contain rounded-lg"
-                                    />
-                                    <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 rounded-lg transition-all flex items-center justify-center">
-                                        <span className="text-white bg-black/70 text-xs px-2 py-1 rounded">
-                                            Thay đổi ảnh
-                                        </span>
+                            >
+                                {data.image ? (
+                                    <div className="relative">
+                                        <img
+                                            src={data.image}
+                                            alt="Preview"
+                                            className="sm:h-40 h-32 mx-auto object-contain rounded-lg"
+                                        />
+                                        <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 rounded-lg transition-all flex items-center justify-center">
+                                            <span className="text-white bg-black/70 text-xs px-2 py-1 rounded">
+                                                Thay đổi ảnh
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
-                            ) : (
-                                <div className="flex flex-col items-center">
-                                    <div className="mx-auto w-12 h-12 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center">
-                                        <IoAddSharp size={24} />
+                                ) : (
+                                    <div className="space-y-2">
+                                        <div
+                                            className="mx-auto w-12 h-12 bg-gray-100 text-gray-400 group-hover:text-red-400 group-hover:bg-red-50 rounded-full
+                                        flex items-center justify-center"
+                                        >
+                                            <IoAddSharp size={24} />
+                                        </div>
+                                        <div className="sm:text-sm text-xs text-red-500">
+                                            <p className="font-medium">
+                                                Tải ảnh lên
+                                            </p>
+                                            <p className="sm:text-xs text-[10px] text-red-300">
+                                                PNG, JPG, JPEG (tối đa 10MB)
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="text-sm text-rose-500 text-center mt-2">
-                                        <p className="font-medium">
-                                            Tải ảnh lên
-                                        </p>
-                                        <p className="text-xs text-rose-300">
-                                            PNG, JPG (tối đa 5MB)
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
-                        </label>
-                    </div>
+                                )}
+                                <input
+                                    type="file"
+                                    id="image"
+                                    className="hidden"
+                                    onChange={handleUploadCategoryImage}
+                                    accept="image/*"
+                                />
+                            </Label>
+                        </div>
 
-                    {/* Buttons */}
-                    <div className="sm:text-sm text-xs flex justify-end space-x-3 pt-2">
-                        <button
-                            type="button"
-                            onClick={close}
-                            className="px-6 py-[6px] border-2 border-secondary-100 rounded-lg text-secondary-200 hover:bg-secondary-100
-                            focus:outline-none focus:ring-2 focus:ring-offset-2 hover:text-white font-semibold focus:ring-secondary-200"
-                            disabled={loading}
-                        >
-                            Hủy
-                        </button>
-                        <button
-                            type="submit"
-                            className="px-4 py-[6px] bg-primary text-secondary-200 shadow-lg rounded-lg hover:opacity-80
-                            focus:outline-none flex items-center disabled:opacity-50 font-semibold"
-                            disabled={!data.name || !data.image || loading}
-                        >
-                            {loading ? (
-                                <>
-                                    <svg
-                                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <circle
-                                            className="opacity-25"
-                                            cx="12"
-                                            cy="12"
-                                            r="10"
-                                            stroke="currentColor"
-                                            strokeWidth="4"
-                                        ></circle>
-                                        <path
-                                            className="opacity-75"
-                                            fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                        ></path>
-                                    </svg>
-                                    Đang lưu...
-                                </>
-                            ) : (
-                                'Cập nhật'
-                            )}
-                        </button>
-                    </div>
+                        <Divider />
+                        {/* Actions */}
+                        <CardFooter className="px-0 text-sm flex items-center justify-end gap-3">
+                            <GlareHover
+                                background="transparent"
+                                glareOpacity={0.3}
+                                glareAngle={-30}
+                                glareSize={300}
+                                transitionDuration={800}
+                                playOnce={false}
+                            >
+                                <Button
+                                    type="button"
+                                    onClick={close}
+                                    className="bg-foreground"
+                                >
+                                    Hủy
+                                </Button>
+                            </GlareHover>
+                            <GlareHover
+                                background="transparent"
+                                glareOpacity={0.3}
+                                glareAngle={-30}
+                                glareSize={300}
+                                transitionDuration={800}
+                                playOnce={false}
+                            >
+                                <Button
+                                    disabled={
+                                        !data.name || !data.image || loading
+                                    }
+                                    type="submit"
+                                    className="bg-foreground"
+                                >
+                                    {loading ? <Loading /> : 'Chỉnh Sửa'}
+                                </Button>
+                            </GlareHover>
+                        </CardFooter>
+                    </CardContent>
                 </form>
-            </div>
+            </Card>
         </section>
     );
 };

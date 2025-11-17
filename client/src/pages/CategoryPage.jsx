@@ -10,6 +10,16 @@ import ConfirmBox from '../components/ConfirmBox';
 import AxiosToastError from '../utils/AxiosToastError';
 import successAlert from '../utils/successAlert';
 import ViewImage from '../components/ViewImage';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import GlareHover from '@/components/GlareHover';
+import { Button } from '@/components/ui/button';
 
 const CategoryPage = () => {
     const [openUploadCaregory, setOpenUploadCaregory] = useState(false);
@@ -73,169 +83,129 @@ const CategoryPage = () => {
     };
 
     return (
-        <section className="container mx-auto lg:py-4 py-2 px-1 flex flex-col">
-            {/* Header */}
-            <div
-                className="px-3 py-4 mb-3 bg-primary-4 rounded-md shadow-md shadow-secondary-100
-            font-bold text-secondary-200 sm:text-lg text-sm flex justify-between
-            items-center gap-4"
-            >
-                <div className="grid">
-                    <h2 className="text-ellipsis line-clamp-1 uppercase">
-                        Danh mục sản phẩm
-                    </h2>
-                    <p className="text-[12px] sm:text-base text-secondary-100">
-                        Quản lý danh mục sản phẩm của bạn
-                    </p>
-                </div>
-                <button
-                    onClick={() => setOpenUploadCaregory(true)}
-                    className="bg-primary-2 border-[3px] border-secondary-200 text-secondary-200 px-3 hover:opacity-80
-                 py-1 rounded-full text-nowrap text-xs sm:text-base"
-                >
-                    Thêm Mới
-                </button>
-            </div>
+        <section className="container mx-auto grid gap-2 z-10">
+            <Card className="text-white py-6 flex-row justify-between gap-6 border-gray-600 border-2">
+                <CardHeader>
+                    <CardTitle className="text-lg text-lime-300 font-bold uppercase">
+                        Danh mục
+                    </CardTitle>
+                    <CardDescription className="text-white">
+                        Quản lý thông tin danh mục
+                    </CardDescription>
+                </CardHeader>
+
+                <CardFooter>
+                    <GlareHover
+                        background="transparent"
+                        glareOpacity={0.3}
+                        glareAngle={-30}
+                        glareSize={300}
+                        transitionDuration={800}
+                        playOnce={false}
+                    >
+                        <Button
+                            onClick={() => setOpenUploadCaregory(true)}
+                            className="bg-transparent text-white hover:bg-transparent"
+                        >
+                            Thêm Mới
+                        </Button>
+                    </GlareHover>
+                </CardFooter>
+            </Card>
 
             {/* Category Grid */}
             {!data[0] && !loading && <NoData message="Chưa có danh mục nào" />}
 
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-[10px] sm:gap-6 py-2">
+            {loading && <Loading />}
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-2 py-2">
                 {data.map((category, index) => (
                     <div
                         key={category._id || index}
-                        className="group bg-white rounded-xl shadow-sm shadow-secondary-100 hover:shadow-lg transition-all duration-300
-                        border border-gray-100 overflow-hidden cursor-pointer"
+                        className="block rounded-[28px] liquid-glass border border-input p-2"
                     >
-                        <div className="w-full h-32 sm:h-52 overflow-hidden bg-gray-50">
-                            <img
-                                src={category.image}
-                                alt={category.name}
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = '/placeholder-category.jpg';
-                                }}
-                                onClick={() => setImageURL(category.image)}
-                            />
-                        </div>
+                        <div>
+                            <Card className="bg-input hover:bg-transparent rounded-3xl transition-all duration-300 overflow-hidden group relative">
+                                {/* Glow effect on hover */}
+                                <div
+                                    className="absolute inset-0 bg-gradient-to-r from-lime-300/20 to-lime-300/10 opacity-0 group-hover:opacity-100 transition-opacity
+                            duration-500 pointer-events-none"
+                                />
 
-                        <div className="px-2 py-3 sm:px-3 sm:py-4 flex flex-col gap-3">
-                            <h3 className="font-semibold line-clamp-2 text-sm sm:text-base h-6 w-full text-center">
-                                {category.name}
-                            </h3>
+                                {/* Border glow */}
+                                <div className="absolute inset-0 rounded-3xl border transition-all duration-500 border-transparent group-hover:border-lime-300/70 group-hover:shadow-[0_0_15px_rgba(132,204,22,0.3)]" />
 
-                            {/* PC & Tablet */}
-                            <div className="mt-auto sm:flex hidden gap-2">
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setOpenEdit(true);
-                                        setEditData(category);
-                                    }}
-                                    className="flex-1 bg-orange-100 hover:bg-orange-200 text-orange-600
-                                font-semibold rounded p-1 flex items-center justify-center gap-1 transition-colors"
-                                >
-                                    <svg
-                                        className="w-4 h-4 mb-[2px]"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                                        />
-                                    </svg>
-                                    <span>Sửa</span>
-                                </button>
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setOpenConfirmBoxDelete(true);
-                                        setDeleteCategory(category);
-                                    }}
-                                    className="flex-1 bg-red-100 hover:bg-red-200 text-red-600
-                                font-semibold rounded p-1 flex items-center justify-center gap-1 transition-colors"
-                                >
-                                    <svg
-                                        className="w-4 h-4 mb-[2px]"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                        />
-                                    </svg>
-                                    <span>Xóa</span>
-                                </button>
-                            </div>
+                                <div className="relative w-full h-full overflow-hidden">
+                                    <img
+                                        src={category.image}
+                                        alt={category.name}
+                                        className="w-full h-32 sm:h-44 object-cover bg-background transition-transform duration-700 cursor-pointer group-hover:scale-100 group-hover:opacity-80"
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.target.src =
+                                                '/placeholder-category.jpg';
+                                        }}
+                                        onClick={() =>
+                                            setImageURL(category.image)
+                                        }
+                                    />
+                                </div>
 
-                            {/* Mobile */}
-                            <div className="mt-auto sm:hidden flex gap-2">
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setOpenEdit(true);
-                                        setEditData(category);
-                                    }}
-                                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-sm
-                                    bg-orange-100 hover:bg-orange-200 text-orange-600 rounded-lg transition-colors"
-                                >
-                                    <svg
-                                        className="w-4 h-4"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                                        />
-                                    </svg>
-                                </button>
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setOpenConfirmBoxDelete(true);
-                                        setDeleteCategory(category);
-                                    }}
-                                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-sm
-                                    bg-red-100 text-red-600 hover:bg-red-200 rounded-lg transition-colors"
-                                >
-                                    <svg
-                                        className="w-4 h-4"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                        />
-                                    </svg>
-                                </button>
-                            </div>
+                                <CardContent className="px-2 py-3 sm:px-3 sm:py-4 flex flex-col gap-3">
+                                    <h3 className="text-center font-semibold transition-colors duration-300 line-clamp-2 h-fit w-full">
+                                        {category.name}
+                                    </h3>
+
+                                    <div className="flex w-full items-center justify-center gap-2">
+                                        <GlareHover
+                                            background="transparent"
+                                            glareOpacity={0.3}
+                                            glareAngle={-30}
+                                            glareSize={300}
+                                            transitionDuration={800}
+                                            playOnce={false}
+                                            className="flex-1"
+                                        >
+                                            <Button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setOpenEdit(true);
+                                                    setEditData(category);
+                                                }}
+                                                className="bg-muted-foreground hover:bg-muted-foreground w-full"
+                                            >
+                                                Sửa
+                                            </Button>
+                                        </GlareHover>
+                                        <GlareHover
+                                            background="transparent"
+                                            glareOpacity={0.3}
+                                            glareAngle={-30}
+                                            glareSize={300}
+                                            transitionDuration={800}
+                                            playOnce={false}
+                                            className="flex-1"
+                                        >
+                                            <Button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setOpenConfirmBoxDelete(
+                                                        true
+                                                    );
+                                                    setDeleteCategory(category);
+                                                }}
+                                                className="bg-foreground w-full"
+                                            >
+                                                Xóa
+                                            </Button>
+                                        </GlareHover>
+                                    </div>
+                                </CardContent>
+                            </Card>
                         </div>
                     </div>
                 ))}
             </div>
-
-            {loading && <Loading />}
 
             {openUploadCaregory && (
                 <UploadCategoryModel

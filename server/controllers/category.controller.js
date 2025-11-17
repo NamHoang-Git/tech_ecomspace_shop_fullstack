@@ -3,7 +3,7 @@ import CategoryModel from './../models/category.model.js';
 
 export const addCategoryController = async (req, res) => {
     try {
-        const { name, image, description, video } = req.body
+        const { name, image } = req.body
 
         if (!name || !image) {
             return res.status(400).json({
@@ -28,9 +28,7 @@ export const addCategoryController = async (req, res) => {
 
         const addCategory = new CategoryModel({
             name,
-            image,
-            description: description || '',
-            video: video || ''
+            image
         })
 
         const saveCategory = await addCategory.save()
@@ -81,7 +79,7 @@ export const getCategoryController = async (req, res) => {
 
 export const updateCategoryController = async (req, res) => {
     try {
-        const { _id, name, image, description, video } = req.body
+        const { _id, name, image } = req.body
 
         const check = await CategoryModel.findById(_id)
 
@@ -93,15 +91,9 @@ export const updateCategoryController = async (req, res) => {
             })
         }
 
-        const updateData = { name, image };
-
-        // Only update description and video if they are provided
-        if (description !== undefined) updateData.description = description;
-        if (video !== undefined) updateData.video = video;
-
         const update = await CategoryModel.findByIdAndUpdate(
             _id,
-            updateData,
+            { name, image },
             { new: true }
         )
 
