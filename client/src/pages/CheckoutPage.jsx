@@ -748,7 +748,6 @@ const CheckoutPage = () => {
                                                                 address._id
                                                             )
                                                         }
-                                                        className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[1px] text-rose-400 liquid-glass"
                                                     >
                                                         <MdDelete size={15} />
                                                     </button>

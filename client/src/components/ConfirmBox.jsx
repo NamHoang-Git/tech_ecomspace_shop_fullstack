@@ -62,7 +62,7 @@ const ConfirmBox = ({
                                         }
                                     }}
                                     disabled={cancelLoading}
-                                    className="bg-white/40 hover:bg-white/50"
+                                    className="bg-white/40 hover:bg-white/50 text-white"
                                 >
                                     {confirmLoading ? <Loading /> : confirmText}
                                 </Button>
@@ -88,7 +88,7 @@ const ConfirmBox = ({
                                         }
                                     }}
                                     disabled={confirmLoading}
-                                    className="px-6"
+                                    className="px-6 text-white"
                                 >
                                     {cancelLoading ? <Loading /> : cancelText}
                                 </Button>

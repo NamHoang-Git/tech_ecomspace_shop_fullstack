@@ -38,7 +38,7 @@ function App() {
         '/forgot-password',
         '/verification-otp',
         '/reset-password',
-        '/verify-email'
+        '/verify-email',
     ].some((path) => location.pathname.startsWith(path));
     const dashBoardLayout = ['/admin', '/dashboard'].some((path) =>
         location.pathname.startsWith(path)
@@ -121,7 +121,21 @@ function App() {
 
             {dashBoardLayout && (
                 <main className="min-h-screen">
-                    <Outlet />
+                    <div className="fixed inset-0 z-0 pointer-events-none">
+                        <LiquidEther
+                            isViscous={false}
+                            iterationsViscous={8}
+                            iterationsPoisson={8}
+                            resolution={0.3}
+                            autoDemo={true}
+                            autoSpeed={0.2}
+                            autoRampDuration={0.8}
+                            style={{ width: '100%', height: '100%' }}
+                        />
+                    </div>
+                    <div className="relative">
+                        <Outlet />
+                    </div>
                 </main>
             )}
             <Toaster />

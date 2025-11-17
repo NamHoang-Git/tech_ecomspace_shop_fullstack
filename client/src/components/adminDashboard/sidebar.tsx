@@ -30,6 +30,8 @@ const navigation = [
     { name: 'Quản lý đơn hàng', href: '/dashboard/bill', icon: Package },
     { name: 'Báo cáo thống kê', href: '/dashboard/report', icon: BarChart2 },
     { name: 'Mã giảm giá', href: '/dashboard/voucher', icon: TicketPercent },
+    { name: 'Địa chỉ', href: '/dashboard/address', icon: TicketPercent },
+    { name: 'Lịch sử mua hàng', href: '/dashboard/my-orders', icon: TicketPercent },
 ];
 
 const bottomNavigation = [

@@ -9,6 +9,16 @@ import { MdDelete, MdEdit, MdRestore } from 'react-icons/md';
 import AddAddress from '../components/AddAddress';
 import EditAddressDetails from '../components/EditAddressDetails';
 import ConfirmBox from '../components/ConfirmBox';
+import {
+    Card,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import GlareHover from '@/components/GlareHover';
+import { Button } from '@/components/ui/button';
+import { IoMdTrash } from 'react-icons/io';
 
 const Address = () => {
     const addressList = useSelector((state) => state.addresses.addressList);
@@ -77,26 +87,38 @@ const Address = () => {
     };
 
     return (
-        <section className="container mx-auto lg:py-4 py-2 px-1 flex flex-col">
-            <div
-                className="p-3 mb-3 bg-primary-4 rounded-md shadow-md shadow-secondary-100
-            font-bold text-secondary-200 sm:text-lg text-sm uppercase flex justify-between
-            items-center gap-2"
-            >
-                <h2 className="text-ellipsis line-clamp-1">Địa chỉ</h2>
-                <button
-                    onClick={() => setOpenAddress(true)}
-                    className="bg-primary-2 border-[3px] border-secondary-200 text-secondary-200 px-3 hover:opacity-80
-                 py-1 rounded-full text-xs"
-                >
-                    Thêm Mới
-                </button>
-            </div>
+        <section className="container mx-auto grid gap-2 z-10">
+            <Card className="text-white py-6 flex-row justify-between gap-6 border-gray-600 border-2">
+                <CardHeader>
+                    <CardTitle className="text-lg text-lime-300 font-bold uppercase">
+                        Danh mục
+                    </CardTitle>
+                    <CardDescription className="text-white">
+                        Quản lý thông tin danh mục
+                    </CardDescription>
+                </CardHeader>
+
+                <CardFooter>
+                    <GlareHover
+                        background="transparent"
+                        glareOpacity={0.3}
+                        glareAngle={-30}
+                        glareSize={300}
+                        transitionDuration={800}
+                        playOnce={false}
+                    >
+                        <Button
+                            onClick={() => setOpenAddress(true)}
+                            className="bg-transparent text-white hover:bg-transparent"
+                        >
+                            Thêm Mới
+                        </Button>
+                    </GlareHover>
+                </CardFooter>
+            </Card>
 
             {/* Danh sách địa chỉ hiện hoạt */}
-            <div
-                className="p-2 grid gap-4 overflow-auto max-h-[calc(100vh/1.5)]"
-            >
+            <div className="p-2 grid gap-4 overflow-auto max-h-[calc(100vh/1.5)]">
                 {activeAddresses.length === 0 ? (
                     <p className="text-gray-500">
                         Chưa có địa chỉ. Hãy thêm địa chỉ mới
@@ -106,7 +128,7 @@ const Address = () => {
                         <div
                             key={index}
                             className="border border-secondary-100 rounded-md px-2 sm:px-4 py-3 hover:bg-base-100
-                        shadow-md cursor-pointer"
+                        shadow-md cursor-pointer liquid-glass"
                         >
                             <div className="flex justify-between sm:items-start items-end gap-4">
                                 <div className="flex items-baseline gap-2 sm:gap-3">
@@ -119,7 +141,7 @@ const Address = () => {
                                         <p>Số điện thoại: {address?.mobile}</p>
                                     </div>
                                     {address.isDefault && (
-                                        <span className="text-secondary-200 text-[10px] sm:text-lg font-bold">
+                                        <span className="text-rose-500 text-[10px] sm:text-lg font-bold">
                                             (*)
                                         </span>
                                     )}
@@ -131,7 +153,7 @@ const Address = () => {
                                             setOpenEdit(true);
                                             setEditData(address);
                                         }}
-                                        className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[3px] text-primary-200"
+                                        className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[3px] text-white liquid-glass"
                                     >
                                         <MdEdit size={18} />
                                     </button>
@@ -150,7 +172,7 @@ const Address = () => {
                                                             handleDisableAddress,
                                                     });
                                                 }}
-                                                className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[3px] text-secondary-200"
+                                                className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[3px] text-rose-400 liquid-glass"
                                             >
                                                 <MdDelete size={18} />
                                             </button>
@@ -165,7 +187,7 @@ const Address = () => {
                                             setOpenEdit(true);
                                             setEditData(address);
                                         }}
-                                        className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[1px] text-primary-200"
+                                        className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[1px] text-white liquid-glass"
                                     >
                                         <MdEdit size={15} />
                                     </button>
@@ -181,7 +203,7 @@ const Address = () => {
                                                 onConfirm: handleDisableAddress,
                                             });
                                         }}
-                                        className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[1px] text-secondary-200"
+                                        className="shadow-md shadow-secondary-100 rounded hover:opacity-80 p-[1px] text-rose-400 liquid-glass"
                                     >
                                         <MdDelete size={15} />
                                     </button>
@@ -194,15 +216,18 @@ const Address = () => {
 
             {/* Danh sách địa chỉ đã xóa */}
             {deletedAddresses.length > 0 && (
-                <div className="bg-white p-2 grid gap-4 mt-4">
-                    <h3 className="text-lg font-bold shadow-md px-2 py-3 text-secondary-200">
-                        Địa chỉ đã xóa
-                    </h3>
+                <Card className="p-2 grid gap-4 mt-4">
+                    <CardHeader className='p-0'>
+                        <CardTitle className="text-sm text-rose-500 font-bold uppercase flex gap-2">
+                            <IoMdTrash size={18} />
+                            Địa chỉ đã xóa
+                        </CardTitle>
+                    </CardHeader>
                     {deletedAddresses.map((address, index) => (
                         <div
                             key={index}
                             className="border border-secondary-100 rounded-md px-2 sm:px-4 py-3 hover:bg-base-100
-                        shadow-md cursor-pointer opacity-60 flex justify-between"
+                        shadow-md cursor-pointer opacity-60 flex justify-between liquid-glass"
                         >
                             <div className="flex items-baseline gap-2 sm:gap-3">
                                 <div className="flex flex-col gap-1 text-[10px] sm:text-base text-justify">
@@ -231,14 +256,14 @@ const Address = () => {
                                             onConfirm: handleRestoreAddress,
                                         });
                                     }}
-                                    className="bg-blue-200 p-2 text-blue-900 font-bold rounded hover:text-white hover:bg-blue-400"
+                                    className="bg-black/50 border border-blue-600 p-2 text-blue-300 font-bold rounded hover:text-white hover:bg-blue-400/50"
                                 >
                                     <MdRestore size={22} />
                                 </button>
                             </div>
                         </div>
                     ))}
-                </div>
+                </Card>
             )}
 
             {openAddress && <AddAddress close={() => setOpenAddress(false)} />}
