@@ -45,17 +45,34 @@ const UploadCategoryModel = ({ close, fetchData }) => {
             return;
         }
 
-        setLoading(true);
-        const response = await uploadImage(file);
-        const { data: ImageResponse } = response;
-        setLoading(false);
+        const MAX_FILE_SIZE = 10 * 1024 * 1024;
+        if (file.size > MAX_FILE_SIZE) {
+            AxiosToastError({
+                response: {
+                    data: {
+                        message:
+                            'Kích thước file quá lớn. Vui lòng chọn file nhỏ hơn 10MB.',
+                    },
+                },
+            });
+            e.target.value = ''; // Reset input file
+            return;
+        }
 
-        setData((prev) => {
-            return {
+        setLoading(true);
+        try {
+            const response = await uploadImage(file);
+            const { data: ImageResponse } = response;
+
+            setData((prev) => ({
                 ...prev,
-                image: ImageResponse.data.data.url,
-            };
-        });
+                image: ImageResponse?.data?.data?.url || '',
+            }));
+        } catch (error) {
+            AxiosToastError(error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleSubmit = async (e) => {

@@ -5,6 +5,19 @@ import successAlert from '../utils/successAlert';
 import AxiosToastError from '../utils/AxiosToastError';
 import Loading from './Loading';
 import { IoAdd, IoPencil, IoTrash, IoCalendar, IoClose } from 'react-icons/io5';
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from './ui/card';
+import { Button } from './ui/button';
+import { Label } from '@radix-ui/react-label';
+import { Input } from './ui/input';
+import Divider from './Divider';
+import GlareHover from './GlareHover';
+import { Textarea } from './ui/textarea';
 
 // Function to format date to YYYY-MM-DDThh:mm format for datetime-local input
 const formatDateForInput = (dateString) => {
@@ -170,346 +183,427 @@ const EditVoucher = ({
     };
 
     return (
-        <section className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                <div className="p-6">
-                    <div className="border-b border-gray-200 py-3 mb-4">
+        <section
+            className="bg-neutral-800 z-50 bg-opacity-60 fixed top-0 left-0 right-0 bottom-0 overflow-auto
+        flex items-center justify-center px-4"
+        >
+            <Card className="rounded-lg w-full max-w-2xl max-h-[90vh] scrollbarCustom scrollbar-hide overflow-y-auto">
+                <div className="">
+                    <CardHeader className="pt-4">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-lg font-semibold text-secondary-200">
+                            <CardTitle className="text-lg text-lime-300 font-bold uppercase">
                                 Sửa mã giảm giá
-                            </h2>
-                            <button
-                                onClick={onClose}
-                                className="text-secondary-200 hover:text-secondary-100 transition-colors"
+                            </CardTitle>
+                            <Button
+                                onClick={() => onClose()}
+                                className="bg-transparent hover:bg-transparent text-foreground
+                                            hover:text-lime-300 h-12"
                             >
-                                <IoClose size={22} />
-                            </button>
+                                <IoClose />
+                            </Button>
                         </div>
-                    </div>
-                    <form
-                        onSubmit={handleSubmit}
-                        className="space-y-4 font-semibold text-sm"
-                    >
-                        <div className="col-span-2">
-                            <label className="block font-medium text-gray-700 mb-1">
-                                Mã voucher{' '}
-                                <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                name="code"
-                                value={editFormData.code}
-                                onChange={handleOnChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-secondary-200 text-secondary-200
-                                    font-semibold"
-                                required
-                                spellCheck={false}
-                            />
-                        </div>
-
-                        <div className="col-span-2">
-                            <label className="block font-medium text-gray-700 mb-1">
-                                Tên voucher{' '}
-                                <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                name="name"
-                                value={editFormData.name}
-                                onChange={handleOnChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-secondary-200 text-secondary-200
-                                    font-semibold"
-                                required
-                                spellCheck={false}
-                            />
-                        </div>
-
-                        <div className="col-span-2">
-                            <label className="block font-medium text-gray-700 mb-1">
-                                Mô tả
-                            </label>
-                            <textarea
-                                name="description"
-                                value={editFormData.description}
-                                onChange={handleOnChange}
-                                rows="2"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-secondary-200 text-secondary-200
-                                    font-semibold"
-                                spellCheck={false}
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                            <div>
-                                <label className="block font-medium text-gray-700 mb-1">
-                                    Trạng thái
-                                </label>
-                                <label className="relative inline-flex items-center gap-2 cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        className="sr-only peer"
-                                        name="isActive"
-                                        checked={editFormData.isActive}
-                                        onChange={(e) =>
-                                            setEditFormData((prev) => ({
-                                                ...prev,
-                                                isActive: e.target.checked,
-                                            }))
-                                        }
-                                    />
-                                    <div
-                                        className={`w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all ${
-                                            editFormData.isActive
-                                                ? 'bg-green-300'
-                                                : 'bg-red-300'
-                                        }`}
-                                    ></div>
-                                    <span
-                                        className={`px-2 mt-[1.5px] inline-flex leading-5 font-semibold rounded-full ${
-                                            editFormData.isActive
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-red-100 text-red-800'
-                                        }`}
-                                    >
-                                        {editFormData.isActive
-                                            ? 'Đang hoạt động'
-                                            : 'Đã tắt'}
-                                    </span>
-                                </label>
-                            </div>
-
-                            <div>
-                                <label className="block font-medium text-gray-700 mb-1">
-                                    Loại giảm giá{' '}
+                    </CardHeader>
+                    <form onSubmit={handleSubmit}>
+                        <CardContent className="py-4 space-y-5 text-sm">
+                            <div className="space-y-2">
+                                <Label>
+                                    Mã voucher{' '}
                                     <span className="text-red-500">*</span>
-                                </label>
-                                <select
-                                    name="discountType"
-                                    value={editFormData.discountType}
+                                </Label>
+                                <Input
+                                    type="text"
+                                    name="code"
+                                    value={editFormData.code}
                                     onChange={handleOnChange}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-secondary-200 text-secondary-200
-                                    font-semibold"
+                                    className="text-sm h-12"
                                     required
-                                >
-                                    <option value="percentage">
-                                        Phần trăm (%)
-                                    </option>
-                                    <option value="fixed">
-                                        Số tiền cố định (VND)
-                                    </option>
-                                    <option value="free_shipping">
-                                        Miễn phí vận chuyển
-                                    </option>
-                                </select>
+                                    spellCheck={false}
+                                />
                             </div>
 
-                            {editFormData.discountType !== 'free_shipping' && (
-                                <div>
-                                    <label className="block font-medium text-gray-700 mb-1">
-                                        {editFormData.discountType === 'percentage'
-                                            ? 'Phần trăm giảm giá'
-                                            : 'Số tiền giảm giá'}{' '}
-                                        <span className="text-red-500">*</span>
-                                    </label>
-                                    <div className="relative">
-                                        <input
-                                            type="number"
-                                            name="discountValue"
-                                            value={editFormData.discountValue}
-                                            onChange={handleOnChange}
-                                            min={
-                                                editFormData.discountType ===
-                                                'percentage'
-                                                    ? '0.01'
-                                                    : '1'
-                                            }
-                                            max={
-                                                editFormData.discountType ===
-                                                'percentage'
-                                                    ? '100'
-                                                    : ''
-                                            }
-                                            step={
-                                                editFormData.discountType ===
-                                                'percentage'
-                                                    ? '0.01'
-                                                    : '1'
-                                            }
-                                            className="no-spinner w-full pl-3 pr-8 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-secondary-200 text-secondary-200
-                                            font-semibold"
-                                            required
-                                            placeholder={
-                                                editFormData.discountType ===
-                                                'percentage'
-                                                    ? '0-100%'
-                                                    : 'Enter amount'
+                            <div className="space-y-2">
+                                <Label>
+                                    Tên voucher{' '}
+                                    <span className="text-red-500">*</span>
+                                </Label>
+                                <Input
+                                    type="text"
+                                    name="name"
+                                    value={editFormData.name}
+                                    onChange={handleOnChange}
+                                    className="text-sm h-12"
+                                    required
+                                    spellCheck={false}
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>Mô tả</Label>
+                                <Textarea
+                                    name="description"
+                                    value={editFormData.description}
+                                    onChange={handleOnChange}
+                                    rows="2"
+                                    className="text-sm"
+                                    spellCheck={false}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                <div className="grid">
+                                    <Label>Trạng thái</Label>
+                                    <Label className="relative inline-flex items-center gap-2 cursor-pointer">
+                                        <Input
+                                            type="checkbox"
+                                            className="sr-only peer"
+                                            name="isActive"
+                                            checked={editFormData.isActive}
+                                            onChange={(e) =>
+                                                setEditFormData((prev) => ({
+                                                    ...prev,
+                                                    isActive: e.target.checked,
+                                                }))
                                             }
                                         />
-                                        <span className="absolute right-3 top-2 text-gray-500">
+                                        <div
+                                            className={`w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[6px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all ${
+                                                editFormData.isActive
+                                                    ? 'bg-green-300'
+                                                    : 'bg-red-300'
+                                            }`}
+                                        ></div>
+                                        <span
+                                            className={`px-2 inline-flex leading-5 font-semibold rounded-full ${
+                                                editFormData.isActive
+                                                    ? 'bg-white/20 text-lime-300 border border-lime-200'
+                                                    : 'bg-white/20 text-rose-300 border border-rose-200'
+                                            }`}
+                                        >
+                                            {editFormData.isActive
+                                                ? 'Đang hoạt động'
+                                                : 'Đã tắt'}
+                                        </span>
+                                    </Label>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label>
+                                        Loại giảm giá{' '}
+                                        <span className="text-red-500">*</span>
+                                    </Label>
+                                    <select
+                                        name="discountType"
+                                        value={editFormData.discountType}
+                                        onChange={handleOnChange}
+                                        className="text-sm h-9 w-full border-gray-700 border bg-neutral-950
+                                    px-3 py-1 rounded-md"
+                                        required
+                                    >
+                                        <option value="percentage">
+                                            Phần trăm (%)
+                                        </option>
+                                        <option value="fixed">
+                                            Số tiền cố định (VND)
+                                        </option>
+                                        <option value="free_shipping">
+                                            Miễn phí vận chuyển
+                                        </option>
+                                    </select>
+                                </div>
+
+                                {editFormData.discountType !==
+                                    'free_shipping' && (
+                                    <div className="space-y-2">
+                                        <Label>
                                             {editFormData.discountType ===
                                             'percentage'
-                                                ? '%'
-                                                : '₫'}
-                                        </span>
+                                                ? 'Phần trăm giảm giá'
+                                                : 'Số tiền giảm giá'}{' '}
+                                            <span className="text-red-500">
+                                                *
+                                            </span>
+                                        </Label>
+                                        <div className="relative">
+                                            <Input
+                                                type="number"
+                                                name="discountValue"
+                                                value={
+                                                    editFormData.discountValue
+                                                }
+                                                onChange={handleOnChange}
+                                                min={
+                                                    editFormData.discountType ===
+                                                    'percentage'
+                                                        ? '0.01'
+                                                        : '1'
+                                                }
+                                                max={
+                                                    editFormData.discountType ===
+                                                    'percentage'
+                                                        ? '100'
+                                                        : ''
+                                                }
+                                                step={
+                                                    editFormData.discountType ===
+                                                    'percentage'
+                                                        ? '0.01'
+                                                        : '1'
+                                                }
+                                                className="no-spinner w-full pl-3 pr-8 text-sm h-10"
+                                                required
+                                                placeholder={
+                                                    editFormData.discountType ===
+                                                    'percentage'
+                                                        ? '0-100%'
+                                                        : 'Enter amount'
+                                                }
+                                            />
+                                            <span className="absolute right-3 top-2">
+                                                {editFormData.discountType ===
+                                                'percentage'
+                                                    ? '%'
+                                                    : '₫'}
+                                            </span>
+                                        </div>
+                                        {editFormData.discountType ===
+                                            'percentage' && (
+                                            <p className="mt-1 text-xs">
+                                                Nhập giá trị từ 0,01% đến 100%
+                                            </p>
+                                        )}
+                                        {editFormData.discountType ===
+                                            'fixed' && (
+                                            <p className="mt-1 text-xs">
+                                                Nhập giá trị lớn hơn 0
+                                            </p>
+                                        )}
                                     </div>
-                                    {editFormData.discountType === 'percentage' && (
-                                        <p className="mt-1 text-xs text-gray-500">
-                                            Nhập giá trị từ 0,01% đến 100%
-                                        </p>
-                                    )}
-                                    {editFormData.discountType === 'fixed' && (
-                                        <p className="mt-1 text-xs text-gray-500">
-                                            Nhập giá trị lớn hơn 0
-                                        </p>
-                                    )}
-                                </div>
-                            )}
+                                )}
 
-                            {editFormData.discountType === 'percentage' && (
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Giảm giá tối đa (VND)
-                                    </label>
+                                {editFormData.discountType === 'percentage' && (
+                                    <div className="space-y-2">
+                                        <Label>Giảm giá tối đa (VND)</Label>
+                                        <div className="relative">
+                                            <Input
+                                                type="number"
+                                                name="maxDiscount"
+                                                value={
+                                                    editFormData.maxDiscount ||
+                                                    ''
+                                                }
+                                                onChange={handleOnChange}
+                                                placeholder="VND "
+                                                min="0"
+                                                step="1"
+                                                className="no-spinner w-full pl-3 pr-8 text-sm h-10"
+                                            />
+                                            <span className="absolute right-3 top-2">
+                                                ₫
+                                            </span>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="space-y-2">
+                                    <Label>Giá trị đơn hàng tối thiểu</Label>
                                     <div className="relative">
-                                        <input
+                                        <Input
                                             type="number"
-                                            name="maxDiscount"
-                                            value={editFormData.maxDiscount || ''}
+                                            name="minOrderValue"
+                                            value={editFormData.minOrderValue}
                                             onChange={handleOnChange}
-                                            placeholder="VND "
                                             min="0"
-                                            step="1"
-                                            className="no-spinner w-full pl-3 pr-8 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-secondary-200 text-secondary-200
-                                            font-semibold"
+                                            step="0.01"
+                                            placeholder="VND"
+                                            className="no-spinner w-full pl-3 pr-8 text-sm h-10"
                                         />
-                                        <span className="absolute right-3 top-2 text-gray-500">
+                                        <span className="absolute right-3 top-2">
                                             ₫
                                         </span>
                                     </div>
+                                    <p className="mt-1 text-xs">
+                                        Giá trị đơn hàng tối thiểu để áp dụng mã
+                                        giảm giá (0 cho không có giá trị tối
+                                        thiểu)
+                                    </p>
                                 </div>
-                            )}
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Giá trị đơn hàng tối thiểu
-                                </label>
-                                <div className="relative">
-                                    <input
+                                <div className="space-y-2">
+                                    <Label>Số lượng sử dụng</Label>
+                                    <Input
                                         type="number"
-                                        name="minOrderValue"
-                                        value={editFormData.minOrderValue}
+                                        name="usageLimit"
+                                        value={editFormData.usageLimit || ''}
                                         onChange={handleOnChange}
-                                        min="0"
-                                        step="0.01"
-                                        placeholder="VND"
-                                        className="no-spinner w-full pl-3 pr-8 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-secondary-200 text-secondary-200
-                                        font-semibold"
+                                        min="1"
+                                        step="1"
+                                        placeholder="Không giới hạn nếu để trống"
+                                        className="no-spinner w-full pl-3 pr-8 text-sm h-10"
                                     />
-                                    <span className="absolute right-3 top-2 text-gray-500">
-                                        ₫
-                                    </span>
+                                    <p className="mt-1 text-xs">
+                                        Số lần mã giảm giá có thể được sử dụng
+                                        (0 cho không giới hạn)
+                                    </p>
                                 </div>
-                                <p className="mt-1 text-xs text-gray-500">
-                                    Giá trị đơn hàng tối thiểu để áp dụng mã
-                                    giảm giá (0 cho không có giá trị tối thiểu)
-                                </p>
-                            </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Số lượng sử dụng
-                                </label>
+                                <div className="space-y-2">
+                                    <Label>
+                                        Ngày bắt đầu{' '}
+                                        <span className="text-red-500">*</span>
+                                    </Label>
+                                    <div className="relative">
+                                        <input
+                                            type="datetime-local"
+                                            name="startDate"
+                                            value={editFormData.startDate}
+                                            onChange={handleOnChange}
+                                            className="text-sm h-10 w-full border-gray-700 border bg-neutral-950
+                                                                    px-3 py-1 rounded-md pr-16 appearance-none"
+                                            required
+                                        />
+                                        <div className="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none">
+                                            <svg
+                                                className="w-5 h-5 text-gray-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
+                                            <svg
+                                                className="w-5 h-5 text-gray-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label>
+                                        Ngày kết thúc{' '}
+                                        <span className="text-red-500">*</span>
+                                    </Label>
+                                    <div className="relative">
+                                        <input
+                                            type="datetime-local"
+                                            name="endDate"
+                                            value={editFormData.endDate}
+                                            onChange={handleOnChange}
+                                            min={editFormData.startDate}
+                                            className="text-sm h-10 w-full border-gray-700 border bg-neutral-950
+                                                                        px-3 py-1 rounded-md pr-8 appearance-none"
+                                            required
+                                        />
+                                        <div className="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none">
+                                            <svg
+                                                className="w-5 h-5 text-gray-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
+                                            <svg
+                                                className="w-5 h-5 text-gray-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center">
                                 <input
-                                    type="number"
-                                    name="usageLimit"
-                                    value={editFormData.usageLimit || ''}
+                                    type="checkbox"
+                                    id="applyForAllProducts"
+                                    name="applyForAllProducts"
+                                    checked={editFormData.applyForAllProducts}
                                     onChange={handleOnChange}
-                                    min="1"
-                                    step="1"
-                                    placeholder="Không giới hạn nếu để trống"
-                                    className="no-spinner w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-secondary-200 text-secondary-200
-                                    font-semibold"
-                                />
-                                <p className="mt-1 text-xs text-gray-500">
-                                    Số lần mã giảm giá có thể được sử dụng (0
-                                    cho không giới hạn)
-                                </p>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Ngày bắt đầu{' '}
-                                    <span className="text-red-500">*</span>
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type="datetime-local"
-                                        name="startDate"
-                                        value={editFormData.startDate}
-                                        onChange={handleOnChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-secondary-200 text-secondary-200
-                                        font-semibold"
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Ngày kết thúc{' '}
-                                    <span className="text-red-500">*</span>
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type="datetime-local"
-                                        name="endDate"
-                                        value={editFormData.endDate}
-                                        onChange={handleOnChange}
-                                        min={editFormData.startDate}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-secondary-200 text-secondary-200
-                                        font-semibold"
-                                        required
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex items-center">
-                            <input
-                                type="checkbox"
-                                id="applyForAllProducts"
-                                name="applyForAllProducts"
-                                checked={editFormData.applyForAllProducts}
-                                onChange={handleOnChange}
-                                className="h-4 w-4 focus:ring-secondary-200 text-secondary-200
+                                    className="h-4 w-4 focus:ring-secondary-200 text-secondary-200
                                     font-semibold border-gray-300 rounded mb-[3px]"
-                            />
-                            <label
-                                htmlFor="applyForAllProducts"
-                                className="ml-2 block text-sm text-gray-700"
-                            >
-                                Áp dụng cho tất cả sản phẩm
-                            </label>
-                        </div>
+                                />
+                                <label
+                                    htmlFor="applyForAllProducts"
+                                    className="ml-2 block text-sm"
+                                >
+                                    Áp dụng cho tất cả sản phẩm
+                                </label>
+                            </div>
 
-                        <div className="flex justify-end space-x-3 pt-4 border-t mt-6 font-semibold sm:text-sm text-xs">
-                            <button
-                                type="button"
-                                onClick={() => onClose()}
-                                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                            >
-                                Hủy
-                            </button>
-                            <button
-                                type="submit"
-                                className="px-4 py-2 border-[2px] border-secondary-200 rounded-md shadow-sm text-secondary-200 bg-primary-100 hover:opacity-80
-                            focus:outline-none focus:ring-1 focus:ring-offset-2 focus:ring-secondary-200"
-                            >
-                                {loading ? <Loading /> : 'Cập nhật'}
-                            </button>
-                        </div>
+                            <Divider />
+                            {/* Actions */}
+                            <CardFooter className="px-0 text-sm flex items-center justify-end gap-3">
+                                <GlareHover
+                                    background="transparent"
+                                    glareOpacity={0.3}
+                                    glareAngle={-30}
+                                    glareSize={300}
+                                    transitionDuration={800}
+                                    playOnce={false}
+                                >
+                                    <Button
+                                        type="button"
+                                        onClick={() => onClose()}
+                                        className="bg-foreground"
+                                    >
+                                        Hủy
+                                    </Button>
+                                </GlareHover>
+                                <GlareHover
+                                    background="transparent"
+                                    glareOpacity={0.3}
+                                    glareAngle={-30}
+                                    glareSize={300}
+                                    transitionDuration={800}
+                                    playOnce={false}
+                                >
+                                    <Button
+                                        type="submit"
+                                        className="bg-foreground"
+                                    >
+                                        {loading ? <Loading /> : 'Cập Nhật'}
+                                    </Button>
+                                </GlareHover>
+                            </CardFooter>
+                        </CardContent>
                     </form>
                 </div>
-            </div>
+            </Card>
         </section>
     );
 };

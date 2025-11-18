@@ -208,9 +208,7 @@ const UploadProductModel = ({ close, fetchData }) => {
                         </Button>
                     </div>
                 </CardHeader>
-                <form
-                    onSubmit={handleSubmit}
-                >
+                <form onSubmit={handleSubmit}>
                     <CardContent className="py-4 space-y-5 text-sm">
                         {/* Product Name */}
                         <div className="space-y-2">
@@ -623,7 +621,19 @@ const UploadProductModel = ({ close, fetchData }) => {
                                 transitionDuration={800}
                                 playOnce={false}
                             >
-                                <Button type="submit" className="bg-foreground">
+                                <Button
+                                    disabled={
+                                        !data.name ||
+                                        !data.image[0] ||
+                                        !data.category[0] ||
+                                        !data.unit ||
+                                        !data.stock ||
+                                        !data.price ||
+                                        loading
+                                    }
+                                    type="submit"
+                                    className="bg-foreground"
+                                >
                                     {loading ? <Loading /> : 'Thêm Mới'}
                                 </Button>
                             </GlareHover>

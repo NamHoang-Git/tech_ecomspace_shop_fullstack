@@ -612,7 +612,19 @@ const EditProductAdmin = ({ close, data: propsData, fetchProduct }) => {
                                 transitionDuration={800}
                                 playOnce={false}
                             >
-                                <Button type="submit" className="bg-foreground">
+                                <Button
+                                    disabled={
+                                        !data.name ||
+                                        !data.image[0] ||
+                                        !data.category[0] ||
+                                        !data.unit ||
+                                        !data.stock ||
+                                        !data.price ||
+                                        loading
+                                    }
+                                    type="submit"
+                                    className="bg-foreground"
+                                >
                                     {loading ? <Loading /> : 'Cập Nhật'}
                                 </Button>
                             </GlareHover>

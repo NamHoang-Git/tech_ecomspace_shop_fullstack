@@ -38,7 +38,7 @@ export default function AdminDashboard() {
                         <Sidebar />
                         <div className="flex-1 overflow-auto">
                             <TopNav />
-                            <div className="container mx-auto p-6 max-w-7xl">
+                            <div className="container mx-auto p-6">
                                 <main className="w-full relative">
                                     <Outlet />
                                 </main>
