@@ -39,6 +39,14 @@ import {
     Legend,
 } from 'chart.js';
 import ViewImage from '../components/ViewImage';
+import { Input } from '@/components/ui/input';
+import {
+    Card,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import { Label } from '@radix-ui/react-label';
 
 // Register ChartJS components
 ChartJS.register(
@@ -55,7 +63,6 @@ ChartJS.register(
 
 const statusOptions = [
     { value: '', label: 'Tất cả' },
-    { value: 'Thanh toán khi giao hàng', label: 'Thanh toán khi giao hàng' },
     { value: 'Đang chờ thanh toán', label: 'Đang chờ thanh toán' },
     { value: 'Đã thanh toán', label: 'Đã thanh toán' },
 ];
@@ -78,6 +85,7 @@ const ReportPage = () => {
         startDate: '',
         endDate: '',
     });
+    const [dateError, setDateError] = useState('');
 
     const [sortConfig, setSortConfig] = useState({
         key: 'createdAt',
@@ -158,14 +166,38 @@ const ReportPage = () => {
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
+
         if (name === 'dateRange') {
             setDateRange(value);
-        } else {
-            setFilters((prev) => ({
-                ...prev,
-                [name]: value,
-            }));
+            return;
         }
+
+        // Tạo đối tượng filters mới để kiểm tra
+        const newFilters = {
+            ...filters,
+            [name]: value,
+        };
+
+        // Kiểm tra nếu cả hai ngày đều có giá trị
+        if (name === 'startDate' || name === 'endDate') {
+            if (newFilters.startDate && newFilters.endDate) {
+                const startDate = new Date(newFilters.startDate);
+                const endDate = new Date(newFilters.endDate);
+
+                if (startDate > endDate) {
+                    setDateError(
+                        'Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc'
+                    );
+                    return; // Không cập nhật filters nếu ngày không hợp lệ
+                }
+            }
+        }
+
+        // Nếu kiểm tra hợp lệ, xóa thông báo lỗi và cập nhật filters
+        setDateError('');
+        setFilters(newFilters);
+        // Reset về trang đầu tiên khi thay đổi bộ lọc
+        setPagination((prev) => ({ ...prev, currentPage: 1 }));
     };
 
     const handleSort = (key) => {
@@ -183,25 +215,37 @@ const ReportPage = () => {
             const searchLower = filters.search.trim().toLowerCase();
 
             result = result.filter((order) => {
-                // Get all searchable fields
                 const searchFields = [
                     order.orderId,
                     order.userId?.name,
                     order.userId?.email,
+                    // Tìm kiếm số điện thoại ở cả hai vị trí
                     order.userId?.mobile,
-                    order.product_details?.name,
+                    order.delivery_address?.mobile,
+                    // Tìm kiếm số điện thoại không có khoảng trắng
+                    order.userId?.mobile?.replace(/\s+/g, ''),
+                    order.delivery_address?.mobile?.replace(/\s+/g, ''),
                     order.payment_status,
+                    // Tìm kiếm thông tin địa chỉ
                     order.delivery_address?.city,
                     order.delivery_address?.district,
                     order.delivery_address?.ward,
                     order.delivery_address?.address,
-                ]
-                    .filter(Boolean)
-                    .map((field) => field?.toLowerCase() || '');
+                    // Tìm kiếm thông tin sản phẩm
+                    ...(order.products?.flatMap((product) => [
+                        product.name,
+                        product.sku,
+                        product.brand,
+                        product.category?.name,
+                    ]) || []),
+                    // Fallback cho product_details nếu không có mảng products
+                    order.product_details?.name,
+                    order.product_details?.brand,
+                    order.product_details?.category,
+                ].filter(Boolean);
 
-                // Check if any field includes the search term
-                return searchFields.some(
-                    (field) => field && field.includes(searchLower)
+                return searchFields.some((field) =>
+                    String(field).toLowerCase().includes(searchLower)
                 );
             });
         }
@@ -273,22 +317,22 @@ const ReportPage = () => {
     };
 
     const PaginationControls = () => (
-        <div className="flex items-center sm:flex-row flex-col justify-between mt-4 gap-3">
+        <div className="flex items-center sm:flex-row flex-col justify-between mt-4 gap-3 text-white">
             <div className="flex items-center sm:flex-row flex-col space-x-2 gap-2">
-                <span className="text-sm text-gray-700 text-center">
+                <span className="text-sm text-center">
                     Hiển thị{' '}
-                    <span className="font-semibold text-secondary-200">
+                    <span className="font-semibold text-lime-300">
                         {indexOfFirstOrder + 1}
                     </span>{' '}
                     đến{' '}
-                    <span className="font-semibold text-secondary-200">
+                    <span className="font-semibold text-lime-300">
                         {Math.min(
                             indexOfLastOrder,
                             filteredAndSortedOrders.length
                         )}
                     </span>{' '}
                     trong tổng số{' '}
-                    <span className="font-semibold text-secondary-200">
+                    <span className="font-semibold text-lime-300">
                         {filteredAndSortedOrders.length}
                     </span>{' '}
                     đơn hàng
@@ -297,8 +341,8 @@ const ReportPage = () => {
                 <select
                     value={pagination.pageSize}
                     onChange={handlePageSizeChange}
-                    className="text-sm h-8 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1
-                focus:ring-secondary-200 px-2"
+                    className="text-sm h-8 border-gray-700 border bg-neutral-950
+                px-3 py-1 rounded-md"
                 >
                     {[5, 10, 25, 50].map((size) => (
                         <option key={size} value={size}>
@@ -313,12 +357,16 @@ const ReportPage = () => {
                     onClick={() => paginate(1)}
                     disabled={pagination.currentPage === 1}
                     className="px-3 py-1 rounded-md border border-gray-300 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                ></button>
+                >
+                    ‹‹
+                </button>
                 <button
                     onClick={() => paginate(pagination.currentPage - 1)}
                     disabled={pagination.currentPage === 1}
                     className="px-3 py-1 rounded-md border border-gray-300 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                ></button>
+                >
+                    ‹
+                </button>
 
                 {Array.from({ length: totalPages }).map((_, i) => {
                     const pageNum = i + 1;
@@ -354,8 +402,8 @@ const ReportPage = () => {
                                 onClick={() => paginate(pageNum)}
                                 className={`px-3 py-1 rounded-md border text-sm font-medium ${
                                     pagination.currentPage === pageNum
-                                        ? 'bg-secondary-200 text-white border-secondary-200'
-                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                        ? 'bg-gray-700 text-white border-lime-300'
+                                        : 'bg-white text-black border-gray-300 hover:bg-gray-50'
                                 }`}
                             >
                                 {pageNum}
@@ -415,18 +463,20 @@ const ReportPage = () => {
         );
     };
 
-    const handleResetFilters = () => {
+    const resetFilters = () => {
         setFilters({
             search: '',
             status: '',
             startDate: '',
             endDate: '',
         });
-        setDateRange('');
-        setPagination({
-            currentPage: 1,
-            pageSize: 10,
-        });
+        setDateRange('7days');
+        setDateError('');
+        setPagination((prev) => ({ ...prev, currentPage: 1 }));
+    };
+
+    const handleResetFilters = () => {
+        resetFilters();
     };
 
     const renderSortIcon = (key) => {
@@ -543,6 +593,12 @@ const ReportPage = () => {
         plugins: {
             legend: {
                 position: 'top',
+                labels: {
+                    color: '#FFFFFF',
+                    font: {
+                        size: 12,
+                    },
+                },
             },
             tooltip: {
                 callbacks: {
@@ -559,10 +615,23 @@ const ReportPage = () => {
                         }
                         return label;
                     },
+                    titleColor: '#FFFFFF',
+                    bodyColor: '#E5E7EB',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderColor: '#4B5563',
+                    borderWidth: 1,
                 },
             },
         },
         scales: {
+            x: {
+                ticks: {
+                    color: '#FFFFFF',
+                },
+                grid: {
+                    color: 'rgba(75, 85, 99, 0.5)',
+                },
+            },
             y: {
                 type: 'linear',
                 display: true,
@@ -570,6 +639,13 @@ const ReportPage = () => {
                 title: {
                     display: true,
                     text: 'Doanh thu (VND)',
+                    color: '#FFFFFF',
+                },
+                ticks: {
+                    color: '#FFFFFF',
+                },
+                grid: {
+                    color: 'rgba(75, 85, 99, 0.5)',
                 },
             },
             y1: {
@@ -578,10 +654,15 @@ const ReportPage = () => {
                 position: 'right',
                 grid: {
                     drawOnChartArea: false,
+                    color: 'rgba(75, 85, 99, 0.5)',
                 },
                 title: {
                     display: true,
                     text: 'Số đơn hàng',
+                    color: '#FFFFFF',
+                },
+                ticks: {
+                    color: '#FFFFFF',
                 },
             },
         },
@@ -591,11 +672,19 @@ const ReportPage = () => {
         switch (chartType) {
             case 'bar':
                 return (
-                    <Bar data={chartData.salesData} options={chartOptions} />
+                    <Bar
+                        data={chartData.salesData}
+                        options={chartOptions}
+                        className="text-white"
+                    />
                 );
             case 'line':
                 return (
-                    <Line data={chartData.salesData} options={chartOptions} />
+                    <Line
+                        data={chartData.salesData}
+                        options={chartOptions}
+                        className="text-white"
+                    />
                 );
             case 'pie':
                 return (
@@ -607,6 +696,12 @@ const ReportPage = () => {
                                 plugins: {
                                     legend: {
                                         position: 'bottom',
+                                        labels: {
+                                            color: '#FFFFFF', // Màu trắng cho chú thích
+                                            font: {
+                                                size: 12,
+                                            },
+                                        },
                                     },
                                     tooltip: {
                                         callbacks: {
@@ -625,6 +720,11 @@ const ReportPage = () => {
                                                 return `${label}: ${value} đơn (${percentage}%)`;
                                             },
                                         },
+                                        titleColor: '#FFFFFF',
+                                        bodyColor: '#E5E7EB',
+                                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                        borderColor: '#4B5563',
+                                        borderWidth: 1,
                                     },
                                 },
                             }}
@@ -637,75 +737,60 @@ const ReportPage = () => {
     };
 
     return (
-        <div className="container mx-auto lg:p-4 py-2 px-1 flex flex-col gap-4">
-            <div className="p-4 mb-2 bg-primary-4 rounded-md shadow-md shadow-secondary-100 font-bold text-secondary-200 sm:text-lg text-sm uppercase flex justify-between items-center gap-2">
-                <h2 className="text-ellipsis line-clamp-1">Báo cáo thống kê</h2>
-            </div>
+        <div className="container mx-auto grid gap-2 z-10">
+            <Card className="py-6 flex-row justify-between gap-6 border-card-foreground">
+                <CardHeader>
+                    <CardTitle className="text-lg text-lime-300 font-bold uppercase">
+                        Báo cáo thống kê
+                    </CardTitle>
+                    <CardDescription>Báo cáo thống kê hệ thống</CardDescription>
+                </CardHeader>
+            </Card>
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
-                <div
-                    className="bg-primary-5 rounded-lg shadow-md shadow-secondary-100 p-3
-                flex items-center gap-4"
-                >
-                    <div className="p-3 rounded-full border-[3px] border-secondary-200 bg-rose-100 text-secondary-200">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 py-2">
+                <div className="liquid-glass rounded-lg shadow-md p-3 flex items-center gap-4">
+                    <div className="p-3 rounded-full border-[3px] liquid-glass text-lime-200">
                         <BsCoin className="h-6 w-6" />
                     </div>
-                    <div className="mt-1">
-                        <p className="lg:text-[15px] text-xs text-secondary-200 font-bold">
-                            Tổng doanh thu
-                        </p>
-                        <p className="lg:text-xl text-base font-bold text-secondary-200">
+                    <div className="mt-1 space-y-1">
+                        <p className="text-xs font-bold">Tổng doanh thu</p>
+                        <p className="text-xl font-bold">
                             {DisplayPriceInVND(totalRevenue)}
                         </p>
                     </div>
                 </div>
-                <div
-                    className="bg-primary-5 rounded-lg shadow-md shadow-secondary-100 p-3
-                flex items-center gap-4"
-                >
-                    <div className="p-3 rounded-full border-[3px] border-blue-600 bg-blue-100 text-blue-600">
+                <div className="liquid-glass rounded-lg shadow-md p-3 flex items-center gap-4">
+                    <div className="p-3 rounded-full border-[3px] liquid-glass text-lime-200">
                         <FaCoins className="h-6 w-6" />
                     </div>
-                    <div className="mt-1">
-                        <p className="lg:text-[15px] text-xs text-secondary-200 font-bold">
+                    <div className="mt-1 space-y-1">
+                        <p className="text-xs font-bold">
                             Giá trị đơn hàng trung bình
                         </p>
-                        <p className="lg:text-xl text-base font-bold text-secondary-200">
+                        <p className="text-xl font-bold">
                             {orderCount > 0
                                 ? DisplayPriceInVND(totalRevenue / orderCount)
                                 : '0'}
                         </p>
                     </div>
                 </div>
-                <div
-                    className="bg-primary-5 rounded-lg shadow-md shadow-secondary-100 p-3
-                flex items-center gap-4"
-                >
-                    <div className="p-3 rounded-full border-[3px] border-white bg-secondary-200 text-white">
+                <div className="liquid-glass rounded-lg shadow-md p-3 flex items-center gap-4">
+                    <div className="p-3 rounded-full border-[3px] liquid-glass text-lime-200">
                         <FaFileInvoice className="h-6 w-6" />
                     </div>
-                    <div className="mt-1">
-                        <p className="lg:text-[15px] text-xs text-secondary-200 font-bold">
-                            Tổng số đơn hàng
-                        </p>
-                        <p className="lg:text-xl text-base font-bold text-secondary-200">
-                            {orderCount}
-                        </p>
+                    <div className="mt-1 space-y-1">
+                        <p className="text-xs font-bold">Tổng số đơn hàng</p>
+                        <p className="text-xl font-bold">{orderCount}</p>
                     </div>
                 </div>
-                <div
-                    className="bg-primary-5 rounded-lg shadow-md shadow-secondary-100 p-3
-                flex items-center gap-4"
-                >
-                    <div className="p-3 rounded-full border-[3px] border-yellow-600 bg-yellow-100 text-yellow-600">
+                <div className="liquid-glass rounded-lg shadow-md p-3 flex items-center gap-4">
+                    <div className="p-3 rounded-full border-[3px] liquid-glass text-lime-200">
                         <FaFilter className="h-6 w-6" />
                     </div>
-                    <div className="mt-1">
-                        <p className="lg:text-[15px] text-xs text-secondary-200 font-bold">
-                            Đang hiển thị
-                        </p>
-                        <p className="lg:text-xl text-base font-bold text-secondary-200">
+                    <div className="mt-1 space-y-1">
+                        <p className="text-xs font-bold">Đang hiển thị</p>
+                        <p className="text-xl font-bold">
                             {Math.min(
                                 indexOfFirstOrder + 1,
                                 filteredAndSortedOrders.length
@@ -722,9 +807,9 @@ const ReportPage = () => {
             </div>
 
             {/* Chart Type Selector */}
-            <div className="bg-white p-4 rounded-lg border-2 border-secondary-200 shadow mb-3">
+            <Card className="p-4 rounded-lg border-2 border-gray-700 text-white shadow mb-3">
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-base sm:text-lg font-bold text-secondary-200">
+                    <h2 className="text-base sm:text-lg font-bold text-lime-300 uppercase">
                         Biểu đồ thống kê
                     </h2>
                     <div className="flex space-x-2">
@@ -732,8 +817,8 @@ const ReportPage = () => {
                             onClick={() => setChartType('line')}
                             className={`p-2 rounded-md ${
                                 chartType === 'line'
-                                    ? 'bg-gray-200 text-secondary-200'
-                                    : 'bg-gray-100'
+                                    ? 'bg-black/50 border border-lime-300'
+                                    : 'bg-gray-100 text-black'
                             }`}
                             title="Biểu đồ đường"
                         >
@@ -743,8 +828,8 @@ const ReportPage = () => {
                             onClick={() => setChartType('bar')}
                             className={`p-2 rounded-md ${
                                 chartType === 'bar'
-                                    ? 'bg-gray-200 text-secondary-200'
-                                    : 'bg-gray-100'
+                                    ? 'bg-black/50 border border-lime-300'
+                                    : 'bg-gray-100 text-black'
                             }`}
                             title="Biểu đồ cột"
                         >
@@ -754,8 +839,8 @@ const ReportPage = () => {
                             onClick={() => setChartType('pie')}
                             className={`p-2 rounded-md ${
                                 chartType === 'pie'
-                                    ? 'bg-gray-200 text-secondary-200'
-                                    : 'bg-gray-100'
+                                    ? 'bg-black/50 border border-lime-300'
+                                    : 'bg-gray-100 text-black'
                             }`}
                             title="Biểu đồ trạng thái đơn hàng"
                         >
@@ -767,24 +852,25 @@ const ReportPage = () => {
                     {filteredAndSortedOrders.length > 0 ? (
                         renderChart()
                     ) : (
-                        <div className="flex items-center justify-center h-full text-gray-500">
+                        <div className="flex items-center justify-center h-full text-lime-300">
                             Không có dữ liệu để hiển thị biểu đồ
                         </div>
                     )}
                 </div>
-            </div>
+            </Card>
 
             {/* Top Products Chart */}
             {filteredAndSortedOrders.length > 0 && (
-                <div className="bg-white p-4 rounded-lg border-2 border-secondary-200 shadow mb-3">
-                    <h2 className="text-base sm:text-lg font-bold mb-4 text-secondary-200">
+                <Card className="p-4 rounded-lg border-2 border-gray-700 text-white shadow mb-3">
+                    <h2 className="text-base sm:text-lg font-bold text-lime-300 uppercase">
                         Top sản phẩm bán chạy
                     </h2>
-                    <div className="">
+                    <div className="text-white">
                         <Bar
                             data={chartData.productsData}
                             options={{
                                 responsive: true,
+                                maintainAspectRatio: false,
                                 plugins: {
                                     legend: {
                                         display: false,
@@ -797,47 +883,57 @@ const ReportPage = () => {
                                                 )}`;
                                             },
                                         },
+                                        titleColor: '#FFFFFF',
+                                        bodyColor: '#E5E7EB',
+                                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                        borderColor: '#4B5563',
+                                        borderWidth: 1,
                                     },
                                 },
                                 scales: {
+                                    x: {
+                                        ticks: {
+                                            color: '#FFFFFF',
+                                        },
+                                        grid: {
+                                            color: 'rgba(75, 85, 99, 0.5)',
+                                        },
+                                    },
                                     y: {
                                         beginAtZero: true,
                                         ticks: {
+                                            color: '#FFFFFF',
                                             callback: function (value) {
                                                 return DisplayPriceInVND(value);
                                             },
+                                        },
+                                        grid: {
+                                            color: 'rgba(75, 85, 99, 0.5)',
                                         },
                                     },
                                 },
                             }}
                         />
                     </div>
-                </div>
+                </Card>
             )}
 
             {/* Filters */}
-            <div
-                className="bg-white p-4 rounded-lg border-2 border-secondary-200 shadow mb-3
-            flex flex-col gap-3 items-end text-sm text-secondary-200"
-            >
-                <div className="flex gap-2">
-                    <button
-                        onClick={handleResetFilters}
-                        className="px-4 py-[6px] font-medium text-secondary-200 bg-white border-2 border-secondary-200 rounded-lg
-                        hover:bg-secondary-200 hover:text-white flex gap-2 items-center"
-                    >
-                        <FaUndo size={12} className="mb-[2px]" />
-                        <p>Đặt lại</p>
-                    </button>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+            <div className="rounded-lg border-2 liquid-glass px-4 py-6 mb-6 space-y-2">
+                <button
+                    onClick={handleResetFilters}
+                    className="flex gap-2 items-center px-4 h-9 font-medium liquid-glass rounded-lg text-sm"
+                >
+                    <FaUndo size={12} className="mb-[2px]" />
+                    <p>Đặt lại</p>
+                </button>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2.5 w-full">
                     <div className="relative">
-                        <input
+                        <Input
                             type="text"
                             name="search"
                             placeholder="Tìm kiếm..."
-                            className="w-full pl-10 h-11 font-medium py-2 border border-gray-400 rounded-lg focus:outline-none focus:ring-1
-                        focus:ring-secondary-200"
+                            className="w-full pl-10 h-12 text-sm"
                             value={filters.search}
                             onChange={handleFilterChange}
                         />
@@ -845,7 +941,8 @@ const ReportPage = () => {
                     </div>
                     <select
                         name="status"
-                        className="w-full p-2 h-11 font-medium border border-gray-400 rounded-lg focus:outline-none focus:ring-1 focus:ring-secondary-200 cursor-pointer"
+                        className="text-sm h-12 w-full border-gray-700 border bg-neutral-950
+                    px-3 py-1 rounded-md cursor-pointer"
                         value={filters.status}
                         onChange={handleFilterChange}
                     >
@@ -858,7 +955,8 @@ const ReportPage = () => {
 
                     <select
                         name="dateRange"
-                        className="w-full p-2 h-11 font-medium border border-gray-400 rounded-lg focus:outline-none focus:ring-1 focus:ring-secondary-200 cursor-pointer"
+                        className="text-sm h-12 w-full border-gray-700 border bg-neutral-950
+                    px-3 py-1 rounded-md cursor-pointer"
                         value={dateRange}
                         onChange={handleFilterChange}
                     >
@@ -872,65 +970,118 @@ const ReportPage = () => {
 
                     <button
                         onClick={exportToExcel}
-                        className="flex items-center justify-center h-11 px-4 py-2 border border-transparent rounded-md shadow-sm sm:text-sm text-xs font-medium
-                    text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-1 focus:ring-offset-2 focus:ring-green-500"
+                        className="flex items-center gap-2 justify-center h-12 px-4 py-2 border border-transparent rounded-md shadow-sm sm:text-sm text-xs font-medium
+                    text-white bg-green-600/60 hover:bg-green-700 focus:outline-none focus:ring-1 focus:ring-offset-2 focus:ring-green-500"
                     >
-                        <FaFileExcel className="mr-2 mb-[3px]" />
+                        <FaFileExcel size={15} />
                         <p>Xuất Excel</p>
                     </button>
                 </div>
 
                 {dateRange === 'custom' && (
                     <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium mb-1">
                                 Từ ngày
                             </label>
-                            <input
-                                type="date"
-                                name="startDate"
-                                className="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 w-full"
-                                value={filters.startDate}
-                                onChange={handleFilterChange}
-                            />
+                            <div className="relative">
+                                <input
+                                    type="date"
+                                    name="startDate"
+                                    className={`w-full h-12 border ${
+                                        dateError
+                                            ? 'border-red-500'
+                                            : 'border-gray-700'
+                                    } bg-neutral-950 px-3 py-1 rounded-md pr-8 appearance-none text-sm`}
+                                    value={
+                                        filters.startDate?.split('T')[0] || ''
+                                    }
+                                    onChange={handleFilterChange}
+                                    max={filters.endDate?.split('T')[0] || ''}
+                                />
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                    <svg
+                                        className="w-5 h-5 text-gray-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <div className="space-y-2">
+                            <label className="block text-sm font-medium mb-1">
                                 Đến ngày
                             </label>
-                            <input
-                                type="date"
-                                name="endDate"
-                                className="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 w-full"
-                                value={filters.endDate}
-                                onChange={handleFilterChange}
-                            />
+                            <div className="relative">
+                                <input
+                                    type="date"
+                                    name="endDate"
+                                    className={`w-full h-12 border ${
+                                        dateError
+                                            ? 'border-red-500'
+                                            : 'border-gray-700'
+                                    } bg-neutral-950 px-3 py-1 rounded-md pr-8 appearance-none text-sm`}
+                                    value={filters.endDate?.split('T')[0] || ''}
+                                    onChange={handleFilterChange}
+                                    min={filters.startDate?.split('T')[0] || ''}
+                                />
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                    <svg
+                                        className="w-5 h-5 text-gray-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
+                            {dateError && (
+                                <p className="mt-1 text-sm text-red-500">
+                                    {dateError}
+                                </p>
+                            )}
                         </div>
                     </div>
                 )}
             </div>
 
             {/* Orders Table */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="rounded-lg shadow overflow-hidden">
                 <div className="overflow-x-auto scrollbarCustom">
                     <div className="min-w-full" style={{ minWidth: '1024px' }}>
-                        <table className="w-full divide-y-4 divide-secondary-200">
-                            <thead className="bg-gray-50 text-xs">
+                        <table className="liquid-glass w-full divide-y-4">
+                            <thead className="text-lime-300 text-xs">
                                 <tr>
-                                    <th className="px-4 py-3 text-left font-bold text-secondary-200 uppercase tracking-wider">
+                                    <th className="px-4 py-3 text-left font-bold uppercase tracking-wider">
                                         <div className="flex items-center justify-center">
-                                            Mã Đơn Hàng
+                                            Mã Đơn
                                             <button
                                                 onClick={() =>
                                                     handleSort('orderId')
                                                 }
-                                                className="mb-1 focus:outline-none"
+                                                className="ml-1"
                                             >
                                                 {renderSortIcon('orderId')}
                                             </button>
                                         </div>
                                     </th>
-                                    <th className="px-4 py-3 text-left font-bold text-secondary-200 uppercase tracking-wider">
+                                    <th className="px-4 py-3 text-left font-bold uppercase tracking-wider">
                                         <div className="flex items-center justify-center">
                                             <p className="text-nowrap">
                                                 Ngày tạo
@@ -945,16 +1096,16 @@ const ReportPage = () => {
                                             </button>
                                         </div>
                                     </th>
-                                    <th className="px-4 py-3 text-left font-bold text-secondary-200 uppercase tracking-wider">
+                                    <th className="px-4 py-3 text-left font-bold uppercase tracking-wider">
                                         Khách hàng
                                     </th>
-                                    <th className="px-4 py-3 text-left font-bold text-secondary-200 uppercase tracking-wider max-w-[180px]">
+                                    <th className="px-4 py-3 text-left font-bold uppercase tracking-wider max-w-[180px]">
                                         Sản phẩm
                                     </th>
-                                    <th className="px-4 py-3 text-nowrap text-left font-bold text-secondary-200 uppercase tracking-wider max-w-[180px]">
+                                    <th className="px-4 py-3 text-nowrap text-left font-bold uppercase tracking-wider max-w-[180px]">
                                         Số lượng
                                     </th>
-                                    <th className="px-4 py-3 text-left font-bold text-secondary-200 uppercase tracking-wider">
+                                    <th className="px-4 py-3 text-left font-bold uppercase tracking-wider">
                                         <div className="flex items-center justify-center">
                                             <p className="text-nowrap">
                                                 Tổng tiền
@@ -969,7 +1120,7 @@ const ReportPage = () => {
                                             </button>
                                         </div>
                                     </th>
-                                    <th className="px-4 py-3 text-left font-bold text-secondary-200 uppercase tracking-wider">
+                                    <th className="px-4 py-3 text-left font-bold uppercase tracking-wider">
                                         <div className="flex items-center justify-center">
                                             <p className="text-nowrap">
                                                 Trạng thái
@@ -988,12 +1139,12 @@ const ReportPage = () => {
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody className="divide-y divide-gray-200 text-white">
                                 {loading ? (
                                     <tr>
                                         <td
                                             colSpan="8"
-                                            className="px-6 py-4 text-center text-gray-500"
+                                            className="px-6 py-4 text-center"
                                         >
                                             Đang tải dữ liệu...
                                         </td>
@@ -1002,7 +1153,7 @@ const ReportPage = () => {
                                     <tr>
                                         <td
                                             colSpan="8"
-                                            className="px-6 py-4 text-center text-gray-500"
+                                            className="px-6 py-4 text-center"
                                         >
                                             Không có dữ liệu hoá đơn
                                         </td>
@@ -1011,15 +1162,15 @@ const ReportPage = () => {
                                     currentOrders.map((order) => (
                                         <tr
                                             key={order._id}
-                                            className="hover:bg-gray-50 sm:text-sm text-xs"
+                                            className="hover:bg-black/60 text-xs sm:text-sm"
                                         >
                                             <td
-                                                className="px-4 py-4 font-medium text-gray-900"
+                                                className="px-4 py-4 font-medium text-center text-rose-500"
                                                 title={order.orderId}
                                             >
                                                 {order.orderId}
                                             </td>
-                                            <td className="px-4 py-4 whitespace-nowrap font-medium text-secondary-200">
+                                            <td className="px-4 py-4 font-medium">
                                                 {format(
                                                     new Date(order.createdAt),
                                                     'dd/MM/yyyy HH:mm',
@@ -1028,9 +1179,9 @@ const ReportPage = () => {
                                                     }
                                                 )}
                                             </td>
-                                            <td className="px-4 py-4 whitespace-nowrap text-gray-500">
+                                            <td className="px-4 py-4">
                                                 <div>
-                                                    <div className="font-medium text-gray-900">
+                                                    <div className="font-medium text-rose-500">
                                                         {order.userId?.name ||
                                                             'Khách vãng lai'}
                                                     </div>
@@ -1051,7 +1202,7 @@ const ReportPage = () => {
                                                     </p>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-4 text-gray-500 flex items-center sm:grid gap-3 max-w-[250px]">
+                                            <td className="px-4 py-4 flex items-center gap-3 max-w-[250px]">
                                                 <img
                                                     src={
                                                         order.product_details
@@ -1063,7 +1214,7 @@ const ReportPage = () => {
                                                             ?.name ||
                                                         'Product Image'
                                                     }
-                                                    className="w-12 h-12 object-cover flex-shrink-0 rounded shadow-md shadow-secondary-100 cursor-pointer"
+                                                    className="w-12 h-12 border border-lime-300 object-cover rounded shadow cursor-pointer"
                                                     onError={(e) => {
                                                         e.target.src =
                                                             '/placeholder.jpg';
@@ -1090,10 +1241,10 @@ const ReportPage = () => {
                                                     </p>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-center font-bold text-secondary-200">
+                                            <td className="px-6 py-4 whitespace-nowrap text-center font-bold">
                                                 {order.quantity}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-center font-bold text-secondary-200">
+                                            <td className="px-6 py-4 whitespace-nowrap text-center font-bold">
                                                 {DisplayPriceInVND(
                                                     order.totalAmt
                                                 )}

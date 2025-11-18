@@ -357,8 +357,8 @@ const ProductAdmin = () => {
 
                 {/* Search */}
                 <div
-                    className="sm:h-[42px] h-8 max-w-64 w-full min-w-16 lg:min-w-24 liquid-glass px-4 sm:py-3 py-[6px]
-                        flex items-center gap-3 rounded-xl shadow-md shadow-secondary-100 focus-within:border-secondary-200"
+                    className="sm:h-[42px] h-8 max-w-72 w-full min-w-16 lg:min-w-24 bg-black/60 border border-gray-500 px-4 sm:py-3 py-[6px]
+                        flex items-center gap-3 rounded-xl shadow-md shadow-secondary-100 focus-within:border-lime-200"
                 >
                     <IoSearch size={22} className="mb-[3px] sm:block hidden" />
                     <IoSearch

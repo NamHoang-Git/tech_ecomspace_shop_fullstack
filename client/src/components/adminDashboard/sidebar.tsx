@@ -2,16 +2,17 @@
 
 import { useState } from 'react';
 import {
-    Home,
     BarChart2,
     Package,
     Layers,
     TicketPercent,
-    Users2,
     Settings,
     HelpCircle,
     Menu,
     PanelLeftClose,
+    LocateIcon,
+    Clock,
+    FileText,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -23,15 +24,17 @@ import {
 } from '@/components/ui/tooltip';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '@/assets/logo.png';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
 
 const navigation = [
     { name: 'Quản lý danh mục', href: '/dashboard/category', icon: Layers },
     { name: 'Quản lý sản phẩm', href: '/dashboard/product', icon: Package },
-    { name: 'Quản lý đơn hàng', href: '/dashboard/bill', icon: Package },
+    { name: 'Quản lý đơn hàng', href: '/dashboard/bill', icon: FileText },
     { name: 'Báo cáo thống kê', href: '/dashboard/report', icon: BarChart2 },
     { name: 'Mã giảm giá', href: '/dashboard/voucher', icon: TicketPercent },
-    { name: 'Địa chỉ', href: '/dashboard/address', icon: TicketPercent },
-    { name: 'Lịch sử mua hàng', href: '/dashboard/my-orders', icon: TicketPercent },
+    { name: 'Địa chỉ', href: '/dashboard/address', icon: LocateIcon },
+    { name: 'Lịch sử mua hàng', href: '/dashboard/my-orders', icon: Clock },
 ];
 
 const bottomNavigation = [
@@ -43,6 +46,16 @@ export function Sidebar() {
     const { pathname } = useLocation();
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+    const user = useSelector((state: RootState) => state.user);
+
+    const filteredNavigation = navigation.filter((item) => {
+        if (user.role === 'ADMIN') {
+            return item.name !== 'Địa chỉ' && item.name !== 'Lịch sử mua hàng';
+        } else {
+            return item.name === 'Địa chỉ' || item.name === 'Lịch sử mua hàng';
+        }
+    });
 
     const NavItem = ({ item, isBottom = false }) => (
         <Tooltip delayDuration={0}>
@@ -158,7 +171,7 @@ export function Sidebar() {
                             </Link>
                         </div>
                         <nav className="flex-1 space-y-1 px-2 py-4">
-                            {navigation.map((item) => (
+                            {filteredNavigation.map((item) => (
                                 <NavItem key={item.name} item={item} />
                             ))}
                         </nav>

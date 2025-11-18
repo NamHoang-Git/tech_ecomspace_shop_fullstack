@@ -13,6 +13,19 @@ import Axios from '../utils/Axios';
 import AxiosToastError from '../utils/AxiosToastError';
 import successAlert from '../utils/successAlert';
 import ConfirmBox from '../components/ConfirmBox';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import GlareHover from '@/components/GlareHover';
+import { Button } from '@/components/ui/button';
+import { FaFilePdf } from 'react-icons/fa6';
+import { Input } from '@/components/ui/input';
+import { FaSearch } from 'react-icons/fa';
 
 const VoucherPage = () => {
     // State declarations
@@ -674,138 +687,100 @@ const VoucherPage = () => {
     }, []);
 
     return (
-        <section className="container mx-auto lg:py-4 py-2 px-1 flex flex-col gap-4">
+        <section className="container mx-auto grid gap-2 z-10">
             {/* Header */}
-            <div
-                className="px-3 py-4 bg-primary-4 rounded-md shadow-md shadow-secondary-100
-            font-bold text-secondary-200 sm:text-lg text-sm flex justify-between
-            items-center gap-4"
-            >
-                <h2 className="text-ellipsis line-clamp-1 uppercase">
-                    Quản lý mã giảm giá
-                </h2>
-                <div className="flex items-center gap-2 md:text-base sm:text-sm text-xs">
-                    <button
-                        onClick={() => setOpenUploadVoucher(true)}
-                        className="sm:h-10 h-8 bg-primary-2 border-[3px] border-secondary-200 text-secondary-200 px-2 hover:opacity-80
-                        py-1 rounded-md text-nowrap flex gap-1 items-center"
-                    >
-                        <IoAdd size={20} className="mb-[2px]" />
-                        Thêm Mới
-                    </button>
-                </div>
-            </div>
+            <Card className="text-white py-6 flex-row justify-between gap-6 border-gray-600 border-2">
+                <CardHeader>
+                    <CardTitle className="text-lg text-lime-300 font-bold uppercase">
+                        Quản lý mã giảm giá
+                    </CardTitle>
+                    <CardDescription className="text-white">
+                        Quản lý danh sách mã giảm giá
+                    </CardDescription>
+                </CardHeader>
 
-            {/* Filters */}
-            <div className="w-full sm:w-auto grid sm:grid-cols-2 md:grid-cols-4 gap-3">
-                <div className="relative w-full text-secondary-200 font-semibold">
-                    <select
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                        className="sm:h-10 h-8 w-full appearance-none bg-white border border-gray-300 px-4 rounded-md focus:outline-none focus:ring-1
-                    focus:ring-secondary-200 focus:border-sering-secondary-200 text-sm cursor-pointer"
+                <CardFooter>
+                    <GlareHover
+                        background="transparent"
+                        glareOpacity={0.3}
+                        glareAngle={-30}
+                        glareSize={300}
+                        transitionDuration={800}
+                        playOnce={false}
                     >
-                        <option value="all">Chọn trạng thái</option>
-                        <option value="active">Đang hoạt động</option>
-                        <option value="inactive">Đã tắt</option>
-                        <option value="applying">Đang áp dụng</option>
-                        <option value="expired">Đã hết hạn</option>
-                        <option value="upcoming">Sắp diễn ra</option>
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
-                        <svg
-                            className="fill-current h-4 w-4"
-                            viewBox="0 0 20 20"
+                        <Button
+                            onClick={() => setOpenUploadVoucher(true)}
+                            className="bg-transparent text-white hover:bg-transparent"
                         >
-                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                        </svg>
-                    </div>
-                </div>
-                <div className="relative w-full text-secondary-200 font-semibold">
-                    <select
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                        className="sm:h-10 h-8 w-full appearance-none bg-white border border-gray-300 px-4 rounded-md focus:outline-none focus:ring-1
-                    focus:ring-secondary-200 focus:border-sering-secondary-200 text-sm cursor-pointer"
-                    >
-                        <option value="all">Chọn loại giảm giá</option>
-                        <option value="percentage">Phần trăm</option>
-                        <option value="fixed">Giảm giá cố định</option>
-                        <option value="free_shipping">
-                            Miễn phí vận chuyển
-                        </option>
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
-                        <svg
-                            className="fill-current h-4 w-4"
-                            viewBox="0 0 20 20"
-                        >
-                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                        </svg>
-                    </div>
-                </div>
-                <button
-                    onClick={() => {
-                        setStatusFilter('all');
-                        setSearchTerm('');
-                    }}
-                    className="sm:h-10 h-8 text-sm w-full sm:w-auto bg-primary-100 hover:bg-opacity-80 text-secondary-200
-                font-medium border-[3px] border-secondary-200 rounded-md transition-colors whitespace-nowrap sm:block hidden"
-                >
-                    Đặt lại bộ lọc
-                </button>
-                <button
-                    onClick={handleExportPDF}
-                    className="sm:h-10 h-8 text-sm text-center bg-secondary-200 text-white
-                rounded-md hover:opacity-80 transition-colors w-full sm:block hidden"
-                >
-                    Xuất PDF
-                </button>
+                            Thêm Mới
+                        </Button>
+                    </GlareHover>
+                </CardFooter>
+            </Card>
 
-                <div className="sm:hidden flex gap-2 text-sm font-medium">
+            <div className="py-2 space-y-2">
+                {/* Filters */}
+                <div className="w-full sm:w-auto grid sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="relative w-full font-semibold">
+                        <select
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                            className="text-sm h-12 w-full border-gray-700 border bg-neutral-950
+                    px-3 py-1 rounded-md cursor-pointer"
+                        >
+                            <option value="all">Chọn trạng thái</option>
+                            <option value="active">Đang hoạt động</option>
+                            <option value="inactive">Đã tắt</option>
+                            <option value="applying">Đang áp dụng</option>
+                            <option value="expired">Đã hết hạn</option>
+                            <option value="upcoming">Sắp diễn ra</option>
+                        </select>
+                    </div>
+                    <div className="relative w-full font-semibold">
+                        <select
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                            className="text-sm h-12 w-full border-gray-700 border bg-neutral-950
+                    px-3 py-1 rounded-md cursor-pointer"
+                        >
+                            <option value="all">Chọn loại giảm giá</option>
+                            <option value="percentage">Phần trăm</option>
+                            <option value="fixed">Giảm giá cố định</option>
+                            <option value="free_shipping">
+                                Miễn phí vận chuyển
+                            </option>
+                        </select>
+                    </div>
                     <button
                         onClick={() => {
                             setStatusFilter('all');
                             setSearchTerm('');
                         }}
-                        className="sm:h-10 h-8 w-full sm:w-auto bg-primary-100 hover:bg-opacity-80 text-secondary-200
-                font-medium border-[3px] border-secondary-200 rounded-md transition-colors whitespace-nowrap"
+                        className="text-center px-4 h-12 font-medium liquid-glass rounded-lg text-sm"
                     >
                         Đặt lại bộ lọc
                     </button>
                     <button
                         onClick={handleExportPDF}
-                        className="sm:h-10 h-8 text-center bg-secondary-200 text-white
-                rounded-md hover:opacity-80 transition-colors w-full"
+                        className="flex items-center gap-2 justify-center h-12 px-4 py-2 border border-transparent rounded-md shadow-sm sm:text-sm text-xs font-medium
+                    text-white bg-red-600/60 hover:bg-red-700 focus:outline-none focus:ring-1 focus:ring-offset-2 focus:ring-red-500"
                     >
-                        Xuất PDF
+                        <FaFilePdf size={15} />
+                        <p>Xuất PDF</p>
                     </button>
                 </div>
-            </div>
 
-            {/* Search */}
-            <div className="w-full md:w-80 lg:w-96 text-secondary-200 font-medium">
-                <div className="relative">
-                    <input
-                        type="text"
-                        placeholder="Tìm kiếm mã giảm giá..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1
-                    focus:ring-secondary-200 focus:border-sering-secondary-200 text-sm"
-                    />
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg
-                            className="h-4 w-4 text-gray-400"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                        >
-                            <path
-                                fillRule="evenodd"
-                                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                clipRule="evenodd"
-                            />
-                        </svg>
+                {/* Search */}
+                <div className="w-full md:w-80 lg:w-96 font-medium">
+                    <div className="relative">
+                        <Input
+                            type="text"
+                            placeholder="Tìm kiếm mã giảm giá..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-10 h-12 text-sm"
+                        />
+                        <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
                     </div>
                 </div>
             </div>
@@ -841,20 +816,20 @@ const VoucherPage = () => {
             )}
 
             {/* Vouchers Table */}
-            <div className="overflow-x-auto scrollbarCustom bg-white rounded-lg shadow overflow-hidden">
-                <table className="min-w-full divide-y-4 divide-secondary-200">
-                    <thead className="bg-gray-50">
+            <div className="overflow-x-auto scrollbarCustom rounded-lg shadow overflow-hidden">
+                <table className="liquid-glass min-w-full divide-y-4">
+                    <thead className="text-lime-300 text-xs">
                         <tr>
                             <th className="px-4 py-2 w-8">
                                 <input
                                     type="checkbox"
-                                    className="h-4 w-4 mt-[3px] text-secondary-200 rounded border-gray-300 focus:ring-secondary-200 cursor-pointer"
+                                    className="h-4 w-4 mt-[3px] rounded border-gray-300 focus:ring-lime-300 cursor-pointer"
                                     checked={selectAll}
                                     onChange={handleSelectAll}
                                 />
                             </th>
                             <th
-                                className="px-4 py-3 text-center text-xs font-bold text-secondary-200 uppercase tracking-wider cursor-pointer"
+                                className="px-4 py-3 text-center font-bold uppercase tracking-wider"
                                 onClick={() => requestSort('code')}
                             >
                                 Mã giảm giá
@@ -867,7 +842,7 @@ const VoucherPage = () => {
                                 )}
                             </th>
                             <th
-                                className="px-4 py-3 text-center text-xs font-bold text-secondary-200 uppercase tracking-wider cursor-pointer"
+                                className="px-4 py-3 text-center font-bold uppercase tracking-wider"
                                 onClick={() => requestSort('name')}
                             >
                                 Tên mã giảm giá
@@ -880,7 +855,7 @@ const VoucherPage = () => {
                                 )}
                             </th>
                             <th
-                                className="px-4 py-3 text-center text-xs font-bold text-secondary-200 uppercase tracking-wider cursor-pointer"
+                                className="px-4 py-3 text-center font-bold uppercase tracking-wider"
                                 onClick={() => requestSort('discountType')}
                             >
                                 Loại giảm giá
@@ -892,14 +867,14 @@ const VoucherPage = () => {
                                     </span>
                                 )}
                             </th>
-                            <th className="px-4 py-3 text-center text-xs font-bold text-secondary-200 uppercase tracking-wider">
+                            <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider">
                                 Giá trị
                             </th>
-                            <th className="px-4 py-3 text-center text-xs font-bold text-secondary-200 uppercase tracking-wider">
+                            <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider">
                                 Đơn hàng tối thiểu
                             </th>
                             <th
-                                className="px-4 py-3 text-center text-xs font-bold text-secondary-200 uppercase tracking-wider cursor-pointer"
+                                className="px-4 py-3 text-center font-bold uppercase tracking-wider"
                                 onClick={() => requestSort('startDate')}
                             >
                                 Ngày bắt đầu
@@ -912,7 +887,7 @@ const VoucherPage = () => {
                                 )}
                             </th>
                             <th
-                                className="px-4 py-3 text-center text-xs font-bold text-secondary-200 uppercase tracking-wider cursor-pointer"
+                                className="px-4 py-3 text-center font-bold uppercase tracking-wider"
                                 onClick={() => requestSort('endDate')}
                             >
                                 Ngày kết thúc
@@ -924,18 +899,18 @@ const VoucherPage = () => {
                                     </span>
                                 )}
                             </th>
-                            <th className="px-4 py-3 text-center text-xs font-bold text-secondary-200 uppercase tracking-wider">
+                            <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider">
                                 Số lượng đã sử dụng
                             </th>
-                            <th className="px-4 py-3 text-center text-xs font-bold text-secondary-200 uppercase tracking-wider">
+                            <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider">
                                 Trạng thái
                             </th>
-                            <th className="px-4 py-3 text-center text-xs font-bold text-secondary-200 uppercase tracking-wider">
+                            <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider">
                                 Thao tác
                             </th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="divide-y divide-gray-200 text-white">
                         {loading ? (
                             <tr>
                                 <td
@@ -958,16 +933,16 @@ const VoucherPage = () => {
                             currentVouchers.map((voucher) => (
                                 <tr
                                     key={voucher._id}
-                                    className={`hover:bg-gray-50 ${
+                                    className={`hover:bg-black/60 text-xs sm:text-sm ${
                                         selectedVouchers.includes(voucher._id)
-                                            ? 'bg-rose-50'
+                                            ? 'bg-gray-800/60'
                                             : ''
                                     } sm:text-sm text-xs`}
                                 >
                                     <td className="px-4 py-4">
                                         <input
                                             type="checkbox"
-                                            className="h-4 w-4 text-secondary-200 rounded border-gray-300 focus:ring-secondary-200 cursor-pointer"
+                                            className="h-4 w-4 rounded border-gray-300 focus:ring-secondary-200 cursor-pointer"
                                             checked={selectedVouchers.includes(
                                                 voucher._id
                                             )}
@@ -976,31 +951,40 @@ const VoucherPage = () => {
                                             }
                                         />
                                     </td>
-                                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center">
+                                    <td className="grid gap-1 px-4 py-4 whitespace-nowrap text-sm font-medium text-white text-center">
                                         <p>{voucher.code}</p>
                                         <span>
                                             {new Date() <
                                             new Date(voucher.startDate) ? (
-                                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                <span
+                                                    className="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-black/50
+                                            text-cyan-300 border border-cyan-200"
+                                                >
                                                     Sắp diễn ra
                                                 </span>
                                             ) : new Date() >
                                               new Date(voucher.endDate) ? (
-                                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                <span
+                                                    className="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-black/50
+                                            text-rose-300 border border-rose-200"
+                                                >
                                                     Đã hết hạn
                                                 </span>
                                             ) : (
-                                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                <span
+                                                    className="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-black/50
+                                            text-lime-300 border border-lime-200"
+                                                >
                                                     Đang áp dụng
                                                 </span>
                                             )}
                                         </span>
                                     </td>
 
-                                    <td className="px-4 py-4 text-sm text-center font-semibold text-gray-600">
+                                    <td className="px-4 py-4 text-sm text-center font-semibold">
                                         {voucher.name}
                                     </td>
-                                    <td className="px-4 py-4 text-sm font-semibold text-center text-gray-600">
+                                    <td className="px-4 py-4 text-sm font-semibold text-center">
                                         {voucher.discountType ===
                                         'percentage' ? (
                                             <p>Percentage (%)</p>
@@ -1010,7 +994,7 @@ const VoucherPage = () => {
                                             <p>Free Shipping</p>
                                         )}
                                     </td>
-                                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-center text-gray-500">
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-center">
                                         {voucher.discountType === 'percentage'
                                             ? `${voucher.discountValue}%`
                                             : voucher.discountType === 'fixed'
@@ -1019,31 +1003,31 @@ const VoucherPage = () => {
                                         {voucher.maxDiscount &&
                                             voucher.discountType ===
                                                 'percentage' && (
-                                                <span className="text-xs font-semibold text-gray-600 block">
+                                                <span className="text-xs font-semibold block">
                                                     Tối đa:{' '}
                                                     {voucher.maxDiscount.toLocaleString()}
                                                     đ
                                                 </span>
                                             )}
                                     </td>
-                                    <td className="px-4 py-4 text-sm text-center font-semibold text-secondary-200">
+                                    <td className="px-4 py-4 text-sm text-center font-semibold">
                                         {voucher.minOrderValue
                                             ? `${voucher.minOrderValue.toLocaleString()}đ`
                                             : 'Không có'}
                                     </td>
-                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-center text-gray-500">
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-center">
                                         {format(
                                             new Date(voucher.startDate),
                                             'dd/MM/yyyy' + ' ' + 'HH:mm:ss'
                                         )}
                                     </td>
-                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-center text-gray-500">
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-center">
                                         {format(
                                             new Date(voucher.endDate),
                                             'dd/MM/yyyy' + ' ' + 'HH:mm:ss'
                                         )}
                                     </td>
-                                    <td className="px-4 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                                    <td className="px-4 py-4 whitespace-nowrap text-center text-sm">
                                         {voucher.usageLimit === null
                                             ? 'Không giới hạn'
                                             : `${voucher.usageCount}/${voucher.usageLimit}`}
@@ -1052,8 +1036,8 @@ const VoucherPage = () => {
                                         <span
                                             className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                                                 voucher.isActive
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-red-100 text-red-800'
+                                                    ? 'bg-white/10 text-emerald-300 border border-emerald-200 px-2 py-0.5'
+                                                    : 'bg-white/10 text-rose-300 border border-rose-200 px-2 py-0.5'
                                             }`}
                                         >
                                             {voucher.isActive
@@ -1064,7 +1048,7 @@ const VoucherPage = () => {
                                     <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <div className="flex justify-end space-x-2">
                                             <label className="relative inline-flex items-center cursor-pointer">
-                                                <input
+                                                <Input
                                                     type="checkbox"
                                                     className="sr-only peer"
                                                     checked={voucher.isActive}
@@ -1075,15 +1059,15 @@ const VoucherPage = () => {
                                                     }
                                                 />
                                                 <div
-                                                    className={`w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-green-500 peer-focus:ring-4
+                                                    className={`w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-emerald-500 peer-focus:ring-2
                                                         peer-focus:ring-green-200 dark:peer-focus:ring-green-800 ${
                                                             voucher.isActive
-                                                                ? 'bg-green-400'
-                                                                : 'bg-red-400'
+                                                                ? 'bg-emerald-300'
+                                                                : 'bg-rose-400'
                                                         }`}
                                                 >
                                                     <div
-                                                        className={`absolute left-1 top-1 bg-white rounded-full h-4 w-4 transition-transform duration-200 ease-in-out ${
+                                                        className={`absolute left-1 top-1 bg-rose-100 rounded-full h-4 w-4 transition-transform duration-200 ease-in-out ${
                                                             voucher.isActive
                                                                 ? 'translate-x-5'
                                                                 : 'translate-x-0'
@@ -1106,7 +1090,7 @@ const VoucherPage = () => {
                                                     });
                                                     setOpenEditVoucher(true);
                                                 }}
-                                                className="bg-orange-100 hover:bg-orange-200 text-orange-600 p-1 rounded-md"
+                                                className="liquid-glass text-white p-1 rounded-md"
                                             >
                                                 <IoPencil size={18} />
                                             </button>
@@ -1119,7 +1103,7 @@ const VoucherPage = () => {
                                                         true
                                                     );
                                                 }}
-                                                className="bg-red-100 hover:bg-red-200 text-red-600 p-1 rounded-md"
+                                                className="liquid-glass text-rose-400 p-1 rounded-md"
                                             >
                                                 <IoTrash size={18} />
                                             </button>
@@ -1134,19 +1118,19 @@ const VoucherPage = () => {
 
             {/* Pagination */}
             {totalPages > 1 && (
-                <div className="flex items-center sm:flex-row flex-col justify-between mt-4 gap-3">
+                <div className="flex items-center sm:flex-row flex-col justify-between mt-4 gap-3 text-white">
                     <div className="flex items-center sm:flex-row flex-col space-x-2 gap-2">
-                        <span className="text-sm text-gray-700 text-center">
+                        <span className="text-sm text-center">
                             Hiển thị{' '}
-                            <span className="font-semibold text-secondary-200">
+                            <span className="font-semibold text-lime-300">
                                 {indexOfFirstItem + 1}
                             </span>{' '}
                             đến{' '}
-                            <span className="font-semibold text-secondary-200">
+                            <span className="font-semibold text-lime-300">
                                 {Math.min(indexOfLastItem, sortedData.length)}
                             </span>{' '}
                             trong tổng số{' '}
-                            <span className="font-semibold text-secondary-200">
+                            <span className="font-semibold text-lime-300">
                                 {sortedData.length}
                             </span>{' '}
                             kết quả
@@ -1154,8 +1138,8 @@ const VoucherPage = () => {
                         <select
                             value={pagination.pageSize}
                             onChange={handlePageSizeChange}
-                            className="text-sm h-8 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1
-                        focus:ring-secondary-200 px-2 cursor-pointer"
+                            className="text-sm h-8 border-gray-700 border bg-neutral-950
+                        px-3 py-1 rounded-md"
                         >
                             {[5, 10, 25, 50].map((size) => (
                                 <option key={size} value={size}>
@@ -1169,8 +1153,7 @@ const VoucherPage = () => {
                         <button
                             onClick={() => paginate(1)}
                             disabled={pagination.currentPage === 1}
-                            className="px-3 py-1 rounded-md border border-gray-300 bg-white text-base font-medium text-gray-700 hover:bg-gray-50
-                        disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-3 py-1 rounded-md border border-gray-300 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             &laquo;
                         </button>
@@ -1181,8 +1164,7 @@ const VoucherPage = () => {
                                 )
                             }
                             disabled={pagination.currentPage === 1}
-                            className="px-3 py-1 rounded-md border border-gray-300 bg-white text-base font-medium text-gray-700 hover:bg-gray-50
-                        disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-3 py-1 rounded-md border border-gray-300 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             &lsaquo;
                         </button>
@@ -1210,8 +1192,8 @@ const VoucherPage = () => {
                                         onClick={() => paginate(pageNum)}
                                         className={`px-3 py-1 rounded-md border text-sm font-medium ${
                                             pagination.currentPage === pageNum
-                                                ? 'bg-secondary-200 text-white border-secondary-200'
-                                                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                                ? 'bg-gray-700 text-white border-lime-300'
+                                                : 'bg-white text-black border-gray-300 hover:bg-gray-50'
                                         }`}
                                     >
                                         {pageNum}
