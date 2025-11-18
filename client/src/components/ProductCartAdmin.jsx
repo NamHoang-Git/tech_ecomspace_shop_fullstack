@@ -7,6 +7,10 @@ import AxiosToastError from '../utils/AxiosToastError';
 import successAlert from '../utils/successAlert';
 import { DisplayPriceInVND } from '../utils/DisplayPriceInVND';
 import ViewImage from './ViewImage';
+import { Card, CardContent } from './ui/card';
+import GlareHover from './GlareHover';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
 
 const ProductCartAdmin = ({ data, fetchProduct }) => {
     const [openEdit, setOpenEdit] = useState(false);
@@ -38,142 +42,108 @@ const ProductCartAdmin = ({ data, fetchProduct }) => {
 
     return (
         <div
-            className="group bg-white rounded-xl shadow-md shadow-secondary-100
+            className="group rounded-xl shadow-md shadow-secondary-100
         hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer"
             key={data._id}
         >
-            <div className="w-full h-32 sm:h-40 md:h-48 overflow-hidden">
-                <img
-                    src={data?.image[0]}
-                    alt={data?.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 border"
-                    onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = '/placeholder-product.jpg';
-                    }}
-                    onClick={() => setImageURL(data?.image[0])}
-                />
-            </div>
+            <div className="p-2 liquid-glass rounded-3xl">
+                <Card className="liquid-glass hover:bg-gradient-to-r from-lime-300/20 to-lime-300/10 rounded-2xl transition-all duration-300 overflow-hidden group relative">
+                    <div className="relative overflow-hidden cursor-pointer">
+                        <img
+                            src={data?.image[0]}
+                            alt={data?.name}
+                            className="w-full h-32 sm:h-44 object-contain bg-white rounded-t-2xl transition-transform duration-500 group-hover:scale-105 border"
+                            onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = '/placeholder-product.jpg';
+                            }}
+                            onClick={() => setImageURL(data?.image[0])}
+                        />
+                        {!data.stock && (
+                            <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                <span className="bg-rose-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                                    Hết hàng
+                                </span>
+                            </div>
+                        )}
+                        {data.discount > 0 && (
+                            <Badge className="absolute top-2 right-2 bg-rose-400">
+                                -{data.discount}%
+                            </Badge>
+                        )}
+                    </div>
 
-            <div
-                className="px-2 py-3 sm:px-3 sm:py-4 flex flex-col gap-2 lg:gap-2
-            text-xs md:text-base"
-            >
-                <h2
-                    title={data?.name}
-                    className="font-bold sm:text-base text-xs line-clamp-2 h-8 sm:h-12 md:h-11 lg:h-12"
-                >
-                    {data?.name}
-                </h2>
-                <div className="flex gap-3 md:text-base text-sm justify-between">
-                    <p
-                        title={data?.unit}
-                        className="font-semibold line-clamp-1 text-slate-500"
-                    >
-                        {data?.unit}
-                    </p>
-                    <p className="text-secondary-200 font-bold">
-                        {DisplayPriceInVND(data?.price)}
-                    </p>
-                </div>
+                    <CardContent className="p-3 flex-1 flex flex-col gap-2">
+                        <div className="flex-1 space-y-2">
+                            <h3
+                                title={data?.name}
+                                className="font-bold sm:text-base text-xs line-clamp-2 h-8 sm:h-12 md:h-11 lg:h-12"
+                            >
+                                {data?.name}
+                            </h3>
+                            <div className="flex gap-1">
+                                {data.category.map((cate) => (
+                                    <Badge
+                                        variant="outline"
+                                        className="bg-white/10 border-lime-300/80"
+                                    >
+                                        {cate.name}
+                                    </Badge>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="flex py-1 gap-3 md:text-base text-sm justify-between">
+                            <p
+                                title={data?.unit}
+                                className="font-semibold line-clamp-1 text-lime-300"
+                            >
+                                {data?.unit}
+                            </p>
+                            <p className="text-secondary-200 font-bold">
+                                {DisplayPriceInVND(data?.price)}
+                            </p>
+                        </div>
 
-                {/* PC & Tablet */}
-                <div className="mt-1 md:flex hidden gap-2">
-                    <button
-                        onClick={() => {
-                            setOpenEdit(true);
-                        }}
-                        className="flex-1 bg-orange-100 hover:bg-orange-200 text-orange-600
-                    font-semibold rounded p-1 flex items-center justify-center gap-1"
-                    >
-                        <svg
-                            className="w-4 h-4 mb-[2px]"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                            />
-                        </svg>
-                        <span>Sửa</span>
-                    </button>
-                    <button
-                        onClick={() => {
-                            setOpenConfirmBoxDelete(true);
-                        }}
-                        className="flex-1 bg-red-100 hover:bg-red-200 text-red-600
-                    font-semibold rounded p-1 flex items-center justify-center gap-1"
-                    >
-                        <svg
-                            className="w-4 h-4 mb-[2px]"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                        </svg>
-                        <span>Xóa</span>
-                    </button>
-                </div>
-
-                {/* Mobile */}
-                <div className="mt-1 md:hidden flex gap-2">
-                    <button
-                        onClick={() => {
-                            setOpenEdit(true);
-                        }}
-                        className="flex-1 bg-orange-100 hover:bg-orange-200 text-orange-600
-                    font-semibold rounded p-1 flex items-center justify-center gap-1"
-                    >
-                        <svg
-                            className="w-4 h-4 mb-[2px]"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                            />
-                        </svg>
-                    </button>
-                    <button
-                        onClick={() => {
-                            setOpenConfirmBoxDelete(true);
-                        }}
-                        className="flex-1 bg-red-100 hover:bg-red-200 text-red-600
-                    font-semibold rounded p-1 flex items-center justify-center gap-1"
-                    >
-                        <svg
-                            className="w-4 h-4 mb-[2px]"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                        </svg>
-                    </button>
-                </div>
+                        <div className="flex w-full items-center justify-center gap-2">
+                            <GlareHover
+                                background="transparent"
+                                glareOpacity={0.3}
+                                glareAngle={-30}
+                                glareSize={300}
+                                transitionDuration={800}
+                                playOnce={false}
+                                className="flex-1"
+                            >
+                                <Button
+                                    onClick={() => {
+                                        setOpenEdit(true);
+                                    }}
+                                    className="bg-muted-foreground hover:bg-muted-foreground w-full"
+                                >
+                                    Sửa
+                                </Button>
+                            </GlareHover>
+                            <GlareHover
+                                background="transparent"
+                                glareOpacity={0.3}
+                                glareAngle={-30}
+                                glareSize={300}
+                                transitionDuration={800}
+                                playOnce={false}
+                                className="flex-1"
+                            >
+                                <Button
+                                    onClick={() => {
+                                        setOpenConfirmBoxDelete(true);
+                                    }}
+                                    className="bg-foreground w-full"
+                                >
+                                    Xóa
+                                </Button>
+                            </GlareHover>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
 
             {openEdit && (

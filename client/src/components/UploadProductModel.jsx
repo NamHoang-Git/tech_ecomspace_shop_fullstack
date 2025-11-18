@@ -10,6 +10,20 @@ import Axios from '../utils/Axios';
 import ViewImage from '../components/ViewImage';
 import AddFieldComponent from '../components/AddFieldComponent';
 import successAlert from './../utils/successAlert';
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from './ui/card';
+import { Button } from './ui/button';
+import { Label } from '@radix-ui/react-label';
+import { Input } from './ui/input';
+import Divider from './Divider';
+import GlareHover from './GlareHover';
+import Loading from './Loading';
+import { Textarea } from './ui/textarea';
 
 const UploadProductModel = ({ close, fetchData }) => {
     const [data, setData] = useState({
@@ -172,458 +186,451 @@ const UploadProductModel = ({ close, fetchData }) => {
     };
 
     return (
-        <section className="fixed top-0 bottom-0 left-0 right-0 bg-neutral-800 z-50 bg-opacity-60 p-4 flex items-center justify-center">
-            <div
-                className="bg-white max-w-4xl w-full rounded-xl shadow-sm border border-gray-200 overflow-y-auto
-            max-h-[calc(100vh-150px)] scrollbarCustom scrollbar-hide"
+        <section
+            className="bg-neutral-800 z-50 bg-opacity-60 fixed top-0 left-0 right-0 bottom-0 overflow-auto
+        flex items-center justify-center px-4"
+        >
+            <Card
+                className="w-full max-w-4xl overflow-hidden overflow-y-auto
+            max-h-[calc(100vh-150px)] scrollbarCustom scrollbar-hide border-foreground"
             >
-                <div className="border-b border-gray-200 px-6 py-4">
+                <CardHeader className="pt-4">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-lg font-semibold text-secondary-200">
+                        <CardTitle className="text-lg text-lime-300 font-bold uppercase">
                             Thêm sản phẩm
-                        </h2>
-                        <button
+                        </CardTitle>
+                        <Button
                             onClick={close}
-                            className="text-secondary-200 hover:text-secondary-100 transition-colors"
+                            className="bg-transparent hover:bg-transparent text-foreground
+                        hover:text-lime-300 h-12"
                         >
-                            <IoClose size={22} />
-                        </button>
+                            <IoClose />
+                        </Button>
                     </div>
-                </div>
+                </CardHeader>
                 <form
-                    className="px-4 py-6 space-y-5 text-secondary-200 text-sm"
                     onSubmit={handleSubmit}
                 >
-                    {/* Product Name */}
-                    <div className="space-y-2">
-                        <label
-                            htmlFor="name"
-                            className="block font-semibold text-gray-700"
-                        >
-                            Tên sản phẩm <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            autoFocus
-                            value={data.name}
-                            onChange={handleOnChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1
-                            focus:ring-secondary-100 focus:border-secondary-100 focus:outline-none transition-all"
-                            placeholder="Nhập tên sản phẩm"
-                            spellCheck={false}
-                            required
-                        />
-                    </div>
-                    {/* Image Upload */}
-                    <div className="space-y-2">
-                        <label className="block font-semibold text-gray-700">
-                            Hình ảnh sản phẩm{' '}
-                            <span className="text-red-500">*</span>
-                        </label>
-
-                        {/* Upload Area */}
-                        <div className="space-y-3">
-                            <input
-                                type="file"
-                                id="uploadProductImage"
-                                accept="image/*"
-                                onChange={handleUploadProductImage}
-                                className="hidden"
-                                multiple
-                                disabled={!data.name || loading}
-                                required={!data.image.length}
+                    <CardContent className="py-4 space-y-5 text-sm">
+                        {/* Product Name */}
+                        <div className="space-y-2">
+                            <Label htmlFor="name">
+                                Tên sản phẩm{' '}
+                                <span className="text-red-500">*</span>
+                            </Label>
+                            <Input
+                                type="text"
+                                id="name"
+                                name="name"
+                                autoFocus
+                                value={data.name}
+                                onChange={handleOnChange}
+                                className="text-sm h-12"
+                                placeholder="Nhập tên sản phẩm"
+                                spellCheck={false}
+                                required
                             />
-                            <label
-                                htmlFor="uploadProductImage"
-                                className={`block border-2 border-dashed rounded-xl p-6 text-center
+                        </div>
+                        {/* Image Upload */}
+                        <div className="space-y-2">
+                            <Label htmlFor="image">
+                                Hình ảnh <span className="text-red-500">*</span>
+                            </Label>
+
+                            {/* Upload Area */}
+                            <div className="space-y-2">
+                                <input
+                                    type="file"
+                                    id="uploadProductImage"
+                                    accept="image/*"
+                                    onChange={handleUploadProductImage}
+                                    className="hidden"
+                                    multiple
+                                    disabled={!data.name || loading}
+                                    required={!data.image.length}
+                                />
+                                <Label
+                                    htmlFor="uploadProductImage"
+                                    className={`block border-2 border-dashed rounded-xl p-6 text-center cursor-pointer
                                 transition-all duration-200 group ${
                                     data.image.length
-                                        ? 'border-blue-200 bg-blue-50'
-                                        : 'border-gray-300 hover:border-rose-400'
+                                        ? 'border-green-300 bg-black/50'
+                                        : 'border-gray-300 hover:border-red-500'
                                 } ${
-                                    !data.name || loading
-                                        ? 'opacity-70 cursor-not-allowed'
-                                        : 'cursor-pointer'
-                                }`}
-                                title={
-                                    !data.name
-                                        ? 'Vui lòng nhập tên sản phẩm trước'
-                                        : ''
-                                }
-                            >
-                                <div className="space-y-2">
-                                    <div className="mx-auto w-12 h-12 bg-gray-100 text-gray-400 group-hover:text-rose-400 group-hover:bg-rose-50 rounded-full flex items-center justify-center">
-                                        {loading ? (
-                                            <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
-                                        ) : (
-                                            <FaCloudUploadAlt
-                                                className=""
-                                                size={24}
-                                            />
-                                        )}
+                                        !data.name || loading
+                                            ? 'opacity-70 cursor-not-allowed'
+                                            : 'cursor-pointer'
+                                    }`}
+                                    title={
+                                        !data.name
+                                            ? 'Vui lòng nhập tên sản phẩm trước'
+                                            : ''
+                                    }
+                                >
+                                    <div className="space-y-2">
+                                        <div className="mx-auto w-12 h-12 bg-gray-100 text-gray-400 group-hover:text-rose-400 group-hover:bg-rose-50 rounded-full flex items-center justify-center">
+                                            {loading ? (
+                                                <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                                            ) : (
+                                                <FaCloudUploadAlt
+                                                    className=""
+                                                    size={24}
+                                                />
+                                            )}
+                                        </div>
+                                        <div className="sm text-xs text-rose-500">
+                                            <p className="font-medium">
+                                                Nhấn để chọn ảnh
+                                            </p>
+                                            <p className="sm:text-xs text-[10px] text-rose-300">
+                                                PNG, JPG (tối đa 10 ảnh, mỗi ảnh
+                                                tối đa 5MB)
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="sm text-xs text-rose-500">
-                                        <p className="font-medium">
-                                            Nhấn để chọn ảnh
-                                        </p>
-                                        <p className="sm:text-xs text-[10px] text-rose-300">
-                                            PNG, JPG (tối đa 10 ảnh, mỗi ảnh tối
-                                            đa 5MB)
-                                        </p>
+                                </Label>
+                            </div>
+
+                            {/* Image Preview */}
+                            {data.image.length > 0 && (
+                                <div className="mt-3">
+                                    <p className="sm:text-sm text-xs font-semibold text-rose-500 mb-2">
+                                        Đã chọn {data.image.length} ảnh
+                                    </p>
+                                    <div className="flex flex-wrap gap-3">
+                                        {data.image.map((img, index) => (
+                                            <div
+                                                key={img + index}
+                                                className="relative group sm:h-24 sm:w-24 h-16 w-16 rounded-lg overflow-hidden border border-secondary-100"
+                                            >
+                                                <img
+                                                    src={img}
+                                                    alt={`Preview ${index + 1}`}
+                                                    className="w-full h-full object-cover cursor-pointer hover:scale-110 transition-all
+                                                    duration-200 border border-white rounded-lg"
+                                                    onClick={() =>
+                                                        setImageURL(img)
+                                                    }
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleRemoveImage(
+                                                            index
+                                                        );
+                                                    }}
+                                                    className="absolute top-0 right-0 bg-red-500 text-white rounded-md sm:p-1 p-[2px] opacity-0 group-hover:opacity-100
+                                                transition-opacity"
+                                                    title="Xóa ảnh"
+                                                >
+                                                    <IoClose size={16} />
+                                                </button>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
-                            </label>
+                            )}
                         </div>
+                        {/* Category Selection */}
+                        <div className="space-y-2">
+                            <Label htmlFor="category">
+                                Danh mục <span className="text-red-500">*</span>
+                            </Label>
 
-                        {/* Image Preview */}
-                        {data.image.length > 0 && (
-                            <div className="mt-3">
-                                <p className="sm:text-sm text-xs font-semibold text-secondary-200 mb-2">
-                                    Đã chọn {data.image.length} ảnh
-                                </p>
-                                <div className="flex flex-wrap gap-3">
-                                    {data.image.map((img, index) => (
-                                        <div
-                                            key={img + index}
-                                            className="relative group sm:h-24 sm:w-24 h-16 w-16 rounded-lg overflow-hidden border border-secondary-100"
+                            {/* Selected Categories */}
+                            {data.category.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mb-2">
+                                    {data.category.map((cate) => (
+                                        <span
+                                            key={cate._id}
+                                            className="inline-flex items-center gap-2 bg-rose-600/90 text-white sm:text-sm text-xs px-3 py-1 rounded-full"
                                         >
-                                            <img
-                                                src={img}
-                                                alt={`Preview ${index + 1}`}
-                                                className="w-full h-full object-cover cursor-pointer hover:scale-110 transition-all duration-200"
-                                                onClick={() => setImageURL(img)}
-                                            />
+                                            {cate.name}
                                             <button
                                                 type="button"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleRemoveImage(index);
-                                                }}
-                                                className="absolute top-0 right-0 bg-red-500 text-white rounded-md sm:p-1 p-[2px] opacity-0 group-hover:opacity-100
-                                                transition-opacity"
-                                                title="Xóa ảnh"
+                                                onClick={() =>
+                                                    handleRemoveCategorySelected(
+                                                        cate._id
+                                                    )
+                                                }
+                                                className="hover:opacity-80 mb-[1.5px]"
                                             >
                                                 <IoClose size={16} />
                                             </button>
-                                        </div>
+                                        </span>
                                     ))}
                                 </div>
-                            </div>
-                        )}
-                    </div>
-                    {/* Category Selection */}
-                    <div className="space-y-2">
-                        <label className="block font-semibold text-gray-700">
-                            Danh mục <span className="text-red-500">*</span>
-                        </label>
+                            )}
 
-                        {/* Selected Categories */}
-                        {data.category.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mb-2">
-                                {data.category.map((cate) => (
-                                    <span
-                                        key={cate._id}
-                                        className="inline-flex items-center gap-2 bg-rose-600/90 text-white sm:text-sm text-xs px-3 py-1 rounded-full"
-                                    >
-                                        {cate.name}
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                handleRemoveCategorySelected(
-                                                    cate._id
-                                                )
-                                            }
-                                            className="hover:opacity-80 mb-[1.5px]"
-                                        >
-                                            <IoClose size={16} />
-                                        </button>
-                                    </span>
-                                ))}
-                            </div>
-                        )}
+                            {/* Category Selector */}
+                            <div className="relative">
+                                <select
+                                    className="text-sm h-12 w-full border-gray-700 border bg-neutral-950
+                                    px-3 py-1 rounded-md"
+                                    value={selectCategoryValue}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        if (!value) return;
 
-                        {/* Category Selector */}
-                        <div className="relative">
-                            <select
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-secondary-100
-                                focus:border-secondary-100 focus:outline-none appearance-none bg-white cursor-pointer"
-                                value={selectCategoryValue}
-                                onChange={(e) => {
-                                    const value = e.target.value;
-                                    if (!value) return;
+                                        const categoryDetails =
+                                            allCategory.find(
+                                                (el) => el._id === value
+                                            );
 
-                                    const categoryDetails = allCategory.find(
-                                        (el) => el._id === value
-                                    );
+                                        // Check for duplicates
+                                        const alreadySelected =
+                                            data.category.some(
+                                                (cate) => cate._id === value
+                                            );
 
-                                    // Check for duplicates
-                                    const alreadySelected = data.category.some(
-                                        (cate) => cate._id === value
-                                    );
-
-                                    if (!alreadySelected && categoryDetails) {
-                                        setData((prev) => ({
-                                            ...prev,
-                                            category: [
-                                                ...prev.category,
-                                                categoryDetails,
-                                            ],
-                                        }));
-                                        setSelectCategoryValue('');
-                                    }
-                                }}
-                            >
-                                <option value="">Chọn danh mục</option>
-                                {allCategory
-                                    .filter(
-                                        (cat) =>
-                                            !data.category.some(
-                                                (selected) =>
-                                                    selected._id === cat._id
-                                            )
-                                    )
-                                    .map((category) => (
-                                        <option
-                                            key={category._id}
-                                            value={category._id}
-                                        >
-                                            {category.name}
-                                        </option>
-                                    ))}
-                            </select>
-                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                <svg
-                                    className="fill-current h-4 w-4"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20"
+                                        if (
+                                            !alreadySelected &&
+                                            categoryDetails
+                                        ) {
+                                            setData((prev) => ({
+                                                ...prev,
+                                                category: [
+                                                    ...prev.category,
+                                                    categoryDetails,
+                                                ],
+                                            }));
+                                            setSelectCategoryValue('');
+                                        }
+                                    }}
                                 >
-                                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                                </svg>
+                                    <option value="">Chọn danh mục</option>
+                                    {allCategory
+                                        .filter(
+                                            (cat) =>
+                                                !data.category.some(
+                                                    (selected) =>
+                                                        selected._id === cat._id
+                                                )
+                                        )
+                                        .map((category) => (
+                                            <option
+                                                key={category._id}
+                                                value={category._id}
+                                            >
+                                                {category.name}
+                                            </option>
+                                        ))}
+                                </select>
+                                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                    <svg
+                                        className="fill-current h-4 w-4"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20"
+                                    >
+                                        <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                                    </svg>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    {/* Unit */}
-                    <div className="space-y-2">
-                        <label
-                            htmlFor="unit"
-                            className="block font-semibold text-gray-700"
-                        >
-                            Đơn vị tính <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="unit"
-                            name="unit"
-                            value={data.unit}
-                            onChange={handleOnChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1
-                            focus:ring-secondary-100 focus:border-secondary-100 focus:outline-none transition-all"
-                            placeholder="Ví dụ: cái, thiết bị, bộ..."
-                            spellCheck={false}
-                            required
-                            onKeyDown={handleKeyDown}
-                        />
-                    </div>
-                    {/* Stock */}
-                    <div className="space-y-2">
-                        <label
-                            htmlFor="stock"
-                            className="block font-semibold text-gray-700"
-                        >
-                            Số lượng tồn kho{' '}
-                            <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="number"
-                            id="stock"
-                            name="stock"
-                            min="0"
-                            value={data.stock || ''}
-                            onChange={handleOnChange}
-                            className="w-full no-spinner px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-secondary-100
-                            focus:border-secondary-100 focus:outline-none"
-                            placeholder="Nhập số lượng tồn kho"
-                            required
-                            onKeyDown={handleKeyDown}
-                        />
-                    </div>
-                    {/* Price */}
-                    <div className="space-y-2">
-                        <label
-                            htmlFor="price"
-                            className="block font-semibold text-gray-700"
-                        >
-                            Giá bán <span className="text-red-500">*</span>
-                        </label>
-                        <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-200 font-sem">
-                                VND
-                            </span>
-                            <input
-                                type="number"
-                                id="price"
-                                name="price"
-                                min="0"
-                                value={data.price || ''}
+                        {/* Unit */}
+                        <div className="space-y-2">
+                            <Label htmlFor="unit">
+                                Đơn vị tính{' '}
+                                <span className="text-red-500">*</span>
+                            </Label>
+                            <Input
+                                type="text"
+                                id="unit"
+                                name="unit"
+                                value={data.unit}
                                 onChange={handleOnChange}
-                                className="w-full no-spinner pl-12 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-secondary-100
-                                focus:border-secondary-100 focus:outline-none"
-                                placeholder="Nhập giá bán"
+                                className="text-sm h-12"
+                                placeholder="Ví dụ: cái, thiết bị, bộ..."
+                                spellCheck={false}
                                 required
                                 onKeyDown={handleKeyDown}
                             />
                         </div>
-                    </div>
-                    <div className="grid gap-2">
-                        <label
-                            id="discount"
-                            htmlFor="discount"
-                            className="block font-semibold text-gray-700"
-                        >
-                            Giảm giá
-                        </label>
-                        <input
-                            type="number"
-                            className="w-full no-spinner px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-secondary-100
-                            focus:border-secondary-100 focus:outline-none"
-                            id="discount"
-                            placeholder="Nhập % giảm giá (nếu có)"
-                            value={data.discount}
-                            name="discount"
-                            onChange={handleOnChange}
-                            onKeyDown={handleKeyDown}
-                        />
-                    </div>
-                    {/* Description */}
-                    <div className="space-y-2">
-                        <label
-                            htmlFor="description"
-                            className="block font-semibold text-gray-700"
-                        >
-                            Mô tả sản phẩm
-                        </label>
-                        <textarea
-                            id="description"
-                            name="description"
-                            value={data.description}
-                            onChange={handleOnChange}
-                            rows={4}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-secondary-100
-                            focus:border-secondary-100 focus:outline-none resize-none"
-                            placeholder="Nhập mô tả chi tiết về sản phẩm..."
-                            spellCheck={false}
-                            onKeyDown={handleKeyDown}
-                        />
-                    </div>
-
-                    {/* Additional Fields */}
-                    {Object.keys(data.more_details).length > 0 && (
-                        <div className="space-y-4 pt-2 border-t border-gray-200">
-                            <h4 className="font-semibold text-secondary-200">
-                                Thông tin bổ sung
-                            </h4>
-                            {Object.keys(data.more_details).map((field) => (
-                                <div key={field} className="space-y-2">
-                                    <label
-                                        htmlFor={`field-${field}`}
-                                        className="block font-semibold text-gray-700 capitalize"
-                                    >
-                                        {field.replace(/_/g, ' ')}
-                                    </label>
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            id={`field-${field}`}
-                                            value={
-                                                data.more_details[field] || ''
-                                            }
-                                            onChange={(e) => {
-                                                const value = e.target.value;
-                                                setData((prev) => ({
-                                                    ...prev,
-                                                    more_details: {
-                                                        ...prev.more_details,
-                                                        [field]: value,
-                                                    },
-                                                }));
-                                            }}
-                                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-secondary-100
-                                            focus:border-secondary-100 focus:outline-none"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                const newDetails = {
-                                                    ...data.more_details,
-                                                };
-                                                delete newDetails[field];
-                                                setData((prev) => ({
-                                                    ...prev,
-                                                    more_details: newDetails,
-                                                }));
-                                            }}
-                                            className="px-3 text-red-500 hover:text-red-700"
-                                            title="Xóa trường"
-                                        >
-                                            <IoClose size={20} />
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
+                        {/* Stock */}
+                        <div className="space-y-2">
+                            <Label htmlFor="stock">
+                                Số lượng tồn kho{' '}
+                                <span className="text-red-500">*</span>
+                            </Label>
+                            <Input
+                                type="number"
+                                id="stock"
+                                name="stock"
+                                min="0"
+                                value={data.stock || ''}
+                                onChange={handleOnChange}
+                                className="text-sm h-12 no-spinner"
+                                placeholder="Nhập số lượng tồn kho"
+                                required
+                                onKeyDown={handleKeyDown}
+                            />
                         </div>
-                    )}
+                        {/* Price */}
+                        <div className="space-y-2">
+                            <Label htmlFor="price">
+                                Giá bán <span className="text-red-500">*</span>
+                            </Label>
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-200 font-sem">
+                                    VND
+                                </span>
+                                <Input
+                                    type="number"
+                                    id="price"
+                                    name="price"
+                                    min="0"
+                                    value={data.price || ''}
+                                    onChange={handleOnChange}
+                                    className="text-sm h-12 pl-12 no-spinner"
+                                    placeholder="Nhập giá bán"
+                                    required
+                                    onKeyDown={handleKeyDown}
+                                />
+                            </div>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label id="discount" htmlFor="discount">
+                                Giảm giá
+                            </Label>
+                            <Input
+                                type="number"
+                                className="text-sm h-12 no-spinner"
+                                id="discount"
+                                placeholder="Nhập % giảm giá (nếu có)"
+                                value={data.discount}
+                                name="discount"
+                                onChange={handleOnChange}
+                                onKeyDown={handleKeyDown}
+                            />
+                        </div>
+                        {/* Description */}
+                        <div className="space-y-2">
+                            <Label htmlFor="description">Mô tả sản phẩm</Label>
+                            <Textarea
+                                id="description"
+                                name="description"
+                                value={data.description}
+                                onChange={handleOnChange}
+                                rows={4}
+                                className="text-sm"
+                                placeholder="Nhập mô tả chi tiết về sản phẩm..."
+                                spellCheck={false}
+                                onKeyDown={handleKeyDown}
+                            />
+                        </div>
 
-                    {/* Add Field Button */}
-                    <button
-                        type="button"
-                        onClick={() => setOpenAddField(true)}
-                        className="flex items-center gap-2 font-semibold text-primary-600
-                        hover:text-primary-700 transition-colors bg-white w-full
-                        px-3 py-2 rounded-lg border shadow-md"
-                    >
-                        <IoAddCircleOutline size={20} />
-                        <p className="mt-[3px]">Thêm trường tùy chỉnh</p>
-                    </button>
-
-                    {/* Submit Button */}
-                    <div className="pt-4 border-t border-gray-200">
-                        <button
-                            type="submit"
-                            disabled={
-                                !data.name ||
-                                !data.image[0] ||
-                                !data.category[0] ||
-                                !data.unit ||
-                                !data.stock ||
-                                !data.price ||
-                                loading
-                            }
-                            className={`w-full py-2 px-4 rounded-lg sm:text-base text-sm font-semibold transition-colors ${
-                                data.name &&
-                                data.image[0] &&
-                                data.category[0] &&
-                                data.unit &&
-                                data.stock &&
-                                data.price &&
-                                !loading
-                                    ? 'bg-primary-4 text-secondary-200 hover:opacity-80 shadow-lg'
-                                    : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                            }`}
-                        >
-                            {loading ? (
-                                <div className="flex items-center justify-center">
-                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                                    Đang xử lý...
+                        {/* Additional Fields */}
+                        {Object.keys(data.more_details).length > 0 && (
+                            <>
+                                <Divider />
+                                <div className="space-y-4">
+                                    <CardTitle className="text-sm text-lime-300 font-bold uppercase">
+                                        Thông tin bổ sung
+                                    </CardTitle>
+                                    {Object.keys(data.more_details).map(
+                                        (field) => (
+                                            <div
+                                                key={field}
+                                                className="space-y-2"
+                                            >
+                                                <Label
+                                                    htmlFor={`field-${field}`}
+                                                >
+                                                    {field.replace(/_/g, ' ')}
+                                                </Label>
+                                                <div className="flex gap-2">
+                                                    <Input
+                                                        type="text"
+                                                        id={`field-${field}`}
+                                                        value={
+                                                            data.more_details[
+                                                                field
+                                                            ] || ''
+                                                        }
+                                                        onChange={(e) => {
+                                                            const value =
+                                                                e.target.value;
+                                                            setData((prev) => ({
+                                                                ...prev,
+                                                                more_details: {
+                                                                    ...prev.more_details,
+                                                                    [field]:
+                                                                        value,
+                                                                },
+                                                            }));
+                                                        }}
+                                                        className="text-sm h-12"
+                                                    />
+                                                    <Button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const newDetails = {
+                                                                ...data.more_details,
+                                                            };
+                                                            delete newDetails[
+                                                                field
+                                                            ];
+                                                            setData((prev) => ({
+                                                                ...prev,
+                                                                more_details:
+                                                                    newDetails,
+                                                            }));
+                                                        }}
+                                                        className="bg-transparent hover:bg-transparent text-red-500
+                                                    hover:text-red-700 h-12"
+                                                        title="Xóa trường"
+                                                    >
+                                                        <IoClose size={20} />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        )
+                                    )}
                                 </div>
-                            ) : (
-                                'Lưu sản phẩm'
-                            )}
-                        </button>
-                    </div>
+                            </>
+                        )}
+
+                        {/* Add Field Button */}
+                        <GlareHover
+                            background="transparent"
+                            glareOpacity={0.3}
+                            glareAngle={-30}
+                            glareSize={300}
+                            transitionDuration={800}
+                            playOnce={false}
+                        >
+                            <Button
+                                type="button"
+                                onClick={() => setOpenAddField(true)}
+                                className="flex items-center gap-2 font-semibold text-rose-300
+                        hover:text-primary-700 transition-colors w-full
+                        px-3 py-2 rounded-lg border shadow-md hover:bg-transparent"
+                            >
+                                <IoAddCircleOutline />
+                                Thêm trường tùy chỉnh
+                            </Button>
+                        </GlareHover>
+
+                        <Divider />
+                        {/* Submit Button */}
+                        <CardFooter className="px-0 text-sm flex justify-end">
+                            <GlareHover
+                                background="transparent"
+                                glareOpacity={0.3}
+                                glareAngle={-30}
+                                glareSize={300}
+                                transitionDuration={800}
+                                playOnce={false}
+                            >
+                                <Button type="submit" className="bg-foreground">
+                                    {loading ? <Loading /> : 'Thêm Mới'}
+                                </Button>
+                            </GlareHover>
+                        </CardFooter>
+                    </CardContent>
                 </form>
-            </div>
+            </Card>
 
             {/* Image Preview Modal */}
             {imageURL && (

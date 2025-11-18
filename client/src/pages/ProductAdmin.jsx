@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import SummaryApi from '../common/SummaryApi';
 import Axios from '../utils/Axios';
 import AxiosToastError from '../utils/AxiosToastError';
@@ -14,6 +14,26 @@ import {
 } from 'react-icons/io5';
 import { debounce } from 'lodash';
 import UploadProductModel from '../components/UploadProductModel';
+import {
+    Card,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import GlareHover from '@/components/GlareHover';
+import { Button } from '@/components/ui/button';
+import { FaFilter } from 'react-icons/fa6';
+import { RiResetLeftFill } from 'react-icons/ri';
+import { Label } from '@radix-ui/react-label';
+import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 
 const ProductAdmin = () => {
     const [productData, setProductData] = useState([]);
@@ -46,67 +66,97 @@ const ProductAdmin = () => {
         }
     }, []);
 
-    const fetchProduct = useCallback(async () => {
-        const accessToken = localStorage.getItem('accesstoken');
-        if (!accessToken) return;
+    const fetchProduct = useCallback(
+        async (
+            searchTerm = search,
+            filterValues = filters,
+            currentPage = page
+        ) => {
+            const accessToken = localStorage.getItem('accesstoken');
+            if (!accessToken) return;
 
-        try {
-            setLoading(true);
+            try {
+                setLoading(true);
 
-            // Prepare request data with proper parameter names
-            const requestData = {
-                page,
-                limit: 15,
-                search: search.trim(),
-                minPrice: filters.minPrice
-                    ? Number(filters.minPrice)
-                    : undefined,
-                maxPrice: filters.maxPrice
-                    ? Number(filters.maxPrice)
-                    : undefined,
-                sort: filters.sortBy,
-                category:
-                    filters.category !== 'all' ? filters.category : undefined,
-            };
+                // Prepare request data with proper parameter names
+                const requestData = {
+                    page: currentPage,
+                    limit: 15,
+                    search: searchTerm.trim(),
+                    minPrice: filterValues.minPrice
+                        ? Number(filterValues.minPrice)
+                        : undefined,
+                    maxPrice: filterValues.maxPrice
+                        ? Number(filterValues.maxPrice)
+                        : undefined,
+                    sort: filterValues.sortBy,
+                    category:
+                        filterValues.category !== 'all'
+                            ? filterValues.category
+                            : undefined,
+                };
 
-            // Remove undefined values
-            Object.keys(requestData).forEach((key) => {
-                if (requestData[key] === undefined || requestData[key] === '') {
-                    delete requestData[key];
+                // Clean up undefined values
+                Object.keys(requestData).forEach((key) => {
+                    if (
+                        requestData[key] === undefined ||
+                        requestData[key] === ''
+                    ) {
+                        delete requestData[key];
+                    }
+                });
+
+                const response = await Axios({
+                    ...SummaryApi.get_product,
+                    data: requestData,
+                });
+
+                if (response.data.success) {
+                    setTotalPageCount(response.data.totalNoPage);
+                    setProductData(response.data.data);
                 }
-            });
-
-            const response = await Axios({
-                ...SummaryApi.get_product,
-                data: requestData,
-            });
-
-            const { data: responseData } = response;
-
-            if (responseData.success) {
-                setTotalPageCount(responseData.totalNoPage);
-                setProductData(responseData.data);
+            } catch (error) {
+                AxiosToastError(error);
+            } finally {
+                setLoading(false);
             }
-        } catch (error) {
-            AxiosToastError(error);
-        } finally {
-            setLoading(false);
-        }
-    }, [page, search, filters]);
+        },
+        []
+    );
 
-    useEffect(() => {
-        fetchCategories();
-    }, [fetchCategories]);
+    // Reset all filters
+    const resetFilters = () => {
+        const resetFilters = {
+            minPrice: '',
+            maxPrice: '',
+            sortBy: 'newest',
+            category: 'all',
+        };
+        setFilters(resetFilters);
+        setPage(1);
+        setSearch('');
+        // Fetch products with reset filters
+        fetchProduct('', resetFilters, 1);
+    };
 
-    useEffect(() => {
-        fetchProduct();
-    }, [fetchProduct]);
+    const handleOnChange = (e) => {
+        const { value } = e.target;
+        setSearch(value);
+        setPage(1);
+        debouncedSearch(value, filters, 1);
+    };
+
+    // Debounced search function
+    const debouncedSearch = useRef(
+        debounce((searchTerm, filterValues, currentPage) => {
+            fetchProduct(searchTerm, filterValues, currentPage);
+        }, 500)
+    ).current;
 
     // Handle filter changes
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
 
-        // Only allow numbers or empty string for price inputs
         if (
             (name === 'minPrice' || name === 'maxPrice') &&
             value !== '' &&
@@ -115,206 +165,216 @@ const ProductAdmin = () => {
             return;
         }
 
-        setFilters((prev) => ({
-            ...prev,
+        const newFilters = {
+            ...filters,
             [name]: value,
-        }));
+        };
+
+        setFilters(newFilters);
         setPage(1);
+        debouncedSearch(search, newFilters, 1);
     };
 
-    // Reset all filters
-    const resetFilters = () => {
-        setFilters({
-            minPrice: '',
-            maxPrice: '',
-            sortBy: 'newest',
-            category: 'all',
-        });
-        setPage(1);
+    // Handle page changes
+    const handlePageChange = (newPage) => {
+        setPage(newPage);
+        fetchProduct(search, filters, newPage);
     };
 
-    // Add debounce for filters
+    // Initial data fetch
     useEffect(() => {
-        const timer = setTimeout(() => {
-            fetchProduct();
-        }, 300);
-
-        return () => clearTimeout(timer);
-    }, [filters, search, page]);
+        fetchCategories();
+        fetchProduct();
+    }, []);
 
     const handleNextPage = () => {
-        if (page !== totalPageCount) {
-            setPage((prev) => prev + 1);
+        if (page < totalPageCount) {
+            handlePageChange(page + 1);
         }
     };
 
     const handlePreviousPage = () => {
         if (page > 1) {
-            setPage((prev) => prev - 1);
+            handlePageChange(page - 1);
         }
     };
 
-    const handleOnChange = (e) => {
-        const { value } = e.target;
-        setSearch(value);
-        setPage(1);
-    };
-
-    const debouncedSearch = React.useCallback(
-        debounce(() => {
-            fetchProduct();
-        }, 500),
-        [filters, search]
-    );
-
-    useEffect(() => {
-        debouncedSearch();
-        return () => debouncedSearch.cancel();
-    }, [search]);
-
     // Render filter controls
     const renderFilterControls = () => (
-        <div className="bg-white p-4 rounded-lg shadow-lg mb-4 border border-secondary-100 text-secondary-200 sm:text-base text-sm">
+        <div
+            className="liquid-glass p-4 rounded-lg shadow-lg mb-4 border border-secondary-100
+        text-secondary-200 sm:text-base text-sm"
+        >
             <div className="flex justify-between items-center mb-4">
-                <h3 className="font-bold">Bộ lọc</h3>
+                <h2 className="uppercase text-lime-300 drop-shadow-[0_0_20px_rgba(132,204,22,0.35)]">
+                    Bộ lọc
+                </h2>
                 <button
-                    onClick={() => setShowFilters(false)}
-                    className="hover:text-secondary-100 text-secondary-200"
+                    onClick={resetFilters}
+                    className="hover:bg-zinc-800 hover:border-emerald-500 flex items-center gap-2
+                    transition-all duration-300 text-lime-300 border-2 border-zinc-400 px-4 py-1.5 rounded-md"
                 >
-                    <IoClose size={22} />
+                    <RiResetLeftFill />
+                    Đặt lại
                 </button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:text-sm text-xs">
-                <div className="grid gap-1">
-                    <label className="block font-medium text-secondary-200">
-                        Giá từ
-                    </label>
-                    <div className="flex items-center gap-2">
-                        <input
-                            type="text"
-                            name="minPrice"
-                            value={filters.minPrice}
-                            onChange={handleFilterChange}
-                            placeholder="Tối thiểu"
-                            className="w-full p-2 border rounded"
-                        />
-                        <span>-</span>
-                        <input
-                            type="text"
-                            name="maxPrice"
-                            value={filters.maxPrice}
-                            onChange={handleFilterChange}
-                            placeholder="Tối đa"
-                            className="w-full p-2 border rounded"
-                        />
-                    </div>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-2.5 sm:text-sm text-xs">
+                    <Label htmlFor="email">Giá từ</Label>
+                    <Input
+                        type="text"
+                        name="minPrice"
+                        value={filters.minPrice}
+                        onChange={handleFilterChange}
+                        placeholder="Thấp nhất"
+                        className="w-24 text-sm border-gray-200 focus:ring-0 shadow-none rounded-lg bg-white/20 focus:border-[#3F3FF3]"
+                    />
+                    <span>-</span>
+                    <Input
+                        type="text"
+                        name="maxPrice"
+                        value={filters.maxPrice}
+                        onChange={handleFilterChange}
+                        placeholder="Cao nhất"
+                        className="w-24 text-sm border-gray-200 focus:ring-0 shadow-none rounded-lg bg-white/20 focus:border-[#3F3FF3]"
+                    />
+                    <span className="">VNĐ</span>
                 </div>
 
-                <div className="grid gap-1">
-                    <label className="block font-medium text-secondary-200">
-                        Sắp xếp
-                    </label>
-                    <select
-                        name="sortBy"
+                <div className="flex items-center gap-2.5 text-sm">
+                    <Label htmlFor="email">Sắp xếp</Label>
+                    <Select
                         value={filters.sortBy}
-                        onChange={handleFilterChange}
-                        className="w-full p-2 border rounded text-secondary-100"
+                        onValueChange={(value) =>
+                            handleFilterChange({
+                                target: { name: 'sortBy', value },
+                            })
+                        }
                     >
-                        <option value="newest">Mới nhất</option>
-                        <option value="price_asc">Giá tăng dần</option>
-                        <option value="price_desc">Giá giảm dần</option>
-                        <option value="name_asc">Tên A-Z</option>
-                    </select>
+                        <SelectTrigger className="w-32 text-sm border-gray-200 focus:ring-0 shadow-none rounded-lg bg-white/20 focus:border-[#3F3FF3]">
+                            <SelectValue placeholder="Sắp xếp" />
+                        </SelectTrigger>
+
+                        <SelectContent className="liquid-glass-2 text-white cursor-pointer">
+                            <SelectItem
+                                value="newest"
+                                className="cursor-pointer"
+                            >
+                                Mới nhất
+                            </SelectItem>
+                            <SelectItem value="price_asc">
+                                Giá tăng dần
+                            </SelectItem>
+                            <SelectItem value="price_desc">
+                                Giá giảm dần
+                            </SelectItem>
+                            <SelectItem value="name_asc">Tên A-Z</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
 
-                <div className="grid gap-1">
-                    <label className="block font-medium text-secondary-200">
-                        Danh mục
-                    </label>
-                    <select
-                        name="category"
+                <div className="flex items-center gap-2.5 text-sm">
+                    <Label htmlFor="email">Danh mục</Label>
+                    <Select
                         value={filters.category}
-                        onChange={handleFilterChange}
-                        className="w-full p-2 border rounded text-secondary-100"
+                        onValueChange={(value) =>
+                            handleFilterChange({
+                                target: { name: 'category', value },
+                            })
+                        }
                     >
-                        <option value="all">Tất cả danh mục</option>
-                        {categories.map((category) => (
-                            <option key={category._id} value={category._id}>
-                                {category.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                        <SelectTrigger className="w-40 text-sm border-gray-200 focus:ring-0 shadow-none rounded-lg bg-white/20 focus:border-[#3F3FF3]">
+                            <SelectValue placeholder="Danh mục" />
+                        </SelectTrigger>
 
-                <div className="flex items-end">
-                    <button
-                        onClick={resetFilters}
-                        className="px-4 py-2 bg-primary-2 text-secondary-200 rounded hover:opacity-80 transition-colors
-                    font-semibold shadow-lg sm:text-sm text-xs"
-                    >
-                        Đặt lại bộ lọc
-                    </button>
+                        <SelectContent className="liquid-glass-2 text-white cursor-pointer">
+                            <SelectItem value="all" className="cursor-pointer">
+                                Tất cả
+                            </SelectItem>
+                            {categories.map((category) => (
+                                <SelectItem
+                                    key={category._id}
+                                    value={category._id}
+                                >
+                                    {category.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
             </div>
         </div>
     );
 
     return (
-        <section className="container mx-auto lg:py-4 py-2 px-1 flex flex-col gap-2">
-            <div
-                className="px-3 py-4 bg-primary-4 rounded-md shadow-md shadow-secondary-100
-                font-bold text-secondary-200 sm:text-lg text-sm flex justify-between sm:flex-row flex-col
-                sm:items-center gap-4"
-            >
-                <div className="flex-row sm:flex-col flex items-center sm:items-start gap-2 sm:gap-1">
-                    <h2 className="text-ellipsis uppercase">Sản phẩm</h2>
-                    <p className="hidden sm:block sm:text-base text-secondary-100">
-                        Quản lý sản phẩm của bạn
-                    </p>
-                </div>
+        <section className="container mx-auto grid gap-2 z-10">
+            {/* Header */}
+            <Card className="py-6 flex-row justify-between gap-6 border-card-foreground">
+                <CardHeader>
+                    <CardTitle className="text-lg text-lime-300 font-bold uppercase">
+                        Sản phẩm
+                    </CardTitle>
+                    <CardDescription>Quản lý sản phẩm của bạn</CardDescription>
+                </CardHeader>
 
-                <div className="flex items-center gap-3 sm:text-sm text-xs">
-                    {/* Filter Button */}
-                    <button
+                <CardFooter>
+                    <GlareHover
+                        background="transparent"
+                        glareOpacity={0.3}
+                        glareAngle={-30}
+                        glareSize={300}
+                        transitionDuration={800}
+                        playOnce={false}
+                    >
+                        <Button
+                            onClick={() => setOpenUploadProduct(true)}
+                            className="bg-foreground"
+                        >
+                            Thêm Mới
+                        </Button>
+                    </GlareHover>
+                </CardFooter>
+            </Card>
+            <div className="flex items-center gap-3 text-sm mt-1.5">
+                {/* Filter Button */}
+                <GlareHover
+                    background="#000"
+                    glareColor="#ffffff"
+                    glareOpacity={0.8}
+                    glareAngle={-30}
+                    glareSize={300}
+                    transitionDuration={800}
+                    playOnce={false}
+                >
+                    <Button
                         onClick={() => setShowFilters(!showFilters)}
-                        className="sm:h-[42px] h-8 flex items-center gap-1 px-3 py-2 bg-white text-secondary-200 rounded-md
-                        hover:bg-gray-100 transition-colors font-medium shadow-md shadow-secondary-100"
+                        className="flex items-center gap-2 px-4 text-lime-300 h-11 w-full hover:bg-transparent"
                     >
-                        <IoFilter className="mb-[2px]" />
-                        <span>Lọc</span>
-                    </button>
+                        <FaFilter className="mb-[3px]" />
+                        <span className="font-bold uppercase">Lọc</span>
+                    </Button>
+                </GlareHover>
 
-                    {/* Search */}
-                    <div
-                        className="sm:h-[42px] h-8 max-w-64 w-full min-w-16 lg:min-w-24 bg-white px-4 sm:py-3 py-[6px]
+                {/* Search */}
+                <div
+                    className="sm:h-[42px] h-8 max-w-64 w-full min-w-16 lg:min-w-24 liquid-glass px-4 sm:py-3 py-[6px]
                         flex items-center gap-3 rounded-xl shadow-md shadow-secondary-100 focus-within:border-secondary-200"
-                    >
-                        <IoSearch
-                            size={22}
-                            className="mb-[3px] sm:block hidden"
-                        />
-                        <IoSearch
-                            size={16}
-                            className="mb-[1.5px] block sm:hidden"
-                        />
-                        <input
-                            type="text"
-                            placeholder="Tìm kiếm sản phẩm..."
-                            className="h-full w-full outline-none bg-transparent"
-                            value={search}
-                            onChange={handleOnChange}
-                            spellCheck={false}
-                        />
-                    </div>
+                >
+                    <IoSearch size={22} className="mb-[3px] sm:block hidden" />
+                    <IoSearch
+                        size={16}
+                        className="mb-[1.5px] block sm:hidden"
+                    />
+                    <input
+                        type="text"
+                        placeholder="Tìm kiếm sản phẩm..."
+                        className="h-full w-full outline-none bg-transparent"
+                        value={search}
+                        onChange={handleOnChange}
+                        spellCheck={false}
+                    />
                 </div>
             </div>
-            <button
-                onClick={() => setOpenUploadProduct(true)}
-                className="bg-primary-2 border-[3px] border-secondary-200 text-secondary-200 px-3 hover:opacity-80
-            py-1 rounded-full text-nowrap text-xs sm:text-base block ml-auto mx-4 mt-3 mb-2"
-            >
-                Thêm Mới
-            </button>
 
             {showFilters && renderFilterControls()}
 
@@ -327,9 +387,7 @@ const ProductAdmin = () => {
             ) : (
                 <div className="">
                     <div className="min-h-[65vh]">
-                        <div
-                            className="pt-2 pb-8 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5 gap-[10px] sm:gap-6"
-                        >
+                        <div className="pt-2 pb-8 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5 gap-[10px] sm:gap-6">
                             {productData.map((product, index) => (
                                 <ProductCartAdmin
                                     key={product._id || index}
@@ -343,27 +401,27 @@ const ProductAdmin = () => {
                         <button
                             onClick={handlePreviousPage}
                             disabled={page === 1}
-                            className={`flex items-center gap-1 px-3 py-1 rounded ${
+                            className={`flex items-center gap-1 px-3 py-1 rounded h-10 ${
                                 page === 1
-                                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                                    : 'bg-white border-2 border-slate-700 text-slate-600 hover:bg-rose-100 hover:text-rose-600 hover:border-rose-600'
+                                    ? 'bg-gray-200/80 text-gray-500 cursor-not-allowed opacity-80'
+                                    : 'bg-black/80 border-2 border-slate-700 text-lime-300 hover:bg-white/20'
                             }`}
                         >
                             <IoArrowBack size={20} />
                             <span className="hidden sm:inline">Trước</span>
                         </button>
 
-                        <div className="flex items-center font-bold sm:text-base text-sm text-secondary-200">
+                        <div className="flex items-center font-bold text-sm text-secondary-200">
                             Trang {page} / {totalPageCount}
                         </div>
 
                         <button
                             onClick={handleNextPage}
                             disabled={page === totalPageCount}
-                            className={`flex items-center gap-1 px-3 py-1 rounded ${
+                            className={`flex items-center gap-1 px-3 py-1 rounded h-10 ${
                                 page === totalPageCount
-                                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                                    : 'bg-white border-2 border-slate-700 text-slate-600 hover:bg-rose-100 hover:text-rose-600 hover:border-rose-600'
+                                    ? 'bg-gray-200/80 text-gray-500 cursor-not-allowed opacity-80'
+                                    : 'bg-black/80 border-2 border-slate-700 text-lime-300 hover:bg-white/20'
                             }`}
                         >
                             <span className="hidden sm:inline">Tiếp</span>

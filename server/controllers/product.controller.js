@@ -64,8 +64,21 @@ export const getProductController = async (req, res) => {
         const query = {};
 
         // Add search query if provided
-        if (search) {
-            query.$text = { $search: search };
+        if (search && search.trim()) {
+            const searchTerm = search.trim();
+            // Check for invalid regex characters
+            if (containsSpecialRegexChar(searchTerm)) {
+                return res.status(400).json({
+                    message: 'Từ khóa tìm kiếm không hợp lệ',
+                    error: true,
+                    success: false
+                });
+            }
+            const safeSearch = escapeRegex(searchTerm);
+            query.$or = [
+                { name: { $regex: safeSearch, $options: 'i' } },
+                { description: { $regex: safeSearch, $options: 'i' } },
+            ];
         }
 
         // Add price range filter

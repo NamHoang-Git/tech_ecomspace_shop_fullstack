@@ -133,7 +133,10 @@ const CategoryPage = () => {
                                 />
 
                                 {/* Border glow */}
-                                <div className="absolute inset-0 rounded-3xl border transition-all duration-500 border-transparent group-hover:border-lime-300/70 group-hover:shadow-[0_0_15px_rgba(132,204,22,0.3)]" />
+                                <div
+                                    className="absolute inset-0 rounded-3xl border transition-all duration-500 border-transparent
+                                group-hover:border-lime-300/70 group-hover:shadow-[0_0_15px_rgba(132,204,22,0.3)]"
+                                />
 
                                 <div className="relative w-full h-full overflow-hidden">
                                     <img
