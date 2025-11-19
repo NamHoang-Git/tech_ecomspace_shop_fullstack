@@ -9,6 +9,7 @@ import { FaArrowUp, FaSort, FaChevronDown } from 'react-icons/fa';
 import CardProduct from '../components/CardProduct';
 import CardLoading from '../components/CardLoading';
 import { IoFilter } from 'react-icons/io5';
+import ProductCard from '@/components/product/product-card';
 
 const ProductListPage = () => {
     const [data, setData] = useState([]);
@@ -217,7 +218,7 @@ const ProductListPage = () => {
                     {/* Mobile Toggle Button */}
                     <button
                         onClick={() => setShowSidebar(!showSidebar)}
-                        className="lg:hidden flex items-center justify-between w-full p-3 bg-white rounded-lg shadow-lg
+                        className="lg:hidden flex items-center justify-between w-full p-3 liquid-glass rounded-lg shadow-lg
                         text-secondary-200 font-bold text-sm"
                     >
                         <span className="font-medium">Danh mục sản phẩm</span>
@@ -234,7 +235,7 @@ const ProductListPage = () => {
                             showSidebar ? 'block' : 'hidden'
                         } lg:block w-full lg:w-72 flex-shrink-0`}
                     >
-                        <div className="bg-white rounded-lg shadow-lg lg:sticky lg:top-24 p-2">
+                        <div className="liquid-glass rounded-lg shadow-lg lg:sticky lg:top-24 p-2">
                             <h3 className="font-bold text-lg text-secondary-200 hidden lg:block shadow-lg p-3 rounded-lg">
                                 Danh mục
                             </h3>
@@ -249,8 +250,8 @@ const ProductListPage = () => {
                                             to={link}
                                             className={`flex items-center gap-4 p-2 rounded-lg transition-colors ${
                                                 categoryId === s._id
-                                                    ? 'bg-rose-200 text-secondary-200'
-                                                    : 'hover:bg-rose-100 text-gray-700'
+                                                    ? 'bg-white/50 text-black'
+                                                    : 'hover:bg-black/50 text-lime-300'
                                             }`}
                                             onClick={() =>
                                                 setShowSidebar(false)
@@ -276,7 +277,7 @@ const ProductListPage = () => {
                     </div>
 
                     {/* Product List */}
-                    <div className="w-full bg-white shadow-lg rounded-lg">
+                    <div className="w-full liquid-glass shadow-lg rounded-lg">
                         <div
                             className="px-4 py-6 sm:py-4 bg-primary-4 rounded-md shadow-md shadow-secondary-100
                         font-bold text-secondary-200 sm:text-lg text-sm"
@@ -295,7 +296,7 @@ const ProductListPage = () => {
                                         onClick={() =>
                                             setShowFilters(!showFilters)
                                         }
-                                        className="h-8 sm:h-[38px] sm:w-auto w-full mx-auto sm:mr-0 min-w-16 lg:min-w-24 bg-white px-4 py-2
+                                        className="h-8 sm:h-[38px] sm:w-auto w-full mx-auto sm:mr-0 min-w-16 lg:min-w-24 liquid-glass px-4 py-2
                                     flex items-center sm:justify-center gap-2 rounded-xl shadow-md shadow-secondary-100
                                     focus-within:border-secondary-200"
                                     >
@@ -304,13 +305,13 @@ const ProductListPage = () => {
                                     </button>
 
                                     <div
-                                        className="h-8 sm:h-[38px] sm:w-40 w-full mx-auto sm:mr-0 min-w-16 lg:min-w-24 bg-white px-4
+                                        className="h-8 sm:h-[38px] sm:w-40 w-full mx-auto sm:mr-0 min-w-16 lg:min-w-24 liquid-glass px-4
                                     flex items-center gap-2 rounded-xl shadow-md shadow-secondary-100 focus-within:border-secondary-200"
                                     >
                                         <select
                                             value={sortBy}
                                             onChange={handleSortChange}
-                                            className="w-full px-2 bg-white focus:outline-none focus:border-transparent cursor-pointer appearance-none"
+                                            className="w-full px-2 bg-transparent focus:outline-none focus:border-transparent cursor-pointer appearance-none"
                                         >
                                             <option value="newest">
                                                 Mới nhất
@@ -331,7 +332,7 @@ const ProductListPage = () => {
                             </div>
 
                             {showFilters && (
-                                <div className="mt-4 p-4 bg-gray-50 rounded-lg shadow-md shadow-secondary-100 sm:text-base text-sm">
+                                <div className="mt-4 p-4 liquid-glass rounded-lg shadow-md shadow-secondary-100 sm:text-base text-sm">
                                     <div className="flex justify-between items-center mb-3 text-secondary-200">
                                         <h4 className="font-bold">
                                             {isFiltering
@@ -391,7 +392,7 @@ const ProductListPage = () => {
                                     .map((_, index) => (
                                         <div
                                             key={index}
-                                            className="group bg-white rounded-xl shadow-md
+                                            className="group rounded-xl shadow-md
                                     hover:shadow-lg transition-all duration-300 overflow-hidden"
                                         >
                                             <CardLoading />
@@ -399,7 +400,7 @@ const ProductListPage = () => {
                                     ))}
                             </div>
                         ) : data.length === 0 ? (
-                            <div className="bg-white rounded-lg shadow-lg p-8 mt-2 text-center font-semibold">
+                            <div className="rounded-lg shadow-lg p-8 mt-2 text-center font-semibold">
                                 <div className="text-gray-400 mb-4">
                                     <svg
                                         className="sm:w-16 sm:h-16 h-14 w-14 mx-auto"
@@ -433,10 +434,10 @@ const ProductListPage = () => {
                                                 ? lastProductRef
                                                 : null
                                         }
-                                        className="group bg-white rounded-xl shadow-md shadow-secondary-100
+                                        className="group rounded-xl shadow-md shadow-secondary-100
                                     hover:shadow-lg transition-all duration-300 overflow-hidden"
                                     >
-                                        <CardProduct data={product} />
+                                        <ProductCard data={product} />
                                     </div>
                                 ))}
                             </div>
